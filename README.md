@@ -18,6 +18,9 @@ after qmlease enters stable phase.
 
 ### Install QmlEase
 
+> Warning: qmlease is not officially released yet. Below is a pre-documented
+> guide for the near future. (i.e. Below command is not available for now.)
+
 Use pip to install qmlease:
 
 ```shell
