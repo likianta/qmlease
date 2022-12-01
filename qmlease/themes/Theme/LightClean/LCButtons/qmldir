@@ -1,0 +1,9 @@
+module LCButtons
+
+LCBaseButton       1.0  LCBaseButton.qml
+LCButton           1.0  LCButton.qml
+LCCheckBox         1.0  LCCheckBox.qml
+LCComboBox         1.0  LCComboBox.qml
+LCFlatButton       1.0  LCFlatButton.qml
+LCFlatRadioButton  1.0  LCFlatRadioButton.qml
+LCRadioButton      1.0  LCRadioButton.qml

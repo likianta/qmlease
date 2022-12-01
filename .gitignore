@@ -1,0 +1,6 @@
+/.idea/
+/.vscode/
+/deleted/
+/dist/
+__pycache__/
+.DS_Store

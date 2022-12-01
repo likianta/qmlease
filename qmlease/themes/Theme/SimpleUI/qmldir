@@ -1,0 +1,4 @@
+module SimpleUI
+
+HBox    0.1.0     HBox.qml
+VBox    0.1.0     VBox.qml

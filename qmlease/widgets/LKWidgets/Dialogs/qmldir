@@ -1,0 +1,3 @@
+module LKWidgets.Dialogs
+
+LKFileDialog    1.0     LKFileDialog.qml

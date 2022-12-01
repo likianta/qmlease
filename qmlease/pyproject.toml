@@ -1,0 +1,31 @@
+[tool.poetry]
+name = "qmlease"
+version = "3.0.0a0"
+homepage = "https://github.com/likianta/qmlease"
+description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
+readme = "README.md"
+authors = ["Likianta <likianta@foxmail.com>"]
+license = "MIT"
+
+[[tool.poetry.source]]
+name = "tsinghua"
+url = "https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple/"
+default = true
+
+[tool.poetry.dependencies]
+python = "^3.8"
+argsense = "*"
+lambda-ex = "^1.1.0"
+lk-logger = "^5.4.7"
+lk-utils = "^2.5.1"
+qtpy = "^2.3.0"
+pyside6 = { version = "*", optional = true }
+pyside2 = { version = "*", optional = true }
+
+[tool.poetry.extras]
+qt6 = ["pyside6"]  # pip install lk-qtquick-scaffold[qt6]
+qt5 = ["pyside2"]  # pip install lk-qtquick-scaffold[qt5]
+
+[build-system]
+requires = ["poetry"]
+build-backend = "poetry.masonry.api"

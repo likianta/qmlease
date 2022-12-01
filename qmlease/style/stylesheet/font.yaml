@@ -1,0 +1,21 @@
+# DELETE: color_default, color_general_* are going to be removed.
+color_default: '#393355'
+color_general_0: '#000000'
+color_general_1: '#111111'
+color_general_3: '#333333'
+color_general_5: '#666666'
+color_general_7: '#CCCCCC'
+color_general_9: '#DEDEDE'
+
+color_dark_1: '$color_general_7'
+color_dark_5: '#393355'
+color_light_5: '#F2F2F2'
+
+font_default: ''
+
+size_xs: 6
+size_s: 9
+size_m: 12
+size_l: 17
+size_xl: 24
+size_xxl: 36

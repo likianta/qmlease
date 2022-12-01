@@ -1,0 +1,5 @@
+module LKWidgets.Panels
+
+LKFrame     1.0     LKFrame.qml
+LKSidebar   1.0     LKSidebar.qml
+LKWindow    1.0     LKWindow.qml

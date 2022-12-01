@@ -1,0 +1,7 @@
+module LCBackground
+
+LCButtonBg             1.0  LCButtonBg.qml
+LCCheckBoxIndicatorBg  1.0  LCCheckBoxIndicatorBg.qml
+LCFieldBg              1.0  LCFieldBg.qml
+LCGhostBg              1.0  LCGhostBg.qml
+LCRectBg               1.0  LCRectBg.qml

@@ -1,0 +1,9 @@
+module LKWidgets.Buttons
+
+LKButton        1.0     LKButton.qml
+LKCheckBox      1.0     LKCheckBox.qml
+LKComboBox      1.0     LKComboBox.qml
+LKFlatButton    1.0     LKFlatButton.qml
+LKGhostButton   1.0     LKGhostButton.qml
+LKIconButton    1.0     LKIconButton.qml
+LKRadioBox      1.0     LKRadioBox.qml
