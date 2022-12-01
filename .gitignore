@@ -1,6 +1,10 @@
 /.idea/
 /.vscode/
 /deleted/
-/dist/
+/sidework/pyside-package-tailor/venv/qt_for_python/*
+
 __pycache__/
+dist/
 .DS_Store
+
+!/sidework/pyside-package-tailor/venv/qt_for_python/.gitkeep

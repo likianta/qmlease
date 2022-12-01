@@ -1,0 +1,28 @@
+alpha-0:
+  - examples/
+  - plugins/sqldrivers/
+  - resources/
+  - translations/
+  - opengl32sw.dll
+  - lupdate.exe
+  - QtOpenGL.pyd
+  - Qt6Designer.dll
+  - d3dcompiler_47.dll
+  - Qt6DesignerComponents.dll
+  - Qt6OpenGL.dll
+  - linguist.exe
+alpha-1:
+  # remove qml folder, for users who does only use qtwidgets.
+  - examples/
+  - plugins/sqldrivers/
+  - qml/
+  - resources/
+  - translations/
+  - opengl32sw.dll
+  - lupdate.exe
+  - QtOpenGL.pyd
+  - Qt6Designer.dll
+  - d3dcompiler_47.dll
+  - Qt6DesignerComponents.dll
+  - Qt6OpenGL.dll
+  - linguist.exe
