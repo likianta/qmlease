@@ -5,6 +5,7 @@ LKField         1.0     LKField.qml
 LKIcon          1.0     LKIcon.qml
 LKImage         1.0     LKImage.qml
 LKInput         1.0     LKInput.qml
+LKItem          1.0     LKItem.qml
 LKMouseArea     1.0     LKMouseArea.qml
 LKProgress      1.0     LKProgress/LKProgress.qml
 LKProgressA     1.0     LKProgress/LKProgressA.qml
