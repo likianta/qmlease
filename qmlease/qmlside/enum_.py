@@ -15,6 +15,11 @@ _auto = Auto()
 
 
 class _Enum:
+    # general
+    AUTO = _auto()
+    DEFAULT = _auto()
+    NONE = _auto()
+    
     # justify
     AROUND = _auto()
     BETWEEN = _auto()
