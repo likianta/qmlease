@@ -20,7 +20,7 @@ Rectangle {
     property string bgColorPressed: pycolor.button_bg_pressed
 //    property alias  borderColor: root.border.color
     property string text
-    property string textColor: pycolor.button_text
+    property string textColor: pycolor.text_main
 
     signal clicked()
 

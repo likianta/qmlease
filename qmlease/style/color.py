@@ -49,8 +49,8 @@ class Color(Base):
                     inflated_count += 1
             processed.add(a)
         
-        if inflated_count:
-            print(':v', 'increased {} items'.format(inflated_count))
+        # if inflated_count:
+        #     print(':v', 'increased {} items'.format(inflated_count))
         
         return data
     
