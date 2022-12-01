@@ -1,20 +1,40 @@
-from typing import Iterator
+import typing as t
+
+from lk_utils import loads
 from qtpy.QtQml import QQmlPropertyMap
 
 
 class Base(QQmlPropertyMap):
+    """
+    once user is given a stylesheet file (like ".yaml"), this class should
+    parse it and generate a finite set of extended stylesheets, which includes
+    not only the original one, but also its variants.
     
-    def __init__(self):
-        super().__init__()
+    for example, if user stylesheet is:
+        button_bg: '#ff0000'
+        button_bg_pressed: '#00ff00'
+    this class should generate:
+        button_bg: '#ff0000'
+        button_bg_pressed: '#00ff00'
+        button_bg_focused: '#00ff00'
+        button_bg_hovered: '#ff0000'  # based on some internal rules to pick
+        #   the most familiar color.
+        ...
+    see also `self._post_complete()`
+    """
     
-    def update(self, data: dict):
+    def update_from_file(self, file: str) -> None:
+        data: dict = loads(file)
+        self.update(data)
+    
+    def update(self, data: dict) -> None:
         
-        def _get_dynamic_value(value: str):  # -> Any
+        def _eval_reference(value: str) -> t.Any:
             # assert value.startswith('$')
             base_key = value[1:]
             base_value = data[base_key]
             if isinstance(base_value, str) and base_value.startswith('$'):
-                out = _get_dynamic_value(base_value)
+                out = _eval_reference(base_value)
                 data[base_key] = out
                 return out
             else:
@@ -23,29 +43,23 @@ class Base(QQmlPropertyMap):
         for i, (k, v) in enumerate(data.items()):
             if isinstance(v, str) and v.startswith('$'):
                 try:
-                    data[k] = _get_dynamic_value(v)
+                    data[k] = _eval_reference(v)
                 except KeyError as e:
                     print(':v4',
-                          'Failed dynamically assign value to key'
-                          '(source key does not exist)! '
+                          'failed dynamically assign value to key. '
+                          '(source key does not exist!) '
                           'index: {}, key: {}, value: {}'.format(i, k, v))
                     raise e
         
-        self._update(data)
+        data = self._post_complete(data)
+        self._finalize(data)
     
-    def update_from_file(self, file: str):
-        from lk_utils import loads
-        data: dict = loads(file)
-        self.update(data)
+    def _post_complete(self, data: dict) -> dict:
+        raise NotImplementedError
     
-    def _update(self, kwargs: dict):
+    def _finalize(self, kwargs: dict):
         # https://stackoverflow.com/questions/62629628/attaching-qt-property-to
         # -python-class-after-definition-not-accessible-from-qml
         for k, v in kwargs.items():
             setattr(self, k, v)
             self.insert(k, v)
-            for k_abbr in self._get_abbrs(k):
-                self.insert(k_abbr, v)
-    
-    def _get_abbrs(self, name: str) -> Iterator[str]:
-        raise NotImplementedError

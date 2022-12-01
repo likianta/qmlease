@@ -1,17 +1,18 @@
+from lk_utils import loads
+
 from ._base import Base
 
 
 class Font(Base):
-    def _get_abbrs(self, name: str):
-        if name.endswith('_m'):
-            yield name[:-2]
-        elif name.endswith('_default'):
-            yield name[:-8]
+    
+    def _post_complete(self, data: dict) -> dict:
+        for k, v in tuple(data.items()):
+            if not k.endswith('_m'):
+                data[f'{k}_m'] = v
+        return data
     
     def update_from_file(self, file: str):
-        from lk_utils import loads
         data: dict = loads(file)
-        
         if 'font_default' in data:
             if data['font_default'] == '':
                 from qtpy.QtWidgets import QApplication
@@ -21,5 +22,4 @@ class Font(Base):
                 else:
                     font = QApplication.font().family()  # noqa
                 data['font_default'] = font
-        
         self.update(data)
