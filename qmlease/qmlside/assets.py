@@ -2,8 +2,8 @@ from __future__ import annotations
 
 from lk_utils.filesniff import normpath
 
-from ..qt_core import QObject
-from ..qt_core import slot
+from ..qtcore import QObject
+from ..qtcore import slot
 
 
 class Assets(QObject):

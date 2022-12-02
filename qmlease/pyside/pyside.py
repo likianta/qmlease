@@ -3,8 +3,8 @@ from __future__ import annotations
 import typing as t
 
 from .register import PyRegister
-from ..qt_core import QObject
-from ..qt_core import slot
+from ..qtcore import QObject
+from ..qtcore import slot
 
 
 class PySide(QObject, PyRegister):

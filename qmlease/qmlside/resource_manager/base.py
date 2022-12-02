@@ -1,6 +1,6 @@
 from qtpy.QtCore import QObject
 
-from ...qt_core import slot
+from ...qtcore import slot
 
 strict_mode = False
 

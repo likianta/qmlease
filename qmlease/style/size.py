@@ -29,7 +29,7 @@ examples:
     - margin_xl
 """
 from ._base import Base
-from ..qt_core import slot
+from ..qtcore import slot
 
 
 class Size(Base):

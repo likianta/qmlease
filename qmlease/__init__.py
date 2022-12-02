@@ -42,10 +42,10 @@ from .qmlside import eval_js
 from .qmlside import pyassets
 from .qmlside import js_eval
 from .qmlside.widgets_backend import util
-from .qt_core import PObject
-from .qt_core import QObject
-from .qt_core import signal
-from .qt_core import slot
+from .qtcore import PObject
+from .qtcore import QObject
+from .qtcore import signal
+from .qtcore import slot
 from .style import pystyle
 
 __version__ = '3.0.0'

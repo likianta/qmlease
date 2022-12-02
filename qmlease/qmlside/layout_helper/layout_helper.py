@@ -7,9 +7,9 @@ from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
 from ..js_evaluator import eval_js
-from ...qt_core import QObject
-from ...qt_core import bind_func  # noqa
-from ...qt_core import slot
+from ...qtcore import QObject
+from ...qtcore import bind_func  # noqa
+from ...qtcore import slot
 
 
 class T:

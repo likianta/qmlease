@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from qtpy.QtCore import QObject
 
-from ...qt_core import slot
+from ...qtcore import slot
 
 __all__ = ['HotReloader']
 
