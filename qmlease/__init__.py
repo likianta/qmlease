@@ -26,7 +26,7 @@ if 2:  # step2: select qt api
     if api == 'pyside2':
         # try to repair pyside2 highdpi issue
         #   https://www.hwang.top/post/pyside2pyqt-zai-windows-zhong-tian-jia
-        #       -dui-gao-fen-ping-de-zhi-chi/
+        #   -dui-gao-fen-ping-de-zhi-chi/
         # warning: this must be called before QCoreApplication is created.
         from PySide2 import QtCore  # noqa
         QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)

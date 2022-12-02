@@ -5,16 +5,16 @@ import QtQuick.Window 2.15
 //  https://qml.guide/live-reloading-hot-reloading-qml
 
 Window {
-    visible: true
-    color: '#f2f2f2'
-    flags: Qt.WindowStaysOnTopHint
     title: "Hot Reloader"
+    flags: Qt.WindowStaysOnTopHint
+    color: '#f2f2f2'
+    visible: true
 
     Loader {
         id: _loader
         anchors.centerIn: parent
         Component.onCompleted: {
-            pyloader.set_loader(this)
+            py.qmloader.set_loader(this)
         }
     }
 
@@ -27,7 +27,7 @@ Window {
 
         Text {
             anchors.centerIn: parent
-            color: pycolor.text_default
+            color: pycolor.text_main
 //            color: _area.containsMouse ? '#5f00ff' : '#666666'
             font.pixelSize: 28
             text: 'RELOAD'
@@ -37,11 +37,11 @@ Window {
             id: _area
             anchors.fill: parent
             hoverEnabled: true
-            onClicked: pyloader.reload()
+            onClicked: py.qmloader.reload()
         }
 
 //        Component.onCompleted: {
-//            this.color = pyloader.get_bg_color()
+//            this.color = py.qmloader.get_bg_color()
 //        }
     }
 
