@@ -17,7 +17,7 @@ LKRectangle {
     property string borderColorActive: pycolor.input_border_active
     property string bottomColorHighlight: pycolor.input_indicator_active
     property string cursorColor: pyenum.DEFAULT
-    property string textColor: pycolor.text_default
+    property string textColor: pycolor.text_main
 
     property alias  displayText: _input.displayText
     property bool   editable: true
@@ -31,6 +31,7 @@ LKRectangle {
     property bool   useIBeamCursor: true
     property alias  validator: _input.validator
 
+    signal clicked()
     signal submit(string text)
     signal textEdited(string text)
 
@@ -70,8 +71,13 @@ LKRectangle {
         font.pixelSize: pyfont.size_m
         selectByMouse: true
 
+        onActiveFocusChanged: {
+            if (this.activeFocus) {
+                root.clicked()
+            }
+        }
+
         onTextEdited: {
-//            console.log(this.text, this.displayText)
             root.textEdited(this.text)
         }
 

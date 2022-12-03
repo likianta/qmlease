@@ -40,6 +40,8 @@ button_height: 20
 button_height_l: 32
 button_radius: '$radius_m'
 
+circle_size: 32
+
 col_width_m: 48
 
 dot_radius_active: 6
