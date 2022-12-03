@@ -12,7 +12,12 @@ class PySide(QObject, PyRegister):
     @slot(str, result=object)
     @slot(str, list, result=object)
     @slot(str, list, dict, result=object)
-    def call(self, func_name: str, args: list = (), kwargs: dict = None):
+    def call(
+            self,
+            func_name: str,
+            args: list = (),
+            kwargs: dict = None
+    ) -> t.Any:
         """ call python functions in qml side. """
         func, narg = self._pyfunc_holder[func_name]  # narg: 'number of args'
         if kwargs:
@@ -26,6 +31,15 @@ class PySide(QObject, PyRegister):
                 return func(*args)
             else:  # experimental feature.
                 return func(args)
+    
+    @slot(object, str, dict, result=object)
+    def kwcall(self, qobj: QObject, method_name: str, kwargs: dict) -> t.Any:
+        """
+        usage:
+            // qml side
+            pyside.kwcall(lkutil, 'open_file_dialog', {'title': 'Open File'})
+        """
+        return getattr(qobj, method_name)(**kwargs)
     
     @slot(str, result=object)
     @slot(str, dict, result=object)
