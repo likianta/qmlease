@@ -10,7 +10,7 @@ except ImportError:
     from qtpy.QtCore import qCritical as QtCriticalMsg
     from qtpy.QtCore import qWarning as QtWarningMsg
 
-SHOW_FUNCNAME = True
+SHOW_FUNCNAME = False
 _IGNORE_UNPLEASENT_WARNINGS = False
 
 

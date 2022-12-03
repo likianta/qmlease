@@ -1,6 +1,7 @@
 /.idea/
 /.vscode/
 /deleted/
+/sidework/pyside-package-tailor/other_resources/
 /sidework/pyside-package-tailor/venv/qt_for_python/*
 
 __pycache__/

@@ -170,4 +170,6 @@ class Register:
 
 
 class Namespace(QQmlPropertyMap):
-    pass
+    
+    def __getitem__(self, item):
+        return self.property(item)
