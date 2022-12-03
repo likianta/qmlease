@@ -3,8 +3,10 @@ from __future__ import annotations
 import typing as t
 
 from qtpy.QtCore import QObject as QObjectBase
+from qtpy.QtCore import Signal
 
-from .property import Property
+from .property import AutoProp
+from .signal_slot import slot
 
 
 class QObject(QObjectBase):
@@ -25,7 +27,7 @@ class QObject(QObjectBase):
             
         an enhanced `property`:
             class MyObj(QObject):
-                width = Property(100, int)
+                width = AutoProp(100, int)
             my_obj = MyObj()
             my_obj.width  # got 100
             my_obj.width = 200  # changed to 200, and auto emit
@@ -33,20 +35,27 @@ class QObject(QObjectBase):
             
             // also can be recognized in qml side
             Item {
-                width: my_obj.width  // got 100
-                // when pyside has changed the value, qml will be notified, too.
+                Component.onCompleted: {
+                    console.log(my_obj.prop('width'))
+                    my_obj.width_changed.connect(...)
+                }
             }
     """
     
     def __init__(self, parent=None):
-        custom_props = []
-        for k, v in self.__dict__.items():
-            if isinstance(v, Property):
-                custom_props.append(k)
-                setattr(self, k, v)
-                setattr(self, k + '_changed', v.value_changed)
-        self._custom_props = tuple(custom_props)
+        # init class level attributes
+        custom_props = {}
+        for k, v in tuple(self.__class__.__dict__.items()):
+            if isinstance(v, AutoProp):
+                custom_props[k] = v.default
+                k_changed = k + '_changed'
+                sig = Signal(v.type_)
+                print('auto create signal', k_changed, sig, type(sig))
+                setattr(self.__class__, k_changed, sig)
         super().__init__(parent)
+        setattr(self, 'custom_props', tuple(custom_props.keys()))
+        for k, v in custom_props.items():
+            setattr(self, k, v)
     
     def __getitem__(self, item: str):
         return self.property(item)
@@ -55,15 +64,19 @@ class QObject(QObjectBase):
         self.setProperty(key, value)
     
     def __getattr__(self, item) -> t.Any:
-        if isinstance(item, Property):
-            return item.get_value()
         return super().__getattribute__(item)
     
     def __setattr__(self, key, value) -> None:
-        if key in self._custom_props:
-            getattr(self, key).set_value(value)
-            return
+        if isinstance(key, str) and key in getattr(self, 'custom_props', ()):
+            if getattr(self, key) != value:
+                super().__setattr__(key, value)
+                getattr(self, key + '_changed').emit(value)
+                return
         super().__setattr__(key, value)
+    
+    @slot(str, result=object)
+    def get_prop(self, name: str) -> t.Any:
+        return getattr(self, name)
 
 
 def enhance_origin_qobj(qobj: QObjectBase) -> QObject:  # DELETE
@@ -122,6 +135,7 @@ class QObjectBaseWrapper:
 
 
 # -----------------------------------------------------------------------------
+# magic methods
 
 def _getattr(self, key) -> t.Any:
     """ the primitive `getattr` method. """
@@ -131,3 +145,11 @@ def _getattr(self, key) -> t.Any:
 def _setattr(self, key, value) -> None:
     """ the primitive `setattr` method. """
     object.__setattr__(self, key, value)
+
+
+def _qgetattr(self, key) -> t.Any:
+    return QObjectBase.__getattribute__(self, key)
+
+
+def _qsetattr(self, key, value) -> None:
+    QObjectBase.__setattr__(self, key, value)
