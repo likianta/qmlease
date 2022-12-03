@@ -4,12 +4,12 @@ fix typehint of Signal and Slot.
 from __future__ import annotations
 
 from functools import wraps
+from typing import cast
 
 from qtpy.QtCore import QObject
+from qtpy.QtCore import Signal
 from qtpy.QtCore import Slot
 from qtpy.QtQml import QJSValue
-
-from .qobject import QObjectBaseWrapper
 
 __all__ = ['signal', 'slot']
 
@@ -39,6 +39,7 @@ def slot(*argtypes: type | str,
         
         @wraps(func)
         def func_wrapper(*args, **kwargs):
+            from .qobject import QObjectBaseWrapper
             new_args = []
             new_kwargs = {}
             
@@ -158,25 +159,11 @@ def _reformat_result(result: type | None) -> str | type | None:
 
 class SignalType:
     
-    def __call__(self, *argtypes: type):
-        ...
+    def __call__(self, *argtypes: type): ...
     
-    def connect(self, func):
-        ...
+    def connect(self, func): ...
     
-    def emit(self, *args):
-        ...
+    def emit(self, *args): ...
 
 
-signal = SignalType()
-
-
-def __init__():
-    from qtpy.QtCore import Signal
-    # # global signal
-    # # signal = Signal
-    # try to cheat with IDE checker
-    globals()['signal'] = Signal
-
-
-__init__()
+signal = cast(SignalType, Signal)
