@@ -44,6 +44,7 @@ from .qmlside import js_eval
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject
+from .qtcore import SignalType
 from .qtcore import signal
 from .qtcore import slot
 from .style import pystyle

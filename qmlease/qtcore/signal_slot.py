@@ -7,11 +7,11 @@ from functools import wraps
 from typing import cast
 
 from qtpy.QtCore import QObject
-from qtpy.QtCore import Signal
+from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot
 from qtpy.QtQml import QJSValue
 
-__all__ = ['signal', 'slot']
+__all__ = ['SignalType', 'signal', 'slot']
 
 # hold some objects globally (elevate their refcount), to prevent python gc.
 __hidden_ref = []
@@ -157,7 +157,7 @@ def _reformat_result(result: type | None) -> str | type | None:
 
 # -----------------------------------------------------------------------------
 
-class SignalType:
+class Signal:
     
     def __call__(self, *argtypes: type): ...
     
@@ -166,4 +166,26 @@ class SignalType:
     def emit(self, *args): ...
 
 
-signal = cast(SignalType, Signal)
+class SignalGen:
+    def __call__(self, *_) -> Signal: ...
+
+
+SignalType = Signal
+signal = cast(SignalGen, OriginSignal)
+
+'''
+the difference and usage:
+    from qmlease import QObject, SignalType, signal
+    
+    class MyObject(QObject):
+        # right usage:
+        aaa: SignalType
+        bbb = signal(int)
+        # ide will give correct typehint for both `aaa` and `bbb`.
+        
+        # wrong usage:
+        aaa: signal
+        bbb = SignalType(int)
+        #   `aaa` is not a "Signal", but `aaa()` is a "Signal".
+        #   `bbb` will raise TypeError says 'SignalType() takes no arguments'.
+'''
