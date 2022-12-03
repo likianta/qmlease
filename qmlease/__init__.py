@@ -42,7 +42,7 @@ from .qmlside import eval_js
 from .qmlside import pyassets
 from .qmlside import js_eval
 from .qmlside.widgets_backend import util
-from .qtcore import PObject
+from .qtcore import Property
 from .qtcore import QObject
 from .qtcore import signal
 from .qtcore import slot

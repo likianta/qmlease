@@ -2,8 +2,76 @@ from __future__ import annotations
 
 import typing as t
 
+from qtpy.QtCore import Property as PropertyBase
 from qtpy.QtCore import QObject
 
+from .signal_slot import signal
+
+
+class Property(PropertyBase):
+    """
+    see feature introduction in `.qobject.QObject : class-level docstring`.
+    """
+    _value: t.Any
+    value_changed: signal | None
+    
+    def __init__(self, value: t.Any, *types: type | str):
+        assert 0 <= len(types) <= 3
+        #   possible types:
+        #       ()  # nothing. it is same with `('auto',)`
+        #       (int, )  # or str, bool, float, ...
+        #       (int, 'const')
+        #       (int, 'final')
+        #       (int, 'const', 'final')
+        #       ('auto', )
+        #       ('auto', 'const')
+        #       ('auto', 'final')
+        #       ('auto', 'const', 'final')
+        
+        self._value = value
+        
+        auto = 'auto' in types if types else True
+        const = 'const' in types
+        final = 'final' in types
+        if auto:
+            final_type = self._auto_detect_type(value)
+        else:
+            # assert len(types) > 0
+            assert types[0] in (bool, float, int, str)
+            final_type = types[0]
+        
+        if not const and not final:
+            self.value_changed = signal(final_type)
+        else:
+            self.value_changed = None
+        
+        super().__init__(
+            final_type, self.get_value, self.set_value,
+            notify=self.value_changed,
+            constant=const, final=final,
+        )
+    
+    def get_value(self) -> t.Any:
+        return self._value
+    
+    def set_value(self, new: t.Any) -> None:
+        if self._value != new:
+            self._value = new
+            if self.value_changed:
+                self.value_changed.emit(new)
+    
+    @staticmethod
+    def _auto_detect_type(value: t.Any) -> type:
+        """
+        support only basic types.
+        """
+        out = type(value)
+        assert out in (bool, float, int, str)
+        return out
+
+
+# -----------------------------------------------------------------------------
+# DELETE
 
 class T:
     Key = str  # should be a snake_case name.
