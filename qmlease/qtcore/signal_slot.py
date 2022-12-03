@@ -4,6 +4,7 @@ fix typehint of Signal and Slot.
 from __future__ import annotations
 
 from functools import wraps
+from typing import Type
 from typing import cast
 
 from qtpy.QtCore import QObject
@@ -11,7 +12,7 @@ from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot
 from qtpy.QtQml import QJSValue
 
-__all__ = ['SignalType', 'signal', 'slot']
+__all__ = ['signal', 'slot']
 
 # hold some objects globally (elevate their refcount), to prevent python gc.
 __hidden_ref = []
@@ -166,26 +167,4 @@ class Signal:
     def emit(self, *args): ...
 
 
-class SignalGen:
-    def __call__(self, *_) -> Signal: ...
-
-
-SignalType = Signal
-signal = cast(SignalGen, OriginSignal)
-
-'''
-the difference and usage:
-    from qmlease import QObject, SignalType, signal
-    
-    class MyObject(QObject):
-        # right usage:
-        aaa: SignalType
-        bbb = signal(int)
-        # ide will give correct typehint for both `aaa` and `bbb`.
-        
-        # wrong usage:
-        aaa: signal
-        bbb = SignalType(int)
-        #   `aaa` is not a "Signal", but `aaa()` is a "Signal".
-        #   `bbb` will raise TypeError says 'SignalType() takes no arguments'.
-'''
+signal = cast(Type[Signal], OriginSignal)
