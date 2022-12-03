@@ -86,8 +86,12 @@ class QObject(QObjectBase, metaclass=DynamicSignalMeta):
         super().__setattr__(key, value)
     
     @slot(str, result=object)
-    def get_prop(self, name: str) -> t.Any:
+    def qget(self, name: str) -> t.Any:
         return getattr(self, name)
+    
+    @slot(str, object)
+    def qset(self, name: str, value: t.Any) -> None:
+        setattr(self, name, value)
 
 
 def enhance_origin_qobj(qobj: QObjectBase) -> QObject:  # DELETE
