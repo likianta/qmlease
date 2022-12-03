@@ -8,8 +8,30 @@ from qtpy.QtCore import Signal
 from .property import AutoProp
 from .signal_slot import slot
 
+__all__ = ['QObject', 'QObjectBaseWrapper']
 
-class QObject(QObjectBase):
+
+class DynamicSignalMeta(type(QObjectBase)):
+    # https://stackoverflow.com/a/63411358/9695911
+    
+    def __new__(cls, name, bases, dict_):
+        # print(':d', name)
+        # print(name, bases, dict_, ':l')
+        
+        custom_props = []
+        for k, v in tuple(dict_.items()):
+            if isinstance(v, AutoProp):
+                custom_props.append(k)
+                print('auto create signal', k + '_changed')
+                dict_[k] = v.default
+                dict_[k + '_changed'] = Signal(v.type_)
+        dict_['_custom_props'] = tuple(custom_props)
+        
+        # noinspection PyTypeChecker
+        return super().__new__(cls, name, bases, dict_)
+
+
+class QObject(QObjectBase, metaclass=DynamicSignalMeta):
     """
     features:
         alternative to `property` and `setProperty`:
@@ -43,19 +65,7 @@ class QObject(QObjectBase):
     """
     
     def __init__(self, parent=None):
-        # init class level attributes
-        custom_props = {}
-        for k, v in tuple(self.__class__.__dict__.items()):
-            if isinstance(v, AutoProp):
-                custom_props[k] = v.default
-                k_changed = k + '_changed'
-                sig = Signal(v.type_)
-                print('auto create signal', k_changed, sig, type(sig))
-                setattr(self.__class__, k_changed, sig)
         super().__init__(parent)
-        setattr(self, 'custom_props', tuple(custom_props.keys()))
-        for k, v in custom_props.items():
-            setattr(self, k, v)
     
     def __getitem__(self, item: str):
         return self.property(item)
@@ -67,7 +77,8 @@ class QObject(QObjectBase):
         return super().__getattribute__(item)
     
     def __setattr__(self, key, value) -> None:
-        if isinstance(key, str) and key in getattr(self, 'custom_props', ()):
+        # if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
+        if isinstance(key, str) and key in self._custom_props:
             if getattr(self, key) != value:
                 super().__setattr__(key, value)
                 getattr(self, key + '_changed').emit(value)
