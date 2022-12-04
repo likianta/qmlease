@@ -60,6 +60,9 @@ class Model(QAbstractListModel):
     def __getitem__(self, index: int) -> dict:
         return self._items[index]
     
+    def __iter__(self) -> t.Iterator[T.Item]:
+        return iter(self._items)
+    
     # -------------------------------------------------------------------------
     # api
     # tip: all params which named `item` or `items` accept partial dict.

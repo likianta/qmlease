@@ -58,7 +58,7 @@ class QObject(QObjectBase, metaclass=DynamicSignalMeta):
             // also can be recognized in qml side
             Item {
                 Component.onCompleted: {
-                    console.log(my_obj.prop('width'))
+                    console.log(my_obj.qget('width'))
                     my_obj.width_changed.connect(...)
                 }
             }
