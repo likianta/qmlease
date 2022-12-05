@@ -15,18 +15,20 @@ class Util(QObject):
             return 'Consolas'
         else:
             return 'Ubuntu Mono'
-
+    
     @slot(result=str)
     @slot(str, result=str)
     @slot(str, str, result=str)
     @slot(str, str, str, result=str)
     @slot(str, str, str, str, result=str)
-    @slot(str, str, str, str, bool, result=str)
+    @slot(str, str, str, str, str, result=str)
+    @slot(str, str, str, str, str, bool, result=str)
     def file_dialog(
             self,
             action='open',
             type_='file',
-            title='Confirm file selection',
+            start_dir='',
+            title='',
             backend='qt',
             use_native_dialog=True
     ) -> str:
@@ -34,6 +36,10 @@ class Util(QObject):
         args:
             action: literal['open', 'save']
             type_: literal['file', 'folder']
+            start_dir:
+                if not specified, will do the default behavior (remembering
+                last selected path).
+                use '.' to always open current working dir.
             backend: literal['qt', 'tk']
                 warning: use 'tk' cannot remember last opened folder.
             use_native_dialog: bool. deprecated!
@@ -46,14 +52,30 @@ class Util(QObject):
                 // example.qml
                 const path = pyside.kwcall(
                     lkutil, 'file_dialog', {
-                        action: 'open',
-                        type_: 'folder',
+                        'action'   : 'open',
+                        'type_'    : 'folder',
+                        'start_dir': '.',
                     }
                 )
         """
+        if not title:
+            title = '{do} a {thing}'.format(
+                do='Open' if action == 'open' else 'Save',
+                thing='File' if type_ == 'file' else 'Folder'
+            )
+        # check start_dir
+        if start_dir:
+            from os import path as ospath
+            if not ospath.exists(start_dir) or ospath.isfile(start_dir):
+                start_dir = ospath.dirname(start_dir)
+            if not ospath.isdir(start_dir):
+                print(':v3', 'invalid start direcotry, will fallback to '
+                             'default behavior', start_dir)
+                start_dir = ''
+        
         if backend == 'qt':
             from qtpy.QtWidgets import QFileDialog
-            kwargs = {'parent': None, 'caption': title, 'dir': ''}
+            kwargs = {'parent': None, 'caption': title, 'dir': start_dir}
             if not use_native_dialog:
                 # noinspection PyUnresolvedReferences
                 kwargs['options'] = QFileDialog.DontUseNativeDialog
@@ -72,14 +94,15 @@ class Util(QObject):
             from tkinter import filedialog
             root = Tk()
             root.withdraw()
+            kwargs = {'title': title, 'initialdir': start_dir or None}
             if action == 'open':
                 if type_ == 'file':
-                    return filedialog.askopenfilename(title=title)
+                    return filedialog.askopenfilename(**kwargs)
                 else:
-                    return filedialog.askdirectory(title=title)
+                    return filedialog.askdirectory(**kwargs)
             else:
                 if type_ == 'file':
-                    return filedialog.asksaveasfilename(title=title)
+                    return filedialog.asksaveasfilename(**kwargs)
                 else:
                     raise ValueError('Cannot save folder.')
 
