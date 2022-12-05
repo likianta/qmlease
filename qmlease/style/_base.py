@@ -22,6 +22,18 @@ class Base(QQmlPropertyMap):
         ...
     see also `self._post_complete()`
     """
+    data: dict
+    
+    def __init__(self):
+        super().__init__()
+        self.data = {}
+        
+    def __getitem__(self, item: str) -> t.Any:
+        return self.data[item]
+    
+    def __setitem__(self, key: str, value: t.Any) -> None:
+        self.data[key] = value
+        self.insert(key, value)
     
     def update_from_file(self, file: str) -> None:
         data: dict = loads(file)
@@ -29,12 +41,12 @@ class Base(QQmlPropertyMap):
     
     def update(self, data: dict) -> None:
         
-        def _eval_reference(value: str) -> t.Any:
+        def eval_reference(value: str) -> t.Any:
             # assert value.startswith('$')
             base_key = value[1:]
             base_value = data[base_key]
             if isinstance(base_value, str) and base_value.startswith('$'):
-                out = _eval_reference(base_value)
+                out = eval_reference(base_value)
                 data[base_key] = out
                 return out
             else:
@@ -43,7 +55,7 @@ class Base(QQmlPropertyMap):
         for i, (k, v) in enumerate(data.items()):
             if isinstance(v, str) and v.startswith('$'):
                 try:
-                    data[k] = _eval_reference(v)
+                    data[k] = eval_reference(v)
                 except KeyError as e:
                     print(':v4',
                           'failed dynamically assign value to key. '
@@ -57,9 +69,8 @@ class Base(QQmlPropertyMap):
     def _post_complete(self, data: dict) -> dict:
         raise NotImplementedError
     
-    def _finalize(self, kwargs: dict):
+    def _finalize(self, kwargs: dict) -> None:
         # https://stackoverflow.com/questions/62629628/attaching-qt-property-to
         # -python-class-after-definition-not-accessible-from-qml
         for k, v in kwargs.items():
-            setattr(self, k, v)
-            self.insert(k, v)
+            self[k] = v
