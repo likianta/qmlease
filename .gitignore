@@ -1,11 +1,11 @@
 /.idea/
 /.vscode/
 /deleted/
-/sidework/pyside-package-tailor/other_resources/
-/sidework/pyside-package-tailor/venv/qt_for_python/*
+/sidework/pyside_package_tailor/other_resources/
+/sidework/pyside_package_tailor/venv/qt_for_python/*
 
 __pycache__/
 dist/
 .DS_Store
 
-!/sidework/pyside-package-tailor/venv/qt_for_python/.gitkeep
+!/sidework/pyside_package_tailor/venv/qt_for_python/.gitkeep
