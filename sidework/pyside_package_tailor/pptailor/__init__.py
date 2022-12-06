@@ -2,7 +2,8 @@
 command usage:
     # get help
     py -m pptailor -h
-    # generate a subset copy of PySide6
-    py -m pptailor "C:/Program Files/Python311/Lib/site-packages/PySide6" \
-        "D:/temp/test01"
+    # tailor a package
+    py -m pptailor tailor dist/PySide6
+    # restore tailored package
+    py -m pptailor restore dist/PySide6
 """

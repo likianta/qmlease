@@ -1,8 +1,10 @@
 from argsense import cli
 
-from .mini_producer import main as produce
+from .main import restore
+from .main import tailor
 
-cli.add_cmd(produce, 'produce')
+cli.add_cmd(tailor)
+cli.add_cmd(restore)
 
 if __name__ == '__main__':
-    cli.run(produce)
+    cli.run()
