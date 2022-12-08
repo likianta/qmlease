@@ -1,39 +1,28 @@
 import typing as t
 
 from lk_utils import loads
-from qtpy.QtQml import QQmlPropertyMap
 
 
-class Base(QQmlPropertyMap):
-    """
-    once user is given a stylesheet file (like ".yaml"), this class should
-    parse it and generate a finite set of extended stylesheets, which includes
-    not only the original one, but also its variants.
-    
-    for example, if user stylesheet is:
-        button_bg: '#ff0000'
-        button_bg_pressed: '#00ff00'
-    this class should generate:
-        button_bg: '#ff0000'
-        button_bg_pressed: '#00ff00'
-        button_bg_focused: '#00ff00'
-        button_bg_hovered: '#ff0000'  # based on some internal rules to pick
-        #   the most familiar color.
-        ...
-    see also `self._post_complete()`
-    """
+class Base:
     data: dict
     
     def __init__(self):
-        super().__init__()
         self.data = {}
-        
+    
     def __getitem__(self, item: str) -> t.Any:
-        return self.data[item]
+        # return self.get(item)
+        if item in self.data:
+            return self.data[item]
+        if similar := self._guess(item):
+            self.data[item] = similar
+            return similar
+        return None
     
     def __setitem__(self, key: str, value: t.Any) -> None:
         self.data[key] = value
-        self.insert(key, value)
+    
+    def _guess(self, key: str) -> t.Any:
+        raise NotImplementedError
     
     def update_from_file(self, file: str) -> None:
         data: dict = loads(file)
@@ -63,14 +52,7 @@ class Base(QQmlPropertyMap):
                           'index: {}, key: {}, value: {}'.format(i, k, v))
                     raise e
         
-        data = self._post_complete(data)
-        self._finalize(data)
+        self.data.update({self.normalize(k): v for k, v in data.items()})
     
-    def _post_complete(self, data: dict) -> dict:
+    def normalize(self, key: str) -> str:
         raise NotImplementedError
-    
-    def _finalize(self, kwargs: dict) -> None:
-        # https://stackoverflow.com/questions/62629628/attaching-qt-property-to
-        # -python-class-after-definition-not-accessible-from-qml
-        for k, v in kwargs.items():
-            self[k] = v
