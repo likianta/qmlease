@@ -3,19 +3,31 @@
 下载 pyside6-essentials 到指定目录:
 
 ```shell
-cd <sidework/pyside_package_tailor>
+cd sidework/pyside_package_tailor
 pip install pyside6-essentials -t venv/qt_for_python
 ```
 
-此时将得到 `venv/qt_for_python/PySide6`. 将这个文件夹拷贝到 `dist/PySide6`.
+此时将得到 (示例):
+
+- venv/qt_for_python/PySide6
+- venv/qt_for_python/PySide6-6.4.1.dist-info
+- venv/qt_for_python/shiboken6
+- venv/qt_for_python/shiboken6-6.4.1.dist-info
+
+我们将 "PySide6" 和 "shiboken6" 拷贝到 `dist` 目录下.
 
 **裁剪**
 
 运行我们的裁剪程序:
 
 ```python
+cd sidework/pyside_package_tailor
+
 # 获取帮助
 py -m pptailor -h
+py -m pptailor tailor -h
+py -m pptailor restore -h
+
 # 裁剪
 py -m pptailor tailor dist/PySide6
 ```
