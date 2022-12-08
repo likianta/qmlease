@@ -7,7 +7,12 @@ class Font(Base):
     
     def _post_complete(self, data: dict) -> dict:
         for k, v in tuple(data.items()):
-            if not k.endswith('_m'):
+            if '_' in k:
+                if k.endswith('_m'):
+                    data[k[:-2]] = v
+                elif not k.endswith(('_xxs', '_xs', '_s', '_l', '_xl', '_xxl')):
+                    data[f'{k}_m'] = v
+            else:
                 data[f'{k}_m'] = v
         return data
     

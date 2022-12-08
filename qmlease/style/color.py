@@ -37,6 +37,10 @@ class Color(Base):
                 if b not in state_words:
                     a, b = name, 'default'
                     data[f'{a}_{b}'] = value
+                elif b == 'default' and a not in data:
+                    data[a] = value
+                    processed.add(a)
+                    inflated_count += 1
             else:
                 a, b = name, 'default'
                 data[f'{a}_{b}'] = value

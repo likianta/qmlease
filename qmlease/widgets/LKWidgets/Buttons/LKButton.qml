@@ -15,6 +15,7 @@ Rectangle {
     readonly property alias pressed: _area.pressed
 
     property string bgColor: pycolor.button_bg_default
+    property alias  bgColorDefault: root.bgColor
     property string bgColorDisabled: pycolor.button_bg_disabled
     property string bgColorHovered: pycolor.button_bg_hovered
     property string bgColorPressed: pycolor.button_bg_pressed
