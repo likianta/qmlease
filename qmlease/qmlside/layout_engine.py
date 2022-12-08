@@ -2,9 +2,9 @@ import typing as t
 from functools import partial
 
 from .enum_ import pyenum
-from ..qt_core import QObject
-from ..qt_core import bind_func
-from ..qt_core import slot
+from ..qtcore import QObject
+from ..qtcore import bind_func
+from ..qtcore import slot
 
 
 class T:
