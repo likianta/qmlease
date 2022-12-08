@@ -43,7 +43,7 @@ class Application(QApplication):
             'organization', 'dev.likianta.qmlease'
         ))
         
-        self.engine = QQmlApplicationEngine()
+        self.engine = QQmlApplicationEngine()  # noqa
         self.root = self.engine.rootContext()
         self._register = Register(self.root)
         
@@ -113,7 +113,12 @@ class Application(QApplication):
         self.register(pystyle.font, 'pyfont', 'global')
         self.register(pystyle.motion, 'pymotion', 'global')
         self.register(pystyle.size, 'pysize', 'global')
-        
+
+        # TEST
+        self.root.setContextObject(pystyle)
+        self.root.setContextProperty('foo1', pystyle.find_color)
+        self.root.setContextProperty('foo2', pystyle)
+
         self.register(wb.ListView(), 'lklistview', 'global')
         self.register(wb.Progress(), 'lkprogress', 'global')
         self.register(wb.ScopeEngine(), 'lkscope', 'global')
