@@ -99,7 +99,7 @@ class Application(QApplication):
         from ..qmlside import pyassets, pybroad, pyenum, pylayout
         from ..qmlside import qlogger
         from ..qmlside import widgets_backend as wb
-        from ..style import pystyle, pystyle_for_qml
+        from ..style import pystyle
         
         qlogger.setup(ignore_unpleasent_warnings=True)
         
@@ -108,17 +108,12 @@ class Application(QApplication):
         self.register(pyenum, 'pyenum', 'global')
         self.register(pylayout, 'pylayout', 'global')
         self.register(pyside, 'pyside', 'global')
-        self.register(pystyle_for_qml, 'pystyle', 'global')
+        self.register(pystyle, 'pystyle', 'global')
         self.register(pystyle.color, 'pycolor', 'global')
         self.register(pystyle.font, 'pyfont', 'global')
         self.register(pystyle.motion, 'pymotion', 'global')
         self.register(pystyle.size, 'pysize', 'global')
-
-        # TEST
-        self.root.setContextObject(pystyle)
-        self.root.setContextProperty('foo1', pystyle.find_color)
-        self.root.setContextProperty('foo2', pystyle)
-
+        
         self.register(wb.ListView(), 'lklistview', 'global')
         self.register(wb.Progress(), 'lkprogress', 'global')
         self.register(wb.ScopeEngine(), 'lkscope', 'global')

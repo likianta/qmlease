@@ -29,18 +29,32 @@ examples:
     - margin_xl
 """
 from ._base import Base
-from ..qtcore import slot
 
 
 class Size(Base):
+    _valid_sizes = (
+        'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'
+    )
     
-    def _post_complete(self, data: dict) -> dict:
-        for k, v in tuple(data.items()):
-            if not k.endswith('_m'):
-                data[f'{k}_m'] = v
-        return data
+    def _normalize(self, data: dict) -> dict:
+        new_data = {}
+        for k, v in data.items():
+            if '_' in k:
+                a, b = k.rsplit('_', 1)
+                if b in self._valid_sizes:
+                    new_data[k] = v
+                else:
+                    new_data[f'{k}_m'] = v
+            else:
+                new_data[f'{k}_m'] = v
+        return new_data
     
-    @slot(str, result=int)
-    @slot(str, int, result=int)
-    def get_size_of_text(self):
-        pass
+    def _create_similars(self, data: dict) -> dict:
+        return {}
+    
+    def _shortify(self, data: dict) -> dict:
+        new_data = {}
+        for k, v in data.items():
+            if k.endswith('_m'):
+                new_data[k[:-2]] = v
+        return new_data

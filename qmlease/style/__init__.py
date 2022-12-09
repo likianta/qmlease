@@ -9,4 +9,3 @@ fields:
     typography  font, weight, line-height, etc. (not implemented)
 """
 from .style import pystyle
-from .style import pystyle_for_qml

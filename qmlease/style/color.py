@@ -14,53 +14,94 @@ naming style:
         text_hint
         text_link
 """
-import typing as t
+import re
 
 from ._base import Base
 
 
 class Color(Base):
-    _familiar_states = (
+    _similar_states = (
         ('default', 'enabled', 'normal'),
-        ('active', 'focused', 'hovered', 'pressed', 'selected'),
-        ('disabled',),
+        ('active', 'chosen', 'focused', 'hovered', 'pressed', 'selected'),
+        ('disabled', 'inactive'),
     )
     
-    def _post_complete(self, data: dict) -> dict:
-        state_words = tuple(y for x in self._familiar_states for y in x)
-        processed = set()
-        inflated_count = 0
-        
-        for name, value in tuple(data.items()):
-            if '_' in name:
-                a, b = name.rsplit('_', 1)
-                if b not in state_words:
-                    a, b = name, 'default'
-                    data[f'{a}_{b}'] = value
-                elif b == 'default' and a not in data:
-                    data[a] = value
-                    processed.add(a)
-                    inflated_count += 1
-            else:
-                a, b = name, 'default'
-                data[f'{a}_{b}'] = value
-            
-            for a in processed:
-                continue
-            for c in self._find_familiar_state(b):
-                if f'{a}_{c}' not in data:
-                    data[f'{a}_{c}'] = value
-                    inflated_count += 1
-            processed.add(a)
-        
-        # if inflated_count:
-        #     print(':v', 'increased {} items'.format(inflated_count))
-        
-        return data
+    _valid_states = tuple(y for x in _similar_states for y in x)
     
-    def _find_familiar_state(self, state: str) -> t.Iterator[str]:
-        for x in self._familiar_states:
-            if state in x:
-                for y in x:
-                    if y != state:
-                        yield y
+    # _valid_states = (
+    #     'active', 'default', 'disabled', 'enabled', 'focused', 'hovered',
+    #     'inactive', 'normal', 'pressed', 'selected',
+    # )
+    
+    def _normalize(self, data: dict) -> dict:
+        new_data = {}
+        digit_tail = re.compile(r'([a-zA-Z_]+)(\d+)$')
+        for k, v in data.items():
+            if k == v:
+                # e.g. {'black': 'black'}
+                k = k + '_default'
+                new_data[k] = v
+            elif m := digit_tail.search(k):
+                # e.g. {'black_5': '#393355',
+                #       'black5' : '#393355'}
+                a, b = m.groups()
+                k = a.rstrip('_') + '_' + b
+                new_data[k] = v
+            elif '_' not in k:
+                # e.g. {'active': '#E9F0FB',
+                #       'text'  : '#393355'}
+                if k in self._valid_states:
+                    k = 'common_' + k
+                else:
+                    k = k + '_default'
+                new_data[k] = v
+            else:
+                # e.g. {'frame_bg_default' : '#F1F1F3',
+                #       'frame_bg'         : '#F1F1F3',
+                #       'button_bg_hovered': '#E9F0FB'}
+                a, b = k.rsplit('_', 1)
+                if b in self._valid_states:
+                    new_data[k] = v
+                else:
+                    k = k + '_default'
+                    new_data[k] = v
+        return new_data
+    
+    def _create_similars(self, data: dict) -> dict:
+        new_data = {}
+        resolved = set()
+        similar_states_dict = {
+            y: x for x in self._similar_states for y in x
+        }
+        for k, v in data.items():
+            if k in resolved:
+                continue
+            if '_' in k:
+                a, b = k.rsplit('_', 1)
+                if b in similar_states_dict:
+                    for c in similar_states_dict[b]:
+                        if c != b:
+                            if f'{a}_{c}' not in data:
+                                new_data[f'{a}_{c}'] = v
+                            resolved.add(f'{a}_{c}')
+            resolved.add(k)
+        return new_data
+    
+    def _shortify(self, data: dict) -> dict:
+        new_data = {}
+        for k, v in data.items():
+            if k.startswith('common_') and k.endswith('_default'):
+                new_data[k[7:]] = v
+                new_data[k[7:-8]] = v
+                new_data[k[:-8]] = v
+                continue
+            else:
+                if k.startswith('common_'):
+                    new_data[k[7:]] = v
+                    continue
+                elif k.endswith('_default'):
+                    new_data[k[:-8]] = v
+                    continue
+            if k.endswith('_5'):
+                new_data[k[:-2]] = v
+        return new_data
