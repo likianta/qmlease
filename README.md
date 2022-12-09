@@ -14,6 +14,18 @@ after qmlease enters stable phase.
 
 [1]: https://github.com/likianta/lk-qtquick-scaffold
 
+## Highlights
+
+- Support PySide6/PyQt6/PySide2/PyQt5.
+- Simple to launch a QML application.
+- Hot reload QML files in debug mode.
+- Pythonic `signal` `slot` style.
+- Powerful integrating Python with QML by register system.
+- Show QML print messages in Python console.
+- Built-in widgets library.
+- Improved layout engine.
+- Auto complete stylesheet.
+
 ## Installation
 
 ### Install QmlEase
@@ -109,56 +121,90 @@ py -m qmlease run view.qml --debug
 
 It has the same result like above "main.py" does.
 
-## Register funtions to QML
+### Register Python funtions to QML
 
 ```python
 from qmlease import QObject, app, pyside, slot
 
-class MyObject(QObject):
+class AAA(QObject):
     @slot(result=str)
     def hello(self):
-        return 'hello world'
+        return 'hello world (aaa)'
 
-# 1. register QObject subclasses by `app.register`
-app.register(MyObject())  
-#   it will be available as 'MyObject' in QML side.
-# 1.1. or use alias
-app.register(MyObject(), name='PyObject')
-#   it will be available as 'PyObject' in QML side.
+class BBB(QOjbect):
+    @slot(result=str)
+    def hello(self):
+        return 'hello world (bbb)'
 
-# 2. register regular function by `pyside.register`.
+# 1. register instance
+aaa = AAA()
+app.register(aaa, 'aaa')
+
+# 2. register class
+app.register(BBB, 'MyBbbType', namespace='dev.likianta.qmlease')
+
+# 3. register regular function.
 def foo(a: int, b: int, c: int):
     return a + b + c
 pyside.register(foo)
-#   it will be available as 'pyside.call("foo", ...)' in QML side.
-# 2.1. or use alias
-pyside.register(foo, name='add_abc')
-#   it will be available as 'pyside.call("add_abc", ...)' in QML side.
+pyside.register(foo, name='foo_alias')
 ```
 
 view.qml
 
 ```qml
-import QtQuick
+import QtQuick 2.15
+import dev.likianta.qmlease 1.0
 
 Item {
-    Component.onCompleted: {
-        console.log(MyObject.hello())  // -> 'hello world'
-        console.log(PyObject.hello())  // -> 'hello world'
+    MyBbbType {  // from `dev.likianta.qmlease`
+        id: bbb
+    }
 
-        console.log(pyside.call("foo", [1, 2, 3]))  // -> 6
-        console.log(pyside.call("add_abc", [1, 2, 3]))  // -> 6
+    Component.onCompleted: {
+        console.log(py.aaa.hello())  // -> 'hello world'
+        console.log(bbb.hello())  // -> 'hello world'
+
+        console.log(py.call('foo', [1, 2, 3]))  // -> 6
+        console.log(py.call('foo_alias', [1, 2, 3])  // -> 6
     }
 }
 ```
 
-## Integrate qt logging in python console
+### Access QML object properties
+
+```python
+from qmlease import QObject, slot
+
+class MyObject(QObject):
+    @slot(object)
+    def init_view(self, button: QObject) -> None:
+        print(button['text'])  # -> 'AAA'
+        button['text'] = 'BBB'  # this will emit a textChanged signal.
+        print(button['text'])  # -> 'BBB'
+```
+
+### Connect QML signal to Python functions
+
+```python
+from lambda_ex import grafting
+from qmlease import QObject, slot
+
+class MyObject(QObject):
+    @slot(object)
+    def init_view(self, button: QObject) -> None:
+        @grafting(button.clicked.connect)
+        def _():
+            print('clicked', button['text'])
+```
+
+### Integrate qt logging in python console
 
 When you use `console.log` in QML side, it will be printed in Python console:
 
 ![](examples/console_print/screenshot.png)
 
-## Signal and Slot
+### Signal and Slot
 
 The `signal` and `slot` wrap on Qt's `Signal` and `Slot` decorators, but
 extended their functionalities:
@@ -241,7 +287,7 @@ extended their functionalities:
    my_obj.foo(1, 'hello')  # -> [1, 'hello']
    ```
 
-## Built-in widgets library
+### Built-in widgets library
 
 `qmlease` provides a set of built-in widgets under its `~/widgets` directory.
 
@@ -309,11 +355,11 @@ All widget names are started with 'LK', the full list is in
 Note: the widgets documentation is not ready. Currently you may have a look at
 the `examples/lk_widgets` screenshots, or view its source code for more details.
 
-## High-level model, human-readable API
+### High-level model, human-readable API
 
 *TODO*
 
-## Layout engine
+### Layout engine
 
 Layout engine is powered by `qmlease.qmlside.layout_helper`, which is 
 registered as `pylayout` in QML side.
@@ -349,7 +395,7 @@ Column {
 }
 ```
 
-## Executing Python snippet in QML, and vice versa
+### Executing Python snippet in QML, and vice versa
 
 test.py
 
@@ -455,7 +501,7 @@ pycolor.update_from_file('dark-theme.yaml')
 Warning: currently color name style is under refactoring, it is very unstable
 to learn from its style.
 
-# Gallery
+## Gallery
 
 ![](gallery/widgets_demo/viscous-indicator-anim.gif)
 
