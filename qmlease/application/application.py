@@ -97,11 +97,8 @@ class Application(QApplication):
     def _register_backend(self) -> None:
         from ..pyside import pyside
         from ..qmlside import pyassets, pybroad, pyenum, pylayout
-        from ..qmlside import qlogger
         from ..qmlside import widgets_backend as wb
         from ..style import pystyle
-        
-        qlogger.setup(ignore_unpleasent_warnings=True)
         
         self.register(pyassets, 'pyassets', 'global')
         self.register(pybroad, 'pybroad', 'global')

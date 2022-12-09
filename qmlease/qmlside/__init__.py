@@ -1,3 +1,4 @@
+from . import qlogger
 from . import widgets_backend
 from .assets import pyassets
 from .broadcast import pybroad
