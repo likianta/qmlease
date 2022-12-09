@@ -3,9 +3,11 @@ from __future__ import annotations
 import typing as t
 from functools import partial
 
+from lambda_ex import grafting
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
+from ..enum_ import pyenum
 from ..js_evaluator import eval_js
 from ...qtcore import QObject
 from ...qtcore import bind_func  # noqa
@@ -29,6 +31,38 @@ class LayoutHelper(QObject):
         if name == 'nt':
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
+    
+    @slot(object, str)
+    def init_view(
+            self,
+            container: QObject,
+            type_: t.Literal['row', 'column']
+    ) -> None:
+        if type_ == 'row':
+            orientation = 'h'
+            size_prop = 'width'  # noqa
+            another_size_prop = 'height'
+            size_changed = 'width_changed'
+        else:
+            orientation = 'v'
+            size_prop = 'height'  # noqa
+            another_size_prop = 'width'
+            size_changed = 'height_changed'
+        
+        if x := container['alignment']:
+            self.auto_align(container, x)
+            
+            @grafting(container[another_size_prop + '_changed'].connect)
+            def _():
+                self.auto_align(container, x)
+        
+        if container['autoSize']:
+            self.auto_size_children(container, orientation)  # noqa
+            
+            # TODO: when children count changed, auto size again.
+            @grafting(container[size_changed].connect)
+            def _():
+                self.auto_size_children(container, orientation)  # noqa
     
     # -------------------------------------------------------------------------
     # new generation of auto alignment.
@@ -296,8 +330,9 @@ class LayoutHelper(QObject):
                 claimed_size += size
             elif 0 < size < 1:
                 elastic_items[idx] = size
-            elif size == 0 or size == -1:
-                """ FIXME
+            elif size in (0, -1, pyenum.STRETCH, pyenum.FILL):
+                #   FIXME: too many magic numbers
+                """
                 why `size == -1`?
                     this is a workaround.
                     for some widgets, their size default is 0, and they will
@@ -312,7 +347,7 @@ class LayoutHelper(QObject):
                 stretch_items[idx] = 0
             else:
                 raise ValueError('cannot allocate negative size', idx, item)
-            
+        
         if not elastic_items and not stretch_items:
             return False
         

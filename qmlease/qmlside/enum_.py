@@ -30,6 +30,9 @@ class _Enum:
     
     # size
     FILL = _auto()
+    HUG_CONTENT = _auto()
+    SHRINK = _auto()
+    STRETCH = _auto()
     WRAP = _auto()
 
 
