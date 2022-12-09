@@ -1,6 +1,7 @@
 from os import name as os_name
 
 from lk_logger.path_helper import path_helper
+from lk_utils import xpath
 from lk_utils.filesniff import normpath
 from qtpy.QtCore import QMessageLogContext
 from qtpy.QtCore import QtMsgType
@@ -15,6 +16,7 @@ except ImportError:
     from qtpy.QtCore import qWarning as QtWarningMsg
 
 SHOW_FUNCNAME = False
+_BUILTIN_WIDGETS_DIR = xpath('../widgets', True)
 _IGNORE_UNPLEASENT_WARNINGS = False
 _IS_WINDOWS = os_name == 'nt'
 
@@ -160,7 +162,18 @@ def _reformat_path(path: str) -> str:
     
     path = normpath(path, force_abspath=True)
     
+    # print(
+    #     path_helper.is_external_lib(path),
+    #     path, _BUILTIN_WIDGETS_DIR,
+    #     path_helper.reformat_external_lib_path(
+    #         path, style='pretty_relpath'
+    #     ), ':lv'
+    # )
     if path_helper.is_external_lib(path):
+        # if path.startswith(_BUILTIN_WIDGETS_DIR):
+        #     return '[qmlease]/widgets/{}'.format(
+        #         relpath(path, _BUILTIN_WIDGETS_DIR)
+        #     )
         return path_helper.reformat_external_lib_path(
             path, style='pretty_relpath'
         )
