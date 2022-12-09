@@ -41,6 +41,7 @@ from .qmlside import Model
 from .qmlside import eval_js
 from .qmlside import pyassets
 from .qmlside import js_eval
+from .qmlside import qlogger
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject

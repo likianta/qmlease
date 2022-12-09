@@ -1,3 +1,7 @@
+from os import name as os_name
+
+from lk_logger.path_helper import path_helper
+from lk_utils.filesniff import normpath
 from qtpy.QtCore import QMessageLogContext
 from qtpy.QtCore import QtMsgType
 from qtpy.QtCore import qInstallMessageHandler
@@ -12,6 +16,7 @@ except ImportError:
 
 SHOW_FUNCNAME = False
 _IGNORE_UNPLEASENT_WARNINGS = False
+_IS_WINDOWS = os_name == 'nt'
 
 
 def setup(ignore_unpleasent_warnings=False):
@@ -78,6 +83,12 @@ def _log(mode: QtMsgType, ctx: QMessageLogContext, msg: str) -> None:
     Returns:
         print: '{file}:{lineno}  >>  {function}  >>  {message}'
     """
+    # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # for debug
+    
+    # TEST
+    if ctx.file == 'eval code':
+        raise Exception('eval code')
+    
     # filename
     filename = _reformat_path(ctx.file) if ctx.file else '<unknown_source>'
     
@@ -108,13 +119,10 @@ def _log(mode: QtMsgType, ctx: QMessageLogContext, msg: str) -> None:
         msg = '\033[31m' + msg + '!' + '\033[0m'
         #   change font color to red, and add an exclamation mark to it.
     
-    from lk_logger import bprint
     if SHOW_FUNCNAME and function:
-        bprint('{}:{}'.format(filename, lineno),
-               ctx.function, msg, sep=' >> ')
+        print(':s2', '{}:{}'.format(filename, lineno), ctx.function, msg)
     else:
-        bprint('{}:{}'.format(filename, lineno),
-               msg, sep=' >> ')
+        print(':s2', '{}:{}'.format(filename, lineno), msg)
 
 
 def _reformat_path(path: str) -> str:
@@ -135,12 +143,15 @@ def _reformat_path(path: str) -> str:
         c. unknown type
             <{path}>
     """
-    from lk_logger.path_helper import path_helper
-    from lk_utils.filesniff import normpath
-    
     if path.startswith('file:///'):
-        path = path[8:]
-    elif path.startswith('file://'):  # macos/linux
+        if _IS_WINDOWS:
+            # e.g. 'file:///c:/workspace/...'
+            path = path[8:]
+        else:
+            # e.g. 'file:///Users/...'
+            path = path[7:]
+    elif path.startswith('file://'):  # unix
+        # e.g. 'file://users/...'
         path = '/' + path[7].upper() + path[8:]
     elif path[1:].startswith(':%5C'):
         path = path.replace('%5C', '/')
