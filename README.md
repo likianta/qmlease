@@ -503,6 +503,8 @@ to learn from its style.
 
 ## Gallery
 
+![](gallery/widgets_demo/bubbled-tooltip.gif)
+
 ![](gallery/widgets_demo/viscous-indicator-anim.gif)
 
 ![](gallery/widgets_demo/swipe-view.gif)
