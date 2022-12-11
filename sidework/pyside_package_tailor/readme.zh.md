@@ -14,7 +14,36 @@ pip install pyside6-essentials -t venv/qt_for_python
 - venv/qt_for_python/shiboken6
 - venv/qt_for_python/shiboken6-6.4.1.dist-info
 
-我们将 "PySide6" 和 "shiboken6" 拷贝到 `dist` 目录下.
+我们将 "PySide6" 和 "shiboken6" 拷贝到 `dist/pyside6_lite` 目录下. 并在该目录下创建一个 `__init__.py` 文件:
+
+```python
+from os.path import abspath
+from sys import path
+
+_currdir = abspath(f'{__file__}/..')
+
+init_paths = [
+    f'{_currdir}/shiboken6',
+    f'{_currdir}/PySide6',
+]
+
+for p in init_paths:
+    path.insert(0, p)
+```
+
+于是我们得到了以下目录结构:
+
+```
+sidework
+|= pyside_package_tailor
+   |= dist
+      |= pyside6_lite
+         |= PySide6
+         |= shiboken6
+         |- __init__.py
+```
+
+请务必确保自己的目录结构与上述示例一致, 因为我们在接下来的脚本中使用了固定的路径.
 
 **裁剪**
 
@@ -35,8 +64,11 @@ py -m pptailor tailor dist/PySide6
 它将会生成:
 
 ```
-dist
-|= PySide6  # 在这个目录下, 一些文件已经被 "删除" 了. 它的体积有了明显的下降.
+~/dist
+|= pyside6_lite
+   |= PySide6  # 在这个目录下, 一些文件已经被 "删除" 了. 它的体积有了明显的下降.
+   |= shiboken6
+   |- __init__.py
 |= deleted  # 所有被 "删除" 的文件, 会放在这里. 
    |# 它们在这里是平铺的结构, 多级路径被转换为 "--" 连接的顶层路径.
    |= examples
@@ -61,7 +93,7 @@ py -m pptailor restore dist/PySide6
 
 ```python
 import sys
-sys.path.insert(0, '~/dist/')
+sys.path.insert(0, '~/dist/pyside6_lite')
 
 # test
 import PySide6

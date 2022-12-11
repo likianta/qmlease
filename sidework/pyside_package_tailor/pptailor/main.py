@@ -3,6 +3,8 @@ import os
 from lk_utils import fs
 from lk_utils import loads
 
+dist_dir = fs.xpath('../dist')
+
 
 def tailor(dir_i: str, scheme='alpha-0') -> None:
     """
@@ -14,10 +16,10 @@ def tailor(dir_i: str, scheme='alpha-0') -> None:
         scheme (-s): check `pptailor/deletable_list.yaml` for details.
     """
     dir_i = fs.normpath(dir_i)
-    assert dir_i.endswith('dist/PySide6')
+    assert dir_i.endswith('dist/pyside6_lite/PySide6')
     
     dir_o = dir_i  # the same dir
-    dir_x = fs.xpath('../dist/deleted')
+    dir_x = f'{dist_dir}/deleted'
     assert not os.path.exists(dir_x)
     os.mkdir(dir_x)
     
@@ -40,7 +42,7 @@ def tailor(dir_i: str, scheme='alpha-0') -> None:
 
 def restore(dir_i: str) -> None:
     dir_o = dir_i
-    dir_x = fs.parent_path(dir_i) + '/deleted'
+    dir_x = f'{dist_dir}/deleted'
     assert os.path.exists(dir_x)
     for p in os.listdir(dir_x):
         print('restore', p)

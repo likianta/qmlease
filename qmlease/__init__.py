@@ -6,17 +6,24 @@ if 2:  # step2: select qt api
     # this should be defined before importing qtpy.
     # refer: [lib:qtpy/__init__.py : docstring]
     import os
+    import sys
     from importlib.util import find_spec
     
     api = ''
     if not os.getenv('QT_API'):
         for pkg, api in {
-            'PySide6': 'pyside6',
-            'PyQt6'  : 'pyqt6',
-            'PySide2': 'pyside2',
-            'PyQt5'  : 'pyqt5',
+            'PySide6'     : 'pyside6',
+            'PyQt6'       : 'pyqt6',
+            'PySide2'     : 'pyside2',
+            'PyQt5'       : 'pyqt5',
+            'pyside6_lite': 'pyside6'
         }.items():
             if find_spec(pkg):
+                if pkg == 'pyside6_lite':
+                    # see `sidework/pyside_package_tailor/dist/pyside6_lite`.
+                    from pyside6_lite import init_paths  # noqa
+                    for p in init_paths:
+                        sys.path.insert(0, p)
                 print(':v2', 'Auto detected Qt API: ' + api)
                 os.environ['QT_API'] = api
                 break
@@ -35,12 +42,14 @@ if 2:  # step2: select qt api
 
 from .application import Application
 from .application import app
+from .pyside import bind
+from .pyside import bind_signal
 from .pyside import pyside
 from .pyside import register
 from .qmlside import Model
 from .qmlside import eval_js
-from .qmlside import pyassets
 from .qmlside import js_eval
+from .qmlside import pyassets
 from .qmlside import qlogger
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
