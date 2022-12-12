@@ -40,8 +40,9 @@ class Model(QAbstractListModel):
         if isinstance(role_names, dict):
             self._defaults = role_names
         else:
-            self._defaults = {x: None for x in role_names}
-            #   TODO: or `{x: '', ...}`?
+            # trick: set default value to '' instead of None to improve
+            # compatibility.
+            self._defaults = {x: '' for x in role_names}
     
     @property
     def role_names(self):

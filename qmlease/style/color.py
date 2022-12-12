@@ -84,6 +84,11 @@ class Color(Base):
                             if f'{a}_{c}' not in data:
                                 new_data[f'{a}_{c}'] = v
                             resolved.add(f'{a}_{c}')
+                elif b.isdigit():
+                    #   e.g. 'red_7' -> 'red7'
+                    if f'{a}{b}' not in data:
+                        new_data[f'{a}{b}'] = v
+                    resolved.add(f'{a}{b}')
             resolved.add(k)
         return new_data
     
