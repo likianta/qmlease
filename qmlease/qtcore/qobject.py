@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import typing as t
+from functools import partial
 
 from qtpy.QtCore import QObject as QObjectBase
 from qtpy.QtCore import Signal
@@ -11,27 +12,53 @@ from .signal_slot import slot
 __all__ = ['QObject', 'QObjectBaseWrapper']
 
 
-class DynamicSignalMeta(type(QObjectBase)):
+class PartialDelegate:
+    self_qobj: 'QObject'
+    
+    def get(self, key):
+        # print(self.self_qobj, key, ':v')
+        return getattr(self.self_qobj, key)
+    
+    def set(self, key, value):
+        setattr(self.self_qobj, key, value)
+
+
+class DynamicPropMeta(type(QObjectBase)):
     # https://stackoverflow.com/a/63411358/9695911
     
     def __new__(cls, name, bases, dict_):
-        # print(':d', name)
-        # print(name, bases, dict_, ':l')
-        
         custom_props = []
+        delegate = PartialDelegate()
+        
         for k, v in tuple(dict_.items()):
             if isinstance(v, AutoProp):
                 custom_props.append(k)
-                print('auto create signal', k + '_changed')
+                
                 dict_[k] = v.default
-                dict_[k + '_changed'] = Signal(v.type_)
+                if v.notify:
+                    print('auto create signal', f'{k}_changed')
+                    dict_[f'{k}_changed'] = Signal(v.type_)
+                
+                # create slot functions for qml getter & setter
+                assert f'get_{k}' not in dict_
+                func = partial(delegate.get, key=k)
+                dict_[f'get_{k}'] = func
+                slot(name=f'get_{k}', result=v.type_)(func)
+                
+                if not v.const:
+                    assert f'set_{k}' not in dict_
+                    func = partial(delegate.set, key=k)
+                    dict_[f'set_{k}'] = func
+                    slot(v.type_, name=f'set_{k}')(func)
+        
+        dict_['_auto_prop_delegate'] = delegate
         dict_['_custom_props'] = tuple(custom_props)
         
         # noinspection PyTypeChecker
         return super().__new__(cls, name, bases, dict_)
 
 
-class QObject(QObjectBase, metaclass=DynamicSignalMeta):
+class QObject(QObjectBase, metaclass=DynamicPropMeta):
     """
     features:
         alternative to `property` and `setProperty`:
@@ -58,14 +85,16 @@ class QObject(QObjectBase, metaclass=DynamicSignalMeta):
             // also can be recognized in qml side
             Item {
                 Component.onCompleted: {
-                    console.log(my_obj.qget('width'))
+                    console.log(my_obj.get_width())
                     my_obj.width_changed.connect(...)
+                    my_obj.set_width(300)
                 }
             }
     """
     
     def __init__(self, parent=None):
         super().__init__(parent)
+        self._auto_prop_delegate.self_qobj = self
     
     def __getitem__(self, item: str):
         return self.property(item)
@@ -73,17 +102,23 @@ class QObject(QObjectBase, metaclass=DynamicSignalMeta):
     def __setitem__(self, key: str, value: t.Any):
         self.setProperty(key, value)
     
-    def __getattr__(self, item) -> t.Any:
+    def __getattr__(self, item):  # behave as is. just eliminate IDE warning
         return super().__getattribute__(item)
     
-    def __setattr__(self, key, value) -> None:
-        # if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
-        if isinstance(key, str) and key in self._custom_props:
+    def __setattr__(self, key, value):
+        if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
             if getattr(self, key) != value:
                 super().__setattr__(key, value)
-                getattr(self, key + '_changed').emit(value)
+                getattr(self, f'{key}_changed').emit(value)
                 return
         super().__setattr__(key, value)
+    
+    def get_auto_prop(self, key: str) -> t.Any:
+        print(self, key, ':v')
+        return getattr(self, key)
+    
+    def set_auto_prop(self, key: str, new: t.Any) -> None:
+        setattr(self, key, new)
     
     @slot(str, result=object)
     def qget(self, name: str) -> t.Any:

@@ -10,22 +10,34 @@ from .signal_slot import signal
 
 
 class AutoProp:
+    """ this is a dataclass-like class, just store some info for later used by
+        `.qobject.DynamicSignalMeta.__new__` """
+    const: bool
     default: t.Any
+    notify: bool
     type_: type
     
-    def __init__(self, value: t.Any, type_: type = None):
+    def __init__(self, value: t.Any, type_: type = None,
+                 notify: bool = 'auto', const=False):
+        """
+        note: the `notify` is generally used for primitive types, like `int`,
+            `float`, `str`, etc. if you are passing a mutable object, e.g. a
+            `QModel` instance, you should set it False and use `QModel`'s own
+            signal.
+        """
         self.default = value
         self.type_ = type_ or type(value)
-        assert self.type_ in (bool, float, int, str)
-    
-    # @staticmethod
-    # def _auto_detect_type(value: t.Any) -> type:
-    #     """
-    #     support only basic types.
-    #     """
-    #     out = type(value)
-    #     assert out in (bool, float, int, str)
-    #     return out
+        if notify == 'auto':
+            if const:
+                notify = False
+            elif self.type_ in (bool, float, int, str):
+                notify = True
+            else:
+                notify = False
+        else:
+            assert isinstance(notify, bool)
+        self.notify = notify
+        self.const = const
 
 
 # -----------------------------------------------------------------------------
