@@ -54,7 +54,6 @@ class Application(QApplication):
         self.register_qmldir(xpath('../themes'))
         
         self.on_exit = super().aboutToQuit  # noqa
-        self.on_exit.connect(self._exit)
     
     def _ui_fine_tune(self) -> None:
         from os import name
@@ -140,6 +139,8 @@ class Application(QApplication):
         
         from lk_utils import normpath
         self.engine.load('file:///' + normpath(qmlfile, force_abspath=True))
+        
+        self.on_exit.connect(self._exit)
         
         from os import getenv
         if getenv('QT_API') in ('pyside2', 'pyqt5'):
