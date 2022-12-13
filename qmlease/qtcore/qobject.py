@@ -20,6 +20,7 @@ class PartialDelegate:
         return getattr(self.self_qobj, key)
     
     def set(self, key, value):
+        # print(self.self_qobj, key, value, ':v')
         setattr(self.self_qobj, key, value)
 
 
@@ -47,7 +48,11 @@ class DynamicPropMeta(type(QObjectBase)):
                 
                 if not v.const:
                     assert f'set_{k}' not in dict_
-                    func = partial(delegate.set, key=k)
+                    func = partial(delegate.set, k)
+                    #   do not use `key=k` here, see reason:
+                    #       https://stackoverflow.com/questions/26182068
+                    #       /typeerror-got-multiple-values-for-argument-after
+                    #       -applying-functools-partial
                     dict_[f'set_{k}'] = func
                     slot(v.type_, name=f'set_{k}')(func)
         
