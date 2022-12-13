@@ -162,9 +162,9 @@ class QObjectBaseWrapper:
     
     def __getattr__(self, item):
         if isinstance(item, str):
-            if item.endswith('_changed'):
-                return getattr(self.qobj, item.replace('_changed', 'Changed'))
-            elif item != 'qobj' and item != 'children':
+            # if item.endswith('_changed'):
+            #     return getattr(self.qobj, item.replace('_changed', 'Changed'))
+            if item != 'qobj' and item != 'children':
                 return getattr(_getattr(self, 'qobj'), item)
         return _getattr(self, item)
     

@@ -57,7 +57,11 @@ class PySide(QObject, PyRegister):
                 {source_code}
             __return_hook__ = __selfunc__()
         ''').format(source_code=indent(dedent(code), '    '))
-        exec(code_wrapper, kwargs)
+        try:
+            exec(code_wrapper, kwargs)
+        except Exception as e:
+            print(':lv4', code_wrapper, kwargs, e)
+            raise e
         
         # if kwargs['__return_hook__'] is not None:
         #     print(kwargs['__return_hook__'])

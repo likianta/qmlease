@@ -59,9 +59,9 @@ class QLogger(QObject):
     ) -> None:
         # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # for debug
         
-        # TEST
-        if ctx.file == 'eval code':
-            raise Exception(msg)
+        # # TEST
+        # if ctx.file == 'eval code':
+        #     raise Exception(msg)
         
         # file path
         if msg.startswith('[file_id:'):
@@ -74,12 +74,13 @@ class QLogger(QObject):
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
                 if IGNORE_UNPLEASENT_WARNINGS:
-                    if not _IS_WINDOWS and file_path in (
-                            # https://forum.qt.io/topic/131823/lots-of
-                            # -typeerrors-in-console-when-migrating-to-qt6/2
-                            '<qrc:/qt-project.org/imports/QtQuick/Controls/'
-                            'macOS/Button.qml>',
+                    if (
+                            not _IS_WINDOWS and
+                            'qrc:/qt-project.org/imports/QtQuick/Controls'
+                            '/macOS/Button.qml' in file_path
                     ):
+                        # https://forum.qt.io/topic/131823/lots-of
+                        # -typeerrors-in-console-when-migrating-to-qt6/2
                         return
             else:
                 file_path = '<unknown>'
