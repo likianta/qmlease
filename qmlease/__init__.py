@@ -42,8 +42,6 @@ if 2:  # step2: select qt api
 
 from .application import Application
 from .application import app
-from .pyside import bind
-from .pyside import bind_signal
 from .pyside import pyside
 from .pyside import register
 from .qmlside import Model
@@ -54,6 +52,8 @@ from .qmlside import qlogger
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject
+from .qtcore import bind
+from .qtcore import bind_signal
 from .qtcore import signal
 from .qtcore import slot
 from .style import pystyle

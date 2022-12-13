@@ -1,24 +1,51 @@
+"""
+copied from lambda_ex.grafting
+"""
 import typing as t
+from functools import partial
+from typing import Callable
 
-from .qobject import QObject
+from qtpy.QtCore import QObject
+from qtpy.QtCore import Signal
+
+_grafted = set()
 
 
-def bind(src: QObject, tar: QObject,
-         src_attr: str, tar_attr: str = None,
-         extra_func=None) -> None:
-    from ..qmlside import eval_js
+def bind(trigger: Callable, *args, emit_now=False, **kwargs) -> Callable:
+    def decorator(func):
+        uid = (id(trigger), id(func))
+        if uid in _grafted:
+            return func
+        _grafted.add(uid)
+        if args or kwargs:
+            trigger(partial(func, *args, **kwargs))
+        else:
+            trigger(func)
+        if emit_now:
+            func(*args, **kwargs)
+        return func
     
-    if tar_attr is None: tar_attr = src_attr
+    return decorator
+
+
+def bind_signal(signal: Callable, emit_now=False) -> Callable:
+    assert isinstance(signal, Signal)
     
-    if extra_func is None:
-        eval_js('''
-            $tar.{tar_attr} = Qt.binding(() => $src.{src_attr})
-        ''', {'tar': tar, 'tar_attr': tar_attr,
-              'src': src, 'src_attr': src_attr})
-    else:
-        raise NotImplementedError
+    def decorator(func):
+        uid = (id(signal), id(func))
+        if uid in _grafted:
+            return func
+        _grafted.add(uid)
+        signal.connect(func)  # noqa
+        if emit_now:
+            # signal.emit()
+            func()  # FIXME: what about args and kwargs?
+        return func
+    
+    return decorator
 
 
+# TODO: experimental
 def bind_func(qobj: QObject, signal: str, func: t.Callable) -> None:
     eval('qobj.{signal}.connect(func)'.format(signal=signal),
          {'qobj': qobj, 'func': func})
