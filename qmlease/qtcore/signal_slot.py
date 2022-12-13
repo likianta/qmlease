@@ -3,10 +3,13 @@ fix typehint of Signal and Slot.
 """
 from __future__ import annotations
 
+import typing as t0
 from functools import wraps
-from typing import Type
 from typing import cast
 
+# fix typehint of Signal and Slot.
+# https://rednafi.github.io/reflections/static-typing-python-decorators.html
+import typing_extensions as t1
 from qtpy.QtCore import QObject
 from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot
@@ -18,9 +21,19 @@ __all__ = ['signal', 'slot']
 __hidden_ref = []
 
 
-def slot(*argtypes: type | str,
+class T:
+    ArgType0 = t0.Union[type, str]
+    ArgType1 = type
+    ParamSpec = t1.ParamSpec('ParamSpec')
+    SlotReturn0 = t0.Optional[type]
+    SlotReturn1 = t0.Union[str, type, None]
+    
+    Func = t0.Callable[ParamSpec, t0.Any]
+
+
+def slot(*argtypes: T.ArgType0,
          name: str = '',
-         result: type | None = None):
+         result: T.SlotReturn0 = None) -> T.Func:
     """
     args:
         argtypes: see `def _reformat_argtypes()`.
@@ -30,7 +43,7 @@ def slot(*argtypes: type | str,
     argtypes = _reformat_argtypes(argtypes)
     result = _reformat_result(result)
     
-    def decorator(func):
+    def decorator(func: T.Func) -> T.Func:
         nonlocal argtypes, name, result
         __hidden_ref.append(
             Slot(*argtypes,
@@ -39,7 +52,10 @@ def slot(*argtypes: type | str,
         )
         
         @wraps(func)
-        def func_wrapper(*args, **kwargs):
+        def func_wrapper(
+                *args: T.ParamSpec.args,
+                **kwargs: T.ParamSpec.kwargs
+        ) -> T.Func:
             from .qobject import QObjectBaseWrapper
             new_args = []
             new_kwargs = {}
@@ -67,7 +83,9 @@ def slot(*argtypes: type | str,
     return decorator
 
 
-def _reformat_argtypes(argtypes: tuple) -> tuple:
+def _reformat_argtypes(
+        argtypes: t0.Tuple[T.ArgType0, ...]
+) -> t0.Tuple[T.ArgType1, ...]:
     """
     mapping:
         # <group>:
@@ -127,7 +145,7 @@ def _reformat_argtypes(argtypes: tuple) -> tuple:
     return tuple(new_argtypes)
 
 
-def _reformat_result(result: type | None) -> str | type | None:
+def _reformat_result(result: T.SlotReturn0) -> T.SlotReturn1:
     """
     mapping:
         # <group>:
@@ -167,4 +185,4 @@ class Signal:
     def emit(self, *args): ...
 
 
-signal = cast(Type[Signal], OriginSignal)
+signal = cast(t0.Type[Signal], OriginSignal)

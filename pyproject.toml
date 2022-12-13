@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qmlease"
-version = "3.0.0a0"
+version = "3.0.0a3"
 homepage = "https://github.com/likianta/qmlease"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 readme = "README.md"
@@ -17,8 +17,9 @@ python = "^3.8"
 argsense = "*"
 lambda-ex = "^1.1.0"
 lk-logger = "^5.4.7"
-lk-utils = "^2.5.1"
+lk-utils = "^2.5.2"
 qtpy = "^2.3.0"
+typing-extensions = "*"
 pyside6 = { version = "*", optional = true }
 pyside2 = { version = "*", optional = true }
 
