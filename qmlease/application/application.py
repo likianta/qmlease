@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import typing as t
 from os.path import exists
 
 from qtpy.QtCore import QObject
@@ -8,17 +9,14 @@ from qtpy.QtQml import QQmlContext
 from qtpy.QtWidgets import QApplication
 
 from .register import Register
-
-
-class T:
-    from os import PathLike
-    from typing import Union
-    Path = Union[PathLike, str]
+from ..qtcore import signal
 
 
 class Application(QApplication):
     engine: QQmlApplicationEngine
     root: QQmlContext
+    on_exit: signal
+    _on_exit_funcs: t.List[t.Callable]
     _register: Register
     
     def __init__(self, app_name='QmlEase Demo', **kwargs):
@@ -45,6 +43,7 @@ class Application(QApplication):
         
         self.engine = QQmlApplicationEngine()  # noqa
         self.root = self.engine.rootContext()
+        self._on_exit_funcs = []
         self._register = Register(self.root)
         
         self._ui_fine_tune()
@@ -157,7 +156,7 @@ class Application(QApplication):
     #   -startapps+&cd=1&hl=zh-CN&ct=clnk&gl=sg
     launch = start = open = run
     
-    def show_splash_screen(self, file: T.Path):
+    def show_splash_screen(self, file: str) -> None:
         assert exists(file)
         
         from qtpy.QtCore import Qt
@@ -179,7 +178,13 @@ class Application(QApplication):
         splash.show()
         self.processEvents()
     
-    def _exit(self):
+    # -------------------------------------------------------------------------
+    
+    def on_exit_register(self, func: t.Callable) -> int:
+        self._on_exit_funcs.append(func)
+        return len(self._on_exit_funcs) - 1
+    
+    def _exit(self) -> None:
         """
         dev note:
             must release `self.engine` first, then `self._register.__hidden_ref`.
@@ -192,6 +197,13 @@ class Application(QApplication):
                 =512347&page=com.atlassian.jira.plugin.system.issuetabpanels
                 :comment-tabpanel#comment-512347
         """
+        for f in self._on_exit_funcs:
+            try:
+                f()
+            except Exception as e:
+                print(':v4', 'error on app exit', f, e)
+                continue
+        self._on_exit_funcs.clear()
         print('[red dim]exit application[/]', ':r')
         del self.engine
         self._register.release()
