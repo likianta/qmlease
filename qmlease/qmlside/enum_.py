@@ -3,8 +3,8 @@ from qtpy.QtQml import QQmlPropertyMap
 
 class Auto:
     
-    def __init__(self):
-        self._counter = 0
+    def __init__(self, start=0):
+        self._counter = start
     
     def __call__(self) -> int:
         self._counter -= 1
@@ -19,6 +19,7 @@ class _Enum:
     AUTO = _auto()
     DEFAULT = _auto()
     NONE = _auto()
+    ZERO = _auto()
     
     # justify
     AROUND = _auto()
