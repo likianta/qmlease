@@ -8,7 +8,7 @@ from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
 from ..enum_ import pyenum
-from ..js_evaluator import eval_js
+from ..qml_eval import qml_eval
 from ...qtcore import QObject
 from ...qtcore import bind_func  # noqa
 from ...qtcore import slot
@@ -88,40 +88,29 @@ class LayoutHelper(QObject):
             center = 'verticalCenter'
             side_0 = 'left'
             side_1 = 'right'
+            padding_0 = (0, 0, 0, box['padding'])
+            padding_1 = (0, box['padding'], 0, 0)
         else:
             center = 'horizontalCenter'
             side_0 = 'top'
             side_1 = 'bottom'
+            padding_0 = (box['padding'], 0, 0, 0)
+            padding_1 = (0, 0, box['padding'], 0)
         
         for i, child in enumerate(children):
-            eval_js('''
-                $child.anchors.{center} = Qt.binding(() => $parent.{center})
-            '''.format(center=center), {'child': child, 'parent': box})
-            
+            qml_eval.bind_anchors_to_parent(child, box, center)
             if i == 0:
-                eval_js('''
-                    $child.anchors.{side0} = Qt.binding(() => $parent.{side0})
-                    $child.anchors.{side0}Margin = Qt.binding(
-                        () => $parent.padding)
-                '''.format(side0=side_0), {'child': child, 'parent': box})
-            
+                qml_eval.bind_anchors_to_parent(
+                    child, box, side_0, padding_0
+                )
             else:
-                eval_js('''
-                    $child.anchors.{side0} = Qt.binding(() => $last.{side1})
-                    $child.anchors.{side0}Margin = Qt.binding(
-                        () => $parent.spacing)
-                '''.format(side0=side_0, side1=side_1), {
-                    'child': child, 'last': last, 'parent': box
-                })
-                
+                qml_eval.bind_anchors_to_sibling(
+                    child, last, ((side_0, side_1),), box['spacing']
+                )
                 if i == len(children) - 1:
-                    eval_js('''
-                        $child.anchors.{side1} = Qt.binding(
-                            () => $parent.{side1})
-                        $child.anchors.{side1}Margin = Qt.binding(
-                            () => $parent.spacing)
-                    '''.format(side1=side_1), {'child': child, 'parent': box})
-            
+                    qml_eval.bind_anchors_to_parent(
+                        child, box, side_1, padding_1
+                    )
             last = child
     
     @staticmethod
@@ -133,9 +122,7 @@ class LayoutHelper(QObject):
             prop_r = 'height' if orientation == 'h' else 'width'
             for child in children:
                 if child.property(prop_r) == 0:
-                    eval_js('''
-                        $child.{0} = Qt.binding(() => $parent.{0})
-                    '''.format(prop_r), {'child': child, 'parent': box})
+                    qml_eval.bind_prop(child, box, prop_r)
         
         if (orientation == 'h' and box.property('vfill')) or \
                 (orientation == 'v' and box.property('hfill')):
@@ -230,19 +217,15 @@ class LayoutHelper(QObject):
         for a in alignment.split(','):
             if a == 'hcenter':
                 for child in children:
-                    eval_js('''
-                        $child.anchors.horizontalCenter = Qt.binding(() => {
-                            return $container.horizontalCenter
-                        })
-                    ''', {'child': child, 'container': container})
+                    qml_eval.bind_anchors_to_parent(
+                        child, container, 'horizontalCenter'
+                    )
             
             elif a == 'vcenter':
                 for child in children:
-                    eval_js('''
-                        $child.anchors.verticalCenter = Qt.binding(() => {
-                            return $container.verticalCenter
-                        })
-                    ''', {'child': child, 'container': container})
+                    qml_eval.bind_anchors_to_parent(
+                        child, container, 'verticalCenter'
+                    )
             
             elif a == 'hfill' or a == 'vfill':
                 def resize_children(orientation: str):
