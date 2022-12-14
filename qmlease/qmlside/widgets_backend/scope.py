@@ -109,17 +109,17 @@ class ScopeEngine(QObject):
             
             def get_valid_sid(req_scope):
                 for scope, sid in self._current_state['scope_2_sid'].items():
-                    print(scope, sid, ':v')
+                    # print(scope, sid, ':v')
                     if scope.startswith(req_scope):
                         yield scope, sid
             
             for scope, sid in get_valid_sid(scope):
-                print('attach sub scope', scope, sid, ':v2')
+                # print('attach sub scope', scope, sid, ':v2')
                 attach(scope, sid)
     
     @slot(str)
     def cscope(self, scope: T.Scope) -> None:
-        print(scope)
+        # print(scope)
         self.activate_scope(scope)
     
     @slot(str, str)
@@ -187,12 +187,14 @@ class ScopeEngine(QObject):
                 qobj.triggered.emit(fid)
     
     from enum import Enum
+    # noinspection PyUnresolvedReferences
     if isinstance(Qt.ControlModifier, Enum):
         # see a reference at `PySide6 (v6.4.0) > Qt3DRender.pyi > line 1014`
         _pyside6_640_patch = True
     else:
         _pyside6_640_patch = False
-    
+
+    # noinspection PyUnresolvedReferences
     def _compose_kid(self, key: int, modifier: int) -> T.KID:
         if self._pyside6_640_patch:
             # https://www.qt.io/blog/qt-for-python-release-6.4-is-finally-here
