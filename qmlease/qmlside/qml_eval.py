@@ -8,13 +8,11 @@ from textwrap import indent
 
 import typing_extensions as te
 from lk_utils import xpath
-from lk_utils.time_utils import timeout_gen
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
 from qtpy.QtQml import QQmlEngine
 
-from ..application import app
 from ..qtcore import bind_signal
 from ..qtcore.qobject import QObjectBaseWrapper
 
@@ -55,47 +53,28 @@ class T:
 
 class QmlEval(QObject):
     engine: QQmlEngine
-    _comp: QQmlComponent
-    _qobj: QObject
+    _comp: t.Optional[QQmlComponent]
+    _qobj: t.Optional[QObject]
     
     def __init__(self):
         super().__init__(None)
-        self.engine = app.engine
+        # self.engine = app.engine
+        self.engine = QQmlEngine()
         self.engine.installExtensions(QJSEngine.AllExtensions)
-        
-        # self._comp = None  # noqa
-        self._comp = QQmlComponent(
-            self.engine,
-            xpath('qml_eval.qml'),
-            app.root.contextObject()
-        )
-        
-        if self._comp.isReady():
-            self._qobj = self._comp.create()  # noqa
-        
-        elif self._comp.isLoading():
-            self._qobj = None  # noqa
-            
-            @bind_signal(self._comp.statusChanged)
-            def _(status: int) -> None:
-                print(self._comp)
-                if status == QQmlComponent.Ready:
-                    self._qobj = self._comp.create()  # noqa
-                    self._qobj.testHello()
-        
-        elif self._comp.isError():
-            raise RuntimeError(self._comp.errorString())
-        
-        else:
-            print(self._comp, ':v4')
+        self._comp = None
+        self._qobj = None
     
     @property
     def qobj(self) -> QObject:
         if self._qobj is None:
-            print('`QmlEval` is instantiating, please wait 3s...', ':v3')
-            for _ in timeout_gen(3):
-                if self._qobj:
-                    break
+            self._comp = QQmlComponent(self.engine, xpath('qml_eval.qml'))
+            if self._comp.isError():
+                raise RuntimeError(self._comp.errorString())
+            else:
+                assert self._comp.isReady()
+            self._qobj = self._comp.create()  # noqa
+            assert self._qobj
+            # self._qobj.testHello()
         return self._qobj
     
     _param_placeholder = re.compile(r'\$\w+')

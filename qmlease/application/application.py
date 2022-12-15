@@ -3,6 +3,7 @@ from __future__ import annotations
 import typing as t
 from os.path import exists
 
+from lk_utils import xpath
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QQmlApplicationEngine
 from qtpy.QtQml import QQmlContext
@@ -48,7 +49,6 @@ class Application(QApplication):
         
         self._ui_fine_tune()
         
-        from lk_utils import xpath
         self.register_qmldir(xpath('../widgets'))
         self.register_qmldir(xpath('../themes'))
         
@@ -115,7 +115,6 @@ class Application(QApplication):
         self.register(wb.Slider(), 'lkslider', 'global')
         self.register(wb.util, 'lkutil', 'global')
         
-        from lk_utils import xpath
         pyassets.add_source(xpath('../widgets'), 'lkwidgets')
     
     # -------------------------------------------------------------------------
