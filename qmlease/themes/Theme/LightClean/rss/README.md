@@ -1,2 +1,0 @@
-
-- http://remixicon.com/

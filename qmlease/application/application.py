@@ -48,10 +48,7 @@ class Application(QApplication):
         self._register = Register(self.root)
         
         self._ui_fine_tune()
-        
         self.register_qmldir(xpath('../widgets'))
-        self.register_qmldir(xpath('../themes'))
-        
         self.on_exit = super().aboutToQuit  # noqa
     
     def _ui_fine_tune(self) -> None:
