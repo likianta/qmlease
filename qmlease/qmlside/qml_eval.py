@@ -8,12 +8,13 @@ from textwrap import indent
 
 import typing_extensions as te
 from lk_utils import xpath
+from lk_utils.time_utils import timeout_gen
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
+from qtpy.QtQml import QQmlEngine
 
 from ..application import app
-from ..qtcore import QObject
 from ..qtcore import bind_signal
 from ..qtcore.qobject import QObjectBaseWrapper
 
@@ -53,21 +54,49 @@ class T:
 
 
 class QmlEval(QObject):
+    engine: QQmlEngine
+    _comp: QQmlComponent
+    _qobj: QObject
     
     def __init__(self):
-        super().__init__()
-        self.__qobj = None
+        super().__init__(None)
+        self.engine = app.engine
+        self.engine.installExtensions(QJSEngine.AllExtensions)
+        
+        # self._comp = None  # noqa
+        self._comp = QQmlComponent(
+            self.engine,
+            xpath('qml_eval.qml'),
+            app.root.contextObject()
+        )
+        
+        if self._comp.isReady():
+            self._qobj = self._comp.create()  # noqa
+        
+        elif self._comp.isLoading():
+            self._qobj = None  # noqa
+            
+            @bind_signal(self._comp.statusChanged)
+            def _(status: int) -> None:
+                print(self._comp)
+                if status == QQmlComponent.Ready:
+                    self._qobj = self._comp.create()  # noqa
+                    self._qobj.testHello()
+        
+        elif self._comp.isError():
+            raise RuntimeError(self._comp.errorString())
+        
+        else:
+            print(self._comp, ':v4')
     
     @property
-    def engine(self) -> QJSEngine:
-        return app.engine
-    
-    @property
-    def _qobj(self) -> QObject:
-        if self.__qobj is None:
-            self._comp = QQmlComponent(app.engine, xpath('qml_eval.qml'))
-            self.__qobj = self._comp.create()
-        return self.__qobj
+    def qobj(self) -> QObject:
+        if self._qobj is None:
+            print('`QmlEval` is instantiating, please wait 3s...', ':v3')
+            for _ in timeout_gen(3):
+                if self._qobj:
+                    break
+        return self._qobj
     
     _param_placeholder = re.compile(r'\$\w+')
     
@@ -139,7 +168,7 @@ class QmlEval(QObject):
             child = child.qobj
         if isinstance(parent, QObjectBaseWrapper):
             parent = parent.qobj
-        self._qobj.bindAnchors(child, parent, anchors, margins)
+        self.qobj.bindAnchorsToParent(child, parent, anchors, margins)
     
     bind_anchors = bind_anchors_to_parent
     
@@ -179,7 +208,7 @@ class QmlEval(QObject):
                 else x
                 for x in norm_anchors
             ]
-        self._qobj.bindAnchorsToSibling(one, another, norm_anchors, margins)
+        self.qobj.bindAnchorsToSibling(one, another, norm_anchors, margins)
 
 
 qml_eval = QmlEval()

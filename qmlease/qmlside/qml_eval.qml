@@ -1,6 +1,10 @@
 import QtQml 2.0
 
 QtObject {
+    function testHello() {
+        console.log('hello from qml_eval')
+    }
+
     function bindAnchorsToParent(child, parent, anchors_, margins_) {
         /*
          *  args:
@@ -54,7 +58,7 @@ QtObject {
             }
         }
 
-        if (margins_ !== null) {
+        if (margins_ !== undefined) {
             if (margins_.length == 1) {
                 child.anchors.margins = margins_[0]
             } else if (margins_.length == 2) {
@@ -84,13 +88,15 @@ QtObject {
             for (let i = 0; i < anchors_.length; i++) {
                 let one_side = anchors_[i][0]
                 let another_side = anchors_[i][1]
-                eval(`one.anchors.${one_side}`) = Qt.binding(
-                    () => eval(`another.${another_side}`)
-                )
+                eval(`
+                    one.anchors.${one_side} = Qt.binding(
+                        () => another.${another_side}
+                    )
+                `)
             }
         }
 
-        if (margins_ !== null) {
+        if (margins_ !== undefined) {
             if (margins_.length == 1) {
                 one.anchors.margins = margins_[0]
             } else if (margins_.length == 2) {
@@ -108,7 +114,9 @@ QtObject {
     }
 
     function bindProp(a, b, prop) {
-        eval(`a.${prop}`) = Qt.binding(() => eval(`b.${prop}`))
+        eval(`
+            a.${prop} = Qt.binding(() => b.${prop})
+        `)
     }
 }
 
