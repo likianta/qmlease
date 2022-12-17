@@ -45,8 +45,8 @@ class LayoutEngine(QObject):
         
         children = container.children()
         
-        elastic_items: dict[int, float] = {}  # dict[int index, float ratio]
-        stretch_items: dict[int, int] = {}  # dict[int index, int _]
+        elastic_items = {}  # dict[int index, float ratio]
+        stretch_items = {}  # dict[int index, int _]
         #   note: stretch_items.values() are useless (they are all zeros). it
         #   is made just for keeping the same type struct with elastic_items.
         

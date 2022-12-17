@@ -12,7 +12,7 @@ from .__ext__ import slot
 
 
 class T:
-    KID = t.Tuple[int, tuple[bool, bool, bool]]  # key id
+    KID = t.Tuple[int, t.Tuple[bool, bool, bool]]  # key id
     FID = str  # function id
     #   (int key_code, (ctrl, shift, alt))
     
