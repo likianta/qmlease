@@ -1,9 +1,9 @@
 """
 usage:
     run in command line:
-        py -m lk_qtquick_scaffold -h
-        py -m lk_qtquick_scaffold run <qml_file>
-        py -m lk_qtquick_scaffold run <qml_file> --debug
+        py -m qmlease -h
+        py -m qmlease run <qml_file>
+        py -m qmlease run <qml_file> --debug
         ...
 """
 from argsense import cli

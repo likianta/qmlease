@@ -5,7 +5,7 @@ Row {
     spacing: pysize.spacing_m
 
     property string alignment: 'vcenter'
-    //  see [lib:lk-qtquick-scaffold/qmlside/layout_helper/layout_helper.py
+    //  see [lib:qmlease/qmlside/layout_helper/layout_helper.py
     //      : def auto_align : docstring].
     property bool   autoSize: false
 

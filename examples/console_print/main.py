@@ -1,3 +1,3 @@
-from lk_qtquick_scaffold import app
 from lk_utils import relpath
+from qmlease import app
 app.run(relpath('view.qml'))
