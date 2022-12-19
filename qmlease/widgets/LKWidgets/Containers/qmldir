@@ -1,6 +1,0 @@
-module LKWidgets.Containers
-
-LKColumn    1.0     LKColumn.qml
-LKHBox      1.0     LKHBox.qml
-LKListView  1.0     LKListView.qml
-LKRow       1.0     LKRow.qml

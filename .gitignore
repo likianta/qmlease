@@ -1,12 +1,6 @@
 /.idea/
 /.vscode/
 /deleted/
-/sidework/pyside_package_tailor/other_resources/
-/sidework/pyside_package_tailor/venv/qt_for_python/*
-/wiki/chinese/site/
 
 __pycache__/
-dist/
 .DS_Store
-
-!/sidework/pyside_package_tailor/venv/qt_for_python/.gitkeep
