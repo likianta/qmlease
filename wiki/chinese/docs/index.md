@@ -16,6 +16,6 @@ qmlease 主要特性如下:
 
 qmlease 于 2022 年 12 月正式发布了它的第一个 3.0.0 版本[^1], 现在可以通过 [pypi 官网](https://pypi.org/project/qmlease/) 下载.
 
-完整的文档教程会在这个 wiki 中持续更新, 如需开始, 请阅读 [[下一章节|Installation]]!
+完整的文档教程会在这个 wiki 中持续更新, 如需开始, 请阅读 [下一章节](installation.md)!
 
 [^1]: 该版本号是从前身 lk-qtquick-scaffold 延续的. 更多细节请阅读后续章节.
