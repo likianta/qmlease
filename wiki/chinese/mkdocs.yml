@@ -1,0 +1,36 @@
+site_name: QmlEase
+repo_name: likianta/qmlease
+repo_url: https://github.com/likianta/qmlease
+edit_uri: ""
+nav:
+    - 简介: index.md
+    - 安装: installation.md
+    - 快速开始:
+        - quick_start/run_app.md
+        - quick_start/debug_app.md
+        - quick_start/cli.md
+        - quick_start/integrate_python_and_qml.md
+        - quick_start/signal_slot.md
+        - quick_start/built_in_widgets.md
+        - quick_start/layout_engine.md
+        - quick_start/stylesheet_manager.md
+    - 画廊: gallery.md
+theme:
+    name: material
+    icon: 
+        repo: fontawesome/brands/github-alt
+    features:
+        - navigation.indexes
+        - navigation.instant
+        - toc.follow
+markdown_extensions:
+    - pymdownx.highlight:
+        anchor_linenums: true
+    - pymdownx.superfences
+    - footnotes
+    - toc:
+        permalink: true
+plugins:
+    - mkdocs-video:
+        is_video: true
+        video_autoplay: true
