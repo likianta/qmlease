@@ -15,6 +15,8 @@ from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot
 from qtpy.QtQml import QJSValue
 
+from .._env import QT_API
+
 __all__ = ['signal', 'slot']
 
 # hold some objects globally (elevate their refcount), to prevent python gc.
@@ -45,11 +47,17 @@ def slot(*argtypes: T.ArgType0,
     
     def decorator(func: T.Func) -> T.Func:
         nonlocal argtypes, name, result
-        __hidden_ref.append(
-            Slot(*argtypes,
-                 name=(name or func.__name__),
-                 result=result)(func)
-        )
+        if QT_API == 'pyqt5' and result is None:
+            __hidden_ref.append(
+                Slot(*argtypes,
+                     name=(name or func.__name__))(func)
+            )
+        else:
+            __hidden_ref.append(
+                Slot(*argtypes,
+                     name=(name or func.__name__),
+                     result=result)(func)
+            )
         
         @wraps(func)
         def func_wrapper(

@@ -37,7 +37,7 @@ class Application(QApplication):
                         have not been set: QVector("organizationName",
                         "organizationDomain")
         """
-        super().__init__()
+        super().__init__([])
         
         self.setApplicationName(app_name)
         self.setOrganizationName(kwargs.get(
