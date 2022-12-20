@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from lk_utils import normpath
+from lk_utils import xpath
 from qtpy.QtCore import QObject
 
 from ...qtcore import slot
@@ -9,7 +11,9 @@ __all__ = ['HotReloader']
 
 class HotReloader(QObject):
     
-    def __init__(self, title='LK Hot Reloader', reload_scheme='default',
+    def __init__(self,
+                 title='LK Hot Reloader',
+                 reload_scheme='default',
                  app=None):
         """
         args:
@@ -28,12 +32,9 @@ class HotReloader(QObject):
         self._loader = None
         self._reload_scheme = reload_scheme
         
-        from lk_utils import relpath
-        self._view_file = relpath('legacy_view.qml')
-        # # self._view_file = relpath('./view.qml')  # TODO: wip
+        self._view_file = xpath('hot_reloader_legacy.qml')  # TODO
     
     def run(self, file: str):
-        from lk_utils.filesniff import normpath
         file = normpath(file, force_abspath=True)
         self.source = 'file:///' + file
         self._app.set_app_name(self.title)
