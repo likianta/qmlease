@@ -9,6 +9,7 @@ from qtpy.QtGui import QFontMetrics
 
 from ..enum_ import pyenum
 from ..qml_eval import qml_eval
+from ..._env import IS_WINDOWS
 from ...qtcore import QObject
 from ...qtcore import bind_func  # noqa
 from ...qtcore import slot
@@ -25,10 +26,9 @@ class LayoutHelper(QObject):
         super().__init__()
         
         # see also `../../style/font.py`.
-        from os import name
         font = QFont()
         font.setPixelSize(12)
-        if name == 'nt':
+        if IS_WINDOWS:
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
     

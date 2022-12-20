@@ -5,11 +5,13 @@ from os.path import exists
 
 from lk_utils import xpath
 from qtpy.QtCore import QObject
+from qtpy.QtGui import QIcon
 from qtpy.QtQml import QQmlApplicationEngine
 from qtpy.QtQml import QQmlContext
 from qtpy.QtWidgets import QApplication
 
 from .register import Register
+from .._env import IS_WINDOWS
 from .._env import QT_API
 from ..qtcore import signal
 
@@ -53,8 +55,7 @@ class Application(QApplication):
         self.on_exit = super().aboutToQuit  # noqa
     
     def _ui_fine_tune(self) -> None:
-        from os import name
-        if name == 'nt':
+        if IS_WINDOWS:
             self.setFont('Microsoft YaHei UI')  # noqa
     
     # -------------------------------------------------------------------------
@@ -63,6 +64,9 @@ class Application(QApplication):
         # just made a consistent snake-case function alias for external caller,
         # especially for who imports a global instance `app` from this module.
         self.setApplicationName(name)
+    
+    def set_app_icon(self, file: str) -> None:
+        self.setWindowIcon(QIcon(file))
     
     @staticmethod
     def set_assets_root(root_dir: str) -> None:

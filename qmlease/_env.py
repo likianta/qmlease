@@ -47,5 +47,6 @@ def _get_qt_version() -> float:
     return float('.'.join(QT_VERSION.split('.')[:2]))
 
 
-QT_API = _find_qt_api()
-QT_VERSION = _get_qt_version()
+IS_WINDOWS: bool = os.name == 'nt'
+QT_API: str = _find_qt_api()
+QT_VERSION: float = _get_qt_version()

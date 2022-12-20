@@ -1,5 +1,4 @@
 import re
-from os import name as os_name
 
 from lk_logger.path_helper import path_helper
 from lk_utils import normpath
@@ -8,6 +7,7 @@ from qtpy.QtCore import QMessageLogContext
 from qtpy.QtCore import QtMsgType
 from qtpy.QtCore import qInstallMessageHandler
 
+from .._env import IS_WINDOWS
 from .._env import QT_VERSION
 from ..qtcore import QObject
 
@@ -21,7 +21,6 @@ else:
 IGNORE_UNPLEASENT_WARNINGS = True
 SHOW_FUNCNAME = False
 _BUILTIN_WIDGETS_DIR = xpath('../widgets', True)
-_IS_WINDOWS = os_name == 'nt'
 
 
 class QLogger(QObject):
@@ -75,7 +74,7 @@ class QLogger(QObject):
                 file_path = self._reformat_path(file_path)
                 if IGNORE_UNPLEASENT_WARNINGS:
                     if (
-                            not _IS_WINDOWS and
+                            not IS_WINDOWS and
                             'qrc:/qt-project.org/imports/QtQuick/Controls'
                             '/macOS/Button.qml' in file_path
                     ):
@@ -117,7 +116,7 @@ class QLogger(QObject):
             eval code -> <eval code>
         """
         if path.startswith('file:///'):
-            if _IS_WINDOWS:
+            if IS_WINDOWS:
                 # e.g. 'file:///c:/workspace/...'
                 path = path[8:]
             else:

@@ -1,6 +1,8 @@
 from lk_utils import loads
+from qtpy.QtWidgets import QApplication
 
 from .size import Size
+from .._env import IS_WINDOWS
 
 
 class Font(Size):
@@ -9,9 +11,7 @@ class Font(Size):
         data: dict = loads(file)
         if 'font_default' in data:
             if data['font_default'] in ('', 'default', 'system', '$system'):
-                from os import name
-                from qtpy.QtWidgets import QApplication
-                if name == 'nt':
+                if IS_WINDOWS:
                     font = 'Microsoft YaHei UI'
                 else:
                     font = QApplication.font().family()  # noqa
