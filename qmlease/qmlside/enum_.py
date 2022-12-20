@@ -1,5 +1,7 @@
 from qtpy.QtQml import QQmlPropertyMap
 
+from .._env import QT_VERSION
+
 
 class Auto:
     
@@ -41,8 +43,14 @@ class PyEnum(QQmlPropertyMap, _Enum):
     
     def __init__(self):
         super().__init__(None)
-        self.insert({k: v for k, v in _Enum.__dict__.items()
-                     if not k.startswith('_')})  # noqa
+        if QT_VERSION >= 6.1:
+            # since 6.1. this performs much faster than `insert(k, v)`.
+            self.insert({k: v for k, v in _Enum.__dict__.items()
+                         if not k.startswith('_')})  # noqa
+        else:
+            for k, v in _Enum.__dict__.items():
+                if not k.startswith('_'):
+                    self.insert(k, v)
 
 
 pyenum = PyEnum()
