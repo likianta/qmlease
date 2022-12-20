@@ -16,7 +16,7 @@ def main(api: str):
     os.environ['QT_API'] = api
     from qmlease import QT_API, app
     print(QT_API)
-    app.run(xpath('backend_with_qt5.qml'))
+    app.run(xpath('simple_test.qml'))
 
 
 if __name__ == '__main__':

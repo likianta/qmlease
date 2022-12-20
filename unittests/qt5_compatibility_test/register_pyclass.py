@@ -1,6 +1,3 @@
-import os
-os.environ['QT_API'] = 'pyside2'
-
 from lk_utils import xpath
 
 from qmlease import QObject
@@ -15,4 +12,4 @@ class MyObject(QObject):
 
 
 app.register(MyObject, 'MyObject', 'dev.likianta.qmlease')
-app.run(xpath('pyside2_register_pyclass.qml'))
+app.run(xpath('register_pyclass.qml'))
