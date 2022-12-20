@@ -4,7 +4,6 @@ import typing as t
 from os.path import exists
 
 from lk_utils import xpath
-from qtpy.QtCore import QObject
 from qtpy.QtGui import QIcon
 from qtpy.QtQml import QQmlApplicationEngine
 from qtpy.QtQml import QQmlContext
@@ -50,6 +49,8 @@ class Application(QApplication):
         self._on_exit_funcs = []
         self._register = Register(self.root)
         
+        self.register = self._register.register
+        
         self._ui_fine_tune()
         self.register_qmldir(xpath('../widgets'))
         self.on_exit = super().aboutToQuit  # noqa
@@ -66,7 +67,7 @@ class Application(QApplication):
         self.setApplicationName(name)
     
     def set_app_icon(self, file: str) -> None:
-        self.setWindowIcon(QIcon(file))
+        self.setWindowIcon(QIcon(file))  # noqa
     
     @staticmethod
     def set_assets_root(root_dir: str) -> None:
@@ -88,11 +89,6 @@ class Application(QApplication):
             print(':v3p', 'the qmldir not exists! it may cause a "xxx is not '
                           'installed" error in qml side.', qmldir)
         self.engine.addImportPath(qmldir)
-    
-    def register(
-            self, qobj: QObject | type[QObject], name='', namespace='',
-    ) -> None:
-        self._register.register(qobj, name, namespace)
     
     def _register_backend(self) -> None:
         from ..pyside import pyside

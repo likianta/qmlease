@@ -5,12 +5,17 @@ import re
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QQmlContext
 from qtpy.QtQml import QQmlPropertyMap
+from qtpy.QtQml import qmlRegisterType
 
 from .._env import QT_VERSION
 if QT_VERSION >= 6.3:
+    # https://www.qt.io/blog/qt-for-python-details-on-the-new-6.3-release
     from qtpy.QtQml import QmlNamedElement
+elif QT_VERSION >= 6.0:
+    from qtpy.QtQml import QmlElement
 else:
     QmlNamedElement = None
+    QmlElement = None
 
 
 class Register:
@@ -130,19 +135,27 @@ class Register:
             else:
                 print('register pytype class "{}" to "{}"'
                       .format(name, namespace), ':vp')
-                exec('QmlNamedElement(qname)(cls)', {
-                    'QML_IMPORT_NAME'         : namespace,
-                    'QML_IMPORT_MAJOR_VERSION': 1,
-                    'QML_IMPORT_MINOR_VERSION': 0,
-                    'QmlNamedElement'         : QmlNamedElement,
-                    'qname'                   : name,
-                    'cls'                     : qcls,
-                })
-                #: B
-                # # noinspection PyTypeChecker
-                # qmlRegisterSingletonType(
-                #     qobj, namespace, 1, 0, name, qobj
-                # )
+                if QmlNamedElement:
+                    exec('QmlNamedElement(qname)(cls)', {
+                        'QML_IMPORT_NAME'         : namespace,
+                        'QML_IMPORT_MAJOR_VERSION': 1,
+                        'QML_IMPORT_MINOR_VERSION': 0,
+                        'QmlNamedElement'         : QmlNamedElement,
+                        'qname'                   : name,
+                        'cls'                     : qcls,
+                    })
+                elif QmlElement:  # TODO: not tested
+                    qcls.__name__ = name
+                    exec('QmlElement(cls)', {
+                        'QML_IMPORT_NAME'         : namespace,
+                        'QML_IMPORT_MAJOR_VERSION': 1,
+                        'QML_IMPORT_MINOR_VERSION': 0,
+                        'QmlElement'              : QmlElement,
+                        'cls'                     : qcls,
+                    })
+                else:
+                    # noinspection PyTypeChecker
+                    qmlRegisterType(qcls, namespace, 1, 0, name)
         else:
             raise TypeError('target must be a QObject subclass or instance.')
         
