@@ -10,6 +10,7 @@ from qtpy.QtQml import QQmlContext
 from qtpy.QtWidgets import QApplication
 
 from .register import Register
+from .._env import QT_API
 from ..qtcore import signal
 
 
@@ -137,8 +138,7 @@ class Application(QApplication):
         
         self.on_exit.connect(self._exit)
         
-        from os import getenv
-        if getenv('QT_API') in ('pyside2', 'pyqt5'):
+        if QT_API in ('pyside2', 'pyqt5'):
             self.exec_()
         else:
             self.exec()
