@@ -1,3 +1,5 @@
+- [中文版](https://likianta.github.io/qmlease/)
+
 # QmlEase
 
 QmlEase is a flexible toolkit for Python programmer to efficiently develop QML 
