@@ -2,7 +2,7 @@ import os
 from importlib.util import find_spec
 
 
-def find_qt_api() -> str:
+def _find_qt_api() -> str:
     """
     this should be called before importing qtpy.
     refer: `lib:qtpy/__init__.py`
@@ -39,4 +39,13 @@ def find_qt_api() -> str:
     return api
 
 
-QT_API = find_qt_api()
+def _get_qt_version() -> float:
+    """
+    return <major>.<minor> version of the qt api.
+    """
+    from qtpy import QT_VERSION  # e.g. '5.15.2'
+    return float('.'.join(QT_VERSION.split('.')[:2]))
+
+
+QT_API = _find_qt_api()
+QT_VERSION = _get_qt_version()

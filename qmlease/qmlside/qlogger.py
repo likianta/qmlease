@@ -8,15 +8,15 @@ from qtpy.QtCore import QMessageLogContext
 from qtpy.QtCore import QtMsgType
 from qtpy.QtCore import qInstallMessageHandler
 
-try:
-    from qtpy.QtCore import QtCriticalMsg
-    from qtpy.QtCore import QtWarningMsg
-except ImportError:
-    # this may happen when we are using PySide6 >= 6.4.0
+from .._env import QT_VERSION
+from ..qtcore import QObject
+
+if QT_VERSION >= 6.4:
     from qtpy.QtCore import qCritical as QtCriticalMsg
     from qtpy.QtCore import qWarning as QtWarningMsg
-
-from ..qtcore import QObject
+else:
+    from qtpy.QtCore import QtCriticalMsg
+    from qtpy.QtCore import QtWarningMsg
 
 IGNORE_UNPLEASENT_WARNINGS = True
 SHOW_FUNCNAME = False

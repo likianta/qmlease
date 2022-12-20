@@ -1,10 +1,16 @@
 from __future__ import annotations
 
 import re
+
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QQmlContext
 from qtpy.QtQml import QQmlPropertyMap
-from qtpy.QtQml import QmlNamedElement
+
+from .._env import QT_VERSION
+if QT_VERSION >= 6.3:
+    from qtpy.QtQml import QmlNamedElement
+else:
+    QmlNamedElement = None
 
 
 class Register:
@@ -149,12 +155,12 @@ class Register:
     def release(self) -> None:
         del self._namespace
         self.__hidden_ref.clear()
-
+    
     # -------------------------------------------------------------------------
     
     _pattern_1 = re.compile(r'(.)([A-Z][a-z]+)')
     _pattern_2 = re.compile(r'([a-z0-9])([A-Z])')
-
+    
     def _pascal_2_snake_case(self, name: str) -> str:
         """
         https://stackoverflow.com/questions/1175208/

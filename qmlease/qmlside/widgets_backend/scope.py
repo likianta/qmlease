@@ -9,6 +9,7 @@ from qtpy.QtCore import Qt
 
 from .__ext__ import QObject
 from .__ext__ import slot
+from ..._env import QT_VERSION
 
 
 class T:
@@ -186,17 +187,9 @@ class ScopeEngine(QObject):
                 qobj = self._fid_2_qobj[fid]
                 qobj.triggered.emit(fid)
     
-    from enum import Enum
-    # noinspection PyUnresolvedReferences
-    if isinstance(Qt.ControlModifier, Enum):
-        # see a reference at `PySide6 (v6.4.0) > Qt3DRender.pyi > line 1014`
-        _pyside6_640_patch = True
-    else:
-        _pyside6_640_patch = False
-
-    # noinspection PyUnresolvedReferences
-    def _compose_kid(self, key: int, modifier: int) -> T.KID:
-        if self._pyside6_640_patch:
+    @staticmethod
+    def _compose_kid(key: int, modifier: int) -> T.KID:
+        if QT_VERSION >= 6.4:
             # https://www.qt.io/blog/qt-for-python-release-6.4-is-finally-here
             #   open this link and search "Modifier" (seen in comment zone).
             return (key, (
@@ -204,8 +197,9 @@ class ScopeEngine(QObject):
                 bool(modifier & Qt.ShiftModifier.value),
                 bool(modifier & Qt.AltModifier.value),
             ))
-        return (key, (
-            bool(modifier & Qt.ControlModifier),
-            bool(modifier & Qt.ShiftModifier),
-            bool(modifier & Qt.AltModifier),
-        ))
+        else:
+            return (key, (
+                bool(modifier & Qt.ControlModifier),
+                bool(modifier & Qt.ShiftModifier),
+                bool(modifier & Qt.AltModifier),
+            ))
