@@ -75,8 +75,11 @@ Item {
             onClicked: parent.clicked()
             onWheel: (whl) => {
                 if (root.wheelEnabled) {
-                    const delta = -Math.round(whl.angleDelta.y / 120)
-                    let nextIndex = root.currentIndex + delta
+                    // we should use `var` here, not `let` or `const`.
+                    // this is a bug in qt 5 and qt 6.0~6.1. see also
+                    //  https://bugreports.qt.io/browse/QTBUG-91917
+                    var delta = -Math.round(whl.angleDelta.y / 120)
+                    var nextIndex = root.currentIndex + delta
                     if (nextIndex < 0) {
                         if (root.wheelLoop) {
                             nextIndex = root.model.length - 1
