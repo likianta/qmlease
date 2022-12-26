@@ -10,6 +10,7 @@ from .application import app
 from .pyside import pyside
 from .pyside import register
 from .qmlside import Model
+from .qmlside import SimpleModel
 from .qmlside import eval_js
 from .qmlside import pyassets
 from .qmlside import qlogger
@@ -23,4 +24,4 @@ from .qtcore import signal
 from .qtcore import slot
 from .style import pystyle
 
-__version__ = '3.0.2'
+__version__ = '3.1.0'
