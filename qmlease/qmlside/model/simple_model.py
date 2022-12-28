@@ -36,6 +36,8 @@ class SimpleModel(Model):
     def append_many(self, items: T.Data) -> None:
         super().append_many([{'value': x} for x in items])
     
+    extend = append_many
+    
     @slot(int, 'any')
     def insert(self, index: int, item: T.Datum) -> None:
         super().insert(index, {'value': item})

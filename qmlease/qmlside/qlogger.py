@@ -15,8 +15,8 @@ if QT_VERSION >= 6.4:
     from qtpy.QtCore import qCritical as QtCriticalMsg
     from qtpy.QtCore import qWarning as QtWarningMsg
 else:
-    from qtpy.QtCore import QtCriticalMsg
-    from qtpy.QtCore import QtWarningMsg
+    from qtpy.QtCore import QtCriticalMsg  # noqa
+    from qtpy.QtCore import QtWarningMsg  # noqa
 
 IGNORE_UNPLEASENT_WARNINGS = True
 SHOW_FUNCNAME = False
@@ -100,7 +100,8 @@ class QLogger(QObject):
                 msg = msg[len(ctx.file):].split(': ', 1)[1]
             msg += '!'
             logger_markup = ':v4s2'
-        
+
+        msg = msg.replace('[', '\\[')
         if SHOW_FUNCNAME and func_name:
             print(source, ctx.function, msg, logger_markup)
         else:
