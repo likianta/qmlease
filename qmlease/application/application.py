@@ -113,7 +113,7 @@ class Application(QApplication):
         self.register(wb.Slider(), 'lkslider', 'global')
         self.register(wb.util, 'lkutil', 'global')
         
-        pyassets.add_source(xpath('../widgets'), 'lkwidgets')
+        pyassets.add_source(xpath('../widgets/LKWidgets'), 'lkwidgets')
     
     # -------------------------------------------------------------------------
     

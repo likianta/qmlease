@@ -44,21 +44,21 @@ Loader {
             if (this.model) {
                 if (this.showText) {
                     return pyassets.get(
-                        'lkwidgets', 'LKWidgets/LKProgress/LKProgressB2.qml'
+                        'lkwidgets', 'LKProgress/LKProgressB2.qml'
                     )
                 } else {
                     return pyassets.get(
-                        'lkwidgets', 'LKWidgets/LKProgress/LKProgressB.qml'
+                        'lkwidgets', 'LKProgress/LKProgressB.qml'
                     )
                 }
             } else {
                 if (this.showText) {
                     return pyassets.get(
-                        'lkwidgets', 'LKWidgets/LKProgress/LKProgressA2.qml'
+                        'lkwidgets', 'LKProgress/LKProgressA2.qml'
                     )
                 } else {
                     return pyassets.get(
-                        'lkwidgets', 'LKWidgets/LKProgress/LKProgressA.qml'
+                        'lkwidgets', 'LKProgress/LKProgressA.qml'
                     )
                 }
             }
