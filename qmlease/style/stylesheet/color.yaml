@@ -49,6 +49,8 @@ dot_border_hovered: '$dot_hovered'
 
 frame_bg: '$panel_bg'
 
+icon_line_default: '$text_main'
+
 input_bg_active: '$button_bg_active'
 input_bg_default: '$button_bg_default'
 input_border_active: '$border_active'

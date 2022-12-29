@@ -1,5 +1,6 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
+import "Buttons"
 
 LKRectangle {
     id: root
@@ -25,6 +26,7 @@ LKRectangle {
     property alias  inputMask: _input.inputMask
     property int    padding: pysize.padding_l
     property bool   pressEscToLostFocus: false  // TODO
+    property bool   showClearButton: false
     property bool   showIndicator: false
     property alias  text: _input.text
     property alias  textHint: _placeholder.text
@@ -124,6 +126,28 @@ LKRectangle {
                     onStopped: {
                         _custom_cursor_rect.visible = false
                     }
+                }
+            }
+        }
+
+        LKIconButton {
+            visible: root.showClearButton
+            anchors {
+                right: parent.right
+                verticalCenter: parent.verticalCenter
+                margins: 4
+            }
+            halo: true
+            opacity: parent.displayText ? 1 : 0
+            source: pyassets.get('lkwidgets', 'Assets/close-line.svg')
+
+            onClicked: {
+                _input.text = ''
+            }
+
+            Behavior on opacity {
+                NumberAnimation {
+                    duration: 200
                 }
             }
         }

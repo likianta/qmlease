@@ -8,7 +8,7 @@ Item {
     clip: false
 
     property string bgColor: pycolor.button_bg_hovered
-    property string color
+    property string color: pycolor.icon_line_default
     property alias  cursorShape: _area.cursorShape
     property bool   halo: false
     property alias  hovered: _area.containsMouse
