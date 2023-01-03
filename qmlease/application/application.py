@@ -111,6 +111,7 @@ class Application(QApplication):
         self.register(wb.Progress(), 'lkprogress', 'global')
         self.register(wb.ScopeEngine(), 'lkscope', 'global')
         self.register(wb.Slider(), 'lkslider', 'global')
+        self.register(wb.logger, 'lklogger', 'global')
         self.register(wb.util, 'lkutil', 'global')
         
         pyassets.add_source(xpath('../widgets/LKWidgets'), 'lkwidgets')

@@ -1,4 +1,6 @@
 from .listview import ListView
+from .logger import log
+from .logger import logger
 from .progress import Progress
 from .scope import ScopeEngine
 from .slider import Slider
