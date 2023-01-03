@@ -1,6 +1,9 @@
 /.idea/
 /.vscode/
 /deleted/
+/sidework/pyside_package_tailor/dist/deleted/
+/sidework/pyside_package_tailor/dist/pyside6_lite/*
+/sidework/pyside_package_tailor/dist/*.zip
 /sidework/pyside_package_tailor/other_resources/
 /sidework/pyside_package_tailor/venv/qt_for_python/*
 /wiki/
@@ -9,4 +12,5 @@ __pycache__/
 dist/
 .DS_Store
 
+!/sidework/pyside_package_tailor/dist/pyside6_lite/__init__.py
 !/sidework/pyside_package_tailor/venv/qt_for_python/.gitkeep
