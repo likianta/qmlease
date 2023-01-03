@@ -15,20 +15,23 @@ def _find_qt_api() -> str:
             'PyQt6'       : 'pyqt6',
             'PySide2'     : 'pyside2',
             'PyQt5'       : 'pyqt5',
-            'pyside6_lite': 'pyside6'
+            'pyside6_lite': 'pyside6_lite'
         }.items():
             if find_spec(pkg):
-                if pkg == 'pyside6_lite':
-                    # see `sidework/pyside_package_tailor/dist/pyside6_lite`.
-                    # activate special pyside6 location.
-                    import pyside6_lite  # noqa
                 print(':v2', f'auto detected qt api: {api}')
                 os.environ['QT_API'] = api
                 break
         else:
             raise ModuleNotFoundError('no qt bindings found!')
     
-    if api == 'pyside2':
+    if api == 'pyside6_lite':
+        # see `sidework/pyside_package_tailor/dist/pyside6_lite`.
+        # activate special pyside6 location.
+        import pyside6_lite  # noqa
+        # set environ to be 'pyside6' for qtpy to recognize it.
+        os.environ['QT_API'] = 'pyside6'
+    
+    elif api == 'pyside2':
         # try to repair pyside2 highdpi issue
         #   https://www.hwang.top/post/pyside2pyqt-zai-windows-zhong-tian-jia
         #   -dui-gao-fen-ping-de-zhi-chi/

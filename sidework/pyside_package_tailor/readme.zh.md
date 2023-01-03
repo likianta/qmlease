@@ -9,10 +9,17 @@ pip install pyside6-essentials -t venv/qt_for_python
 
 此时将得到 (示例):
 
-- venv/qt_for_python/PySide6
-- venv/qt_for_python/PySide6-6.4.1.dist-info
-- venv/qt_for_python/shiboken6
-- venv/qt_for_python/shiboken6-6.4.1.dist-info
+```
+sidework
+|= pyside_package_tailor
+   |= venv
+      |= qt_for_python
+         |= PySide6
+         |= PySide6-6.4.1.dist-info
+         |= shiboken6
+         |= shiboken6-6.4.1.dist-info
+         |= bin
+```
 
 我们将 "PySide6" 和 "shiboken6" 拷贝到 `dist/pyside6_lite` 目录下. 并在该目录下创建一个 `__init__.py` 文件:
 
@@ -58,13 +65,13 @@ py -m pptailor tailor -h
 py -m pptailor restore -h
 
 # 裁剪
-py -m pptailor tailor dist/PySide6
+py -m pptailor tailor dist/pyside6_lite/PySide6
 ```
 
 它将会生成:
 
 ```
-~/dist
+sidework/pyside_package_tailor/dist
 |= pyside6_lite
    |= PySide6  # 在这个目录下, 一些文件已经被 "删除" 了. 它的体积有了明显的下降.
    |= shiboken6
@@ -84,16 +91,29 @@ py -m pptailor tailor dist/PySide6
 如果要恢复, 即把 "deleted" 中的文件放回原处, 请运行:
 
 ```shell
-py -m pptailor restore dist/PySide6
+py -m pptailor restore dist/pyside6_lite/PySide6
 ```
 
 # 如何使用
 
-将 `dist` 目录加入到 `sys.path` 中:
+用法 1: 先导入 `pyside6_lite`, 再导入 `PySide6`:
 
 ```python
-import sys
-sys.path.insert(0, '~/dist/pyside6_lite')
+import pyside6_lite
+
+# test
+import PySide6
+print(PySide6.__path__)
+```
+
+用法 2: 设置环境变量 `QT_API` 为 "pyside6_lite", 然后导入 `qmlease`:
+
+```python
+import os
+os.environ['QT_API'] = 'pyside6_lite'
+
+import qmlease
+print(qmlease.QT_API)
 
 # test
 import PySide6
