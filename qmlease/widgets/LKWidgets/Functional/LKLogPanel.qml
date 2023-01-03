@@ -7,6 +7,8 @@ Rectangle {
     color: pycolor.panel_bg
     radius: pysize.radius_m
 
+    readonly property alias count: _listview.count
+    readonly property alias listview: _listview
     property string placeholder: 'The logging message will be shown here'
     property string __fontFamily: lkutil.get_monospaced_font()
 
@@ -16,7 +18,7 @@ Rectangle {
 
     Text {
         id: _placeholder
-        visible: !Boolean(_view.count)
+        visible: !Boolean(_listview.count)
         anchors.centerIn: parent
         color: pycolor.text_hint
         font.family: pyfont.font_default
@@ -29,7 +31,7 @@ Rectangle {
         // use ListView rather than TextArea better for performance.
         //  https://stackoverflow.com/questions/31345096/textarea-slow-for
         //  -logging
-        id: _view
+        id: _listview
         anchors {
             fill: parent
             leftMargin: 8
@@ -41,7 +43,7 @@ Rectangle {
         clip: true
         model: lklogger.get_model()
         delegate: Text {
-            width: _view.width
+            width: _listview.width
             color: pycolor.text_main
             font.family: root.__fontFamily
             font.pixelSize: 11
@@ -51,14 +53,14 @@ Rectangle {
         }
 
         onCountChanged: {
-//            _view.currentIndex = _view.count - 1
-            _view.positionViewAtEnd()
+//            _listview.currentIndex = _listview.count - 1
+            _listview.positionViewAtEnd()
         }
     }
 
     B.LKIconButton {
         id: _clear
-        visible: Boolean(_view.count)
+        visible: Boolean(_listview.count)
         anchors {
             right: parent.right
             top: parent.top

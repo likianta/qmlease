@@ -21,14 +21,14 @@ class Logger(QObject):
     short_streamed = signal(str)
     streamed = signal(str)
     
-    _count: int = 0
+    count: int = 0
+    show_number: bool = True
+    show_time: bool = True
     _long_stream_enabled: bool = True
     _message_queue: deque
     _model: Model
     _running = False
     _short_stream_enabled: bool = True
-    _show_number: bool = True
-    _show_time: bool = True
     
     def __init__(self):
         super().__init__()
@@ -65,7 +65,7 @@ class Logger(QObject):
         self._long_stream_enabled = False
         self._running = False
         self._message_queue.clear()
-        self._model.clear()
+        # self._model.clear()
     
     # -------------------------------------------------------------------------
     
@@ -99,11 +99,11 @@ class Logger(QObject):
     
     @slot()
     def clear(self) -> None:
-        self._count = 0
+        self.count = 0
         self._model.clear()
     
     def _push_stream(self, *msg: str, color: str, _async=True) -> None:
-        self._count += 1
+        self.count += 1
         # construct output string
         msg = '; '.join(map(str, msg))
         
@@ -115,11 +115,11 @@ class Logger(QObject):
         
         # long message
         if self._long_stream_enabled:
-            if self._show_time:
+            if self.show_time:
                 msg = '[{}] {}'.format(_generate_timestamp(), msg)
-            if self._show_number:
+            if self.show_number:
                 # msg = '{:>4d}. {}'.format(self._count, msg)
-                msg = '{:>3}. {}'.format(self._count, msg)
+                msg = '{:>3}. {}'.format(self.count, msg)
             long_msg = self._colorify(msg, color)
         else:
             long_msg = ''
