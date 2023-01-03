@@ -11,7 +11,7 @@ from qtpy.QtCore import QObject
 from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
 
-from .qlogger import qlogger
+from .console import qml_console
 from ..application import app
 from ..qtcore.qobject import QObjectBaseWrapper
 
@@ -50,7 +50,7 @@ class JsEvaluator(QObject):
             
             logger = self._qobj.createCustomLogger(
                 '[file_id:{}]'.format(
-                    qlogger.generate_file_id(last_file, last_line)
+                    qml_console.generate_file_id(last_file, last_line)
                 )
             )
         else:
@@ -140,7 +140,7 @@ class JsEvaluator(QObject):
                     )}
                 }
             ''').strip().replace(
-                '$file_id', qlogger.generate_file_id(last_file, last_line)
+                '$file_id', qml_console.generate_file_id(last_file, last_line)
             ))
             console = get_console.call()
             

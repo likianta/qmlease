@@ -23,7 +23,7 @@ SHOW_FUNCNAME = False
 _BUILTIN_WIDGETS_DIR = xpath('../widgets', True)
 
 
-class QLogger(QObject):
+class Console(QObject):
     
     def __init__(self):
         super().__init__()
@@ -165,4 +165,4 @@ class QLogger(QObject):
             return path_helper.relpath(path)
 
 
-qlogger = QLogger()
+qml_console = Console()

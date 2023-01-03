@@ -13,8 +13,10 @@ from .qmlside import Model
 from .qmlside import SimpleModel
 from .qmlside import eval_js
 from .qmlside import pyassets
-from .qmlside import qlogger
+from .qmlside import console
 from .qmlside import qml_eval
+from .qmlside.widgets_backend import log
+from .qmlside.widgets_backend import logger
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject
