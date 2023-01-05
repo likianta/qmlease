@@ -1,5 +1,5 @@
-import QtQuick 2.15
-import QtQuick.Controls 2.15
+import QtQuick 2.0
+import QtQuick.Controls 2.0
 
 Button {
     // https://stackoverflow.com/questions/15236304/need-to-change-color-of
@@ -15,7 +15,7 @@ Button {
     icon.color: root.color
     icon.source: root.source
 
-    property string color
+    property string color: pycolor.icon_line_default
     property alias  hovered_: _area.containsMouse
     property int    size: pysize.icon_size
     property string source
