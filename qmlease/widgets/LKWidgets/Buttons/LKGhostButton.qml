@@ -10,6 +10,8 @@ LKRectangle {
     border.color: borderColor
     color: selected ? bgActive : (hovered ? bgHovered : 'transparent')
 
+    readonly property alias textItem: _text
+
     property string bgHovered: pycolor.button_bg_hovered
     property string bgActive: pycolor.button_bg_active
     property string borderColor: pycolor.border_glow
@@ -20,7 +22,6 @@ LKRectangle {
     property string iconSource
     property bool   selected: false
     property string text
-    property alias  textDelegate: _text
 
     signal clicked()
 

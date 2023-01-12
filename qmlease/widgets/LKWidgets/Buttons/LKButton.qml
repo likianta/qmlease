@@ -47,7 +47,9 @@ Rectangle {
 
     LKText {
         id: _text
-        anchors.centerIn: parent
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         color: root.enabled ? root.textColor : pycolor.text_disabled
         text: root.text
     }
