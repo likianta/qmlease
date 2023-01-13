@@ -116,16 +116,15 @@ Item {
             }
         }
 
-        Image {
+        LKIcon {
             id: _indicator
             anchors {
                 right: parent.right
                 rightMargin: root.__padding
                 verticalCenter: parent.verticalCenter
             }
-            width: root.indicatorSize
-            height: root.indicatorSize
             rotation: root.expanded ? 0 : 90
+            size: root.indicatorSize
             source: '.assets/chevron-down-arrow.svg'
     //        sourceSize.width: root.indicatorSize - 2  // -2 for better appearance
     //        sourceSize.height: root.indicatorSize
