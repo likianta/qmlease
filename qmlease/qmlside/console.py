@@ -76,10 +76,10 @@ class Console(QObject):
                     if (
                             not IS_WINDOWS and
                             'qrc:/qt-project.org/imports/QtQuick/Controls'
-                            '/macOS/Button.qml' in file_path
+                            '/macOS/' in file_path
                     ):
-                        # https://forum.qt.io/topic/131823/lots-of
-                        # -typeerrors-in-console-when-migrating-to-qt6/2
+                        # https://forum.qt.io/topic/131823/lots-of-typeerrors-in
+                        # -console-when-migrating-to-qt6/2
                         return
             else:
                 file_path = '<unknown>'
