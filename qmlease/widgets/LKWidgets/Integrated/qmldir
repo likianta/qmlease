@@ -1,0 +1,4 @@
+module LKWidgets.Integrated
+
+LKFilePicker    1.0     LKFilePicker.qml
+LKLogPanel      1.0     LKLogPanel.qml
