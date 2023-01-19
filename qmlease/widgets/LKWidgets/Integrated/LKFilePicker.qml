@@ -5,11 +5,11 @@ LKRow {
     width: pysize.bar_width
     height: pysize.bar_height
     alignment: 'vcenter'
-    autoSize: true
+//    autoSize: true
 
     property string defaultPath
-    property string field
-    property alias  fieldItem: _label
+    property string label
+    property alias  labelItem: _label
     property string filter: ''
     //  e.g. 'Image Files (*.png *.jpg *.bmp)'
     //    or 'Images (*.png *.xpm *.jpg);;Text files (*.txt);;XML files (*.xml)'
@@ -18,19 +18,23 @@ LKRow {
 
     LKText {
         id: _label
-        visible: Boolean(parent.field)
+        visible: Boolean(parent.label)
         horizontalAlignment: Text.AlignRight
-        text: parent.field
+        text: parent.label
     }
 
     LKInput {
         id: _input
-        width: pyenum.STRETCH
+//        width: pyenum.STRETCH
+        width: _label.visible ?
+            parent.width - _btn.width - parent.spacing * 2 - _label.width :
+            parent.width - _btn.width - parent.spacing
         height: parent.height
         textHint: parent.defaultPath
     }
 
     LKButton {
+        id: _btn
         width: pysize.button_width_l
         height: parent.height
         text: 'Browse'

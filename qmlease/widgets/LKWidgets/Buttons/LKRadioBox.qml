@@ -23,8 +23,9 @@ RadioButton {
 ////        }
 //    }
 
-    property string indicatorColorDefault: pycolor.border_default
-    property string indicatorColorChecked: pycolor.text_main
+    property string indicatorBgColor: 'transparent'
+    property string indicatorBorderColor: pycolor.border_default
+    property string indicatorFgColor: pycolor.text_default
     property bool   showGhostBorder: false
 
     background: LKRectangle {
@@ -51,9 +52,9 @@ RadioButton {
         radius: height / 2
         border.width: 1
         border.color: root.checked ?
-            root.indicatorColorChecked :
-            root.indicatorColorDefault
+            root.indicatorFgColor : root.indicatorBorderColor
         clip: true
+        color: root.indicatorBgColor
 
         LKRectangle {
             anchors {
@@ -62,11 +63,12 @@ RadioButton {
             width: height
             height: root.checked ? parent.height - 4 : 0
             radius: height / 2
-            color: root.indicatorColorChecked
+            color: root.indicatorFgColor
 
             Behavior on height {
                 NumberAnimation {
                     duration: 200
+                    easing.overshoot: 1.5
                     easing.type: Easing.OutBack
                 }
             }

@@ -35,7 +35,8 @@ spacing_v_m: 4
 bar_width: 240
 bar_height: '$height_m'
 
-button_width: 52
+button_width_m: 60
+button_width_l: 100
 button_height: 20
 button_height_l: 32
 button_radius: '$radius_m'

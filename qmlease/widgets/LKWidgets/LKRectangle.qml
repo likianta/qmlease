@@ -2,6 +2,8 @@
 import QtQuick 2.15
 
 Rectangle {
-    color: pycolor.white
     radius: pysize.radius_m
+    color: pycolor.white
+    border.width: 0
+    border.color: pycolor.border_default
 }
