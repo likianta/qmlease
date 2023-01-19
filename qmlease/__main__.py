@@ -20,6 +20,9 @@ def run(view: str, debug=False):
     
     args:
         view: the qml file (relative or absolute path) to load.
+        
+    kwargs:
+        debug (-d): enable hot reload.
     """
     from .application import app
     app.run(view, debug=debug)

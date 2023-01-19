@@ -86,7 +86,7 @@ class Util(QObject):
                     )
         else:
             if backend == 'qt':
-                type_filter = ...
+                type_filter = ''
             else:
                 type_filter = None
         
