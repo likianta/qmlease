@@ -8,8 +8,8 @@ Item {
 
     property Component delegate: LKInput { }
     property alias     fieldItem: _loader.item
+    property string    label
     property int       spacing: pysize.spacing_l
-    property alias     text: _text.text
     property alias     textItem: _text
     property int       widthA: 0
     property int       widthB: 0
@@ -26,6 +26,7 @@ Item {
         width: root.widthA
         clip: true
         horizontalAlignment: Text.AlignRight
+        text: root.label
     }
 
     Loader {
