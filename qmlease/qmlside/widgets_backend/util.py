@@ -105,6 +105,7 @@ class Util(QObject):
                 if type_ == 'file':
                     return QFileDialog.getOpenFileName(**kwargs)[0]
                 else:
+                    kwargs.pop('filter')
                     return QFileDialog.getExistingDirectory(**kwargs)
             else:
                 if type_ == 'file':
@@ -125,6 +126,7 @@ class Util(QObject):
                 if type_ == 'file':
                     return filedialog.askopenfilename(**kwargs)
                 else:
+                    kwargs.pop('filetypes')
                     return filedialog.askdirectory(**kwargs)
             else:
                 if type_ == 'file':
