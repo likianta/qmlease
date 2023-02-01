@@ -11,6 +11,7 @@ yellow: 'yellow'
 # -----------------------------------------------------------------------------
 
 black_5: '#393355'
+black_6: '#767288'
 
 blue_1: '#8EA2F8'
 blue_5: '#1732BC'
@@ -65,6 +66,7 @@ progress_bg: '$grey_5'
 progress_fg: '$blue_5'
 
 text_main: '$black_5'
+text_secondary: '$black_6'
 text_hint: '$grey_5'
 
 win_bg: '$grey_1'
