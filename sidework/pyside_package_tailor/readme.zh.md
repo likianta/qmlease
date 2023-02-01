@@ -26,16 +26,8 @@ sidework
 ```python
 from os.path import abspath
 from sys import path
-
 _currdir = abspath(f'{__file__}/..')
-
-init_paths = [
-    f'{_currdir}/shiboken6',
-    f'{_currdir}/PySide6',
-]
-
-for p in init_paths:
-    path.insert(0, p)
+path.append(_currdir)
 ```
 
 于是我们得到了以下目录结构:
