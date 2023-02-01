@@ -3,12 +3,13 @@ import ".."
 
 Rectangle {
     id: root
-    width: 0
+    width: pyenum.WRAP
     height: pysize.button_height
     radius: pysize.button_radius
     border.width: pysize.border_width_m
 //    border.width: pressed ? 2 : 1
     border.color: hovered ? pycolor.border_active : pycolor.border_default
+    clip: true
 
     readonly property alias textItem: _text
     readonly property alias hovered: _area.containsMouse
@@ -55,7 +56,7 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        if (this.width == 0) {
+        if (this.width == pyenum.WRAP) {
             this.width = Qt.binding(() => {
                 return _text.contentWidth * 1.5
             })
