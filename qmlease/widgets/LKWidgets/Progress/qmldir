@@ -1,3 +1,4 @@
 module LKWidgets.Progress
 
 LKCircleProgress    1.0     LKCircleProgress.qml
+LKProgress          1.0     LKProgress1.qml

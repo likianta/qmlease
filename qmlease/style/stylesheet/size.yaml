@@ -10,6 +10,7 @@ margin_m: 4
 margin_l: 8
 margin_xl: 12
 
+padding_xs: 1
 padding_s: 2
 padding_m: 4
 padding_l: 8
@@ -74,6 +75,7 @@ popup_height: 60
 progress_width: '$bar_width'
 progress_height: 4
 progress_radius: 2  # progress_height / 2
+progress_inner_height: 2
 
 row_height_m: 32
 
