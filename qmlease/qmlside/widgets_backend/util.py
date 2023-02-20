@@ -1,4 +1,5 @@
 import typing as t
+from os import name as os_name
 
 from .__ext__ import QObject
 from .__ext__ import slot
@@ -133,6 +134,15 @@ class Util(QObject):
                     return filedialog.asksaveasfilename(**kwargs)
                 else:
                     raise ValueError('Cannot save folder!')
+    
+    @slot(str, result=str)
+    def normalize_path(self, path: str) -> str:
+        if path.startswith('file:///'):
+            if os_name == 'nt':
+                path = path[8:]
+            else:
+                path = path[7:]
+        return path
 
 
 util = Util()
