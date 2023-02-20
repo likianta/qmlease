@@ -63,74 +63,93 @@ LKRectangle {
         // TODO: font binds to _input.font
     }
 
-    TextInput {
-        id: _input
-        enabled: root.editable
+    Item {
+        id: _input_container
         anchors.fill: _placeholder
         clip: true
-        color: root.textColor
-        font.family: pyfont.font_default
-        font.pixelSize: pyfont.size_m
-        selectByMouse: true
 
-        onActiveFocusChanged: {
-            if (this.activeFocus) {
-                root.clicked()
+        TextInput {
+            id: _input
+            enabled: root.editable
+            anchors {
+                left: parent.left
+                right: _clear_button.left
+                top: parent.top
+                bottom: parent.bottom
+                leftMargin: 4
             }
-        }
+            clip: true
+            color: root.textColor
+            font.family: pyfont.font_default
+            font.pixelSize: pyfont.size_m
+            selectByMouse: true
 
-        onTextEdited: {
-            root.textEdited(this.text)
-        }
+            onActiveFocusChanged: {
+                if (this.activeFocus) {
+                    root.clicked()
+                }
+            }
 
-        onEditingFinished: {
-            root.submit(this.text)
-        }
+            onTextEdited: {
+                root.textEdited(this.text)
+            }
 
-        Component {
-            id: _custom_cursor
+            onAccepted: {
+                root.submit(this.text)
+            }
 
-            Rectangle {
-                // https://stackoverflow.com/questions/58719796/qml-change
-                //  -cursor-color-in-textfield
-                id: _custom_cursor_rect
-                visible: false
-                width: _input.cursorRectangle.width
-                height: _input.height - 2
-                color: root.cursorColor
+            Component {
+                id: _custom_cursor
 
-                SequentialAnimation {
-                    loops: Animation.Infinite
-                    running: _input.cursorVisible
+                Rectangle {
+                    // https://stackoverflow.com/questions/58719796/qml-change
+                    //  -cursor-color-in-textfield
+                    id: _custom_cursor_rect
+                    visible: false
+                    width: _input.cursorRectangle.width
+                    height: _input.height - 2
+                    color: root.cursorColor
 
-                    PropertyAction {
-                        target: _custom_cursor_rect
-                        property: 'visible'
-                        value: true
+                    SequentialAnimation {
+                        loops: Animation.Infinite
+                        running: _input.cursorVisible
+
+                        PropertyAction {
+                            target: _custom_cursor_rect
+                            property: 'visible'
+                            value: true
+                        }
+
+                        PauseAnimation {
+                            duration: 600
+                        }
+
+                        PropertyAction {
+                            target: _custom_cursor_rect
+                            property: 'visible'
+                            value: false
+                        }
+
+                        PauseAnimation {
+                            duration: 600
+                        }
+
+                        onStopped: {
+                            _custom_cursor_rect.visible = false
+                        }
                     }
+                }
+            }
 
-                    PauseAnimation {
-                        duration: 600
-                    }
-
-                    PropertyAction {
-                        target: _custom_cursor_rect
-                        property: 'visible'
-                        value: false
-                    }
-
-                    PauseAnimation {
-                        duration: 600
-                    }
-
-                    onStopped: {
-                        _custom_cursor_rect.visible = false
-                    }
+            Component.onCompleted: {
+                if (root.cursorColor != pyenum.DEFAULT) {
+                    _input.cursorDelegate = _custom_cursor
                 }
             }
         }
 
         LKIconButton {
+            id: _clear_button
             visible: root.showClearButton
             anchors {
                 right: parent.right
@@ -138,7 +157,7 @@ LKRectangle {
                 margins: 4
             }
             halo: true
-            opacity: parent.displayText ? 1 : 0
+            opacity: _input.displayText ? 1 : 0
             source: pyassets.get('lkwidgets', 'Assets/close-line.svg')
 
             onClicked: {
@@ -149,12 +168,6 @@ LKRectangle {
                 NumberAnimation {
                     duration: 200
                 }
-            }
-        }
-
-        Component.onCompleted: {
-            if (root.cursorColor != pyenum.DEFAULT) {
-                _input.cursorDelegate = _custom_cursor
             }
         }
     }
