@@ -78,7 +78,7 @@ LKRectangle {
                 bottom: parent.bottom
                 leftMargin: 4
             }
-            clip: true
+//            clip: true
             color: root.textColor
             font.family: pyfont.font_default
             font.pixelSize: pyfont.size_m

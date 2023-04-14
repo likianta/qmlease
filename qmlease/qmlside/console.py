@@ -87,7 +87,7 @@ class Console(QObject):
         line_number = 0 if ctx.line == -1 else ctx.line + start_line_no
         source = f'{file_path}:{line_number}'
         func_name = ctx.function
-        logger_markup = ':s2'
+        logger_markup = ':s1'
         
         # optimize msg
         if mode in (QtWarningMsg, QtCriticalMsg):
@@ -99,7 +99,7 @@ class Console(QObject):
                 # the main message.
                 msg = msg[len(ctx.file):].split(': ', 1)[1]
             msg += '!'
-            logger_markup = ':v4s2'
+            logger_markup = ':v4s1'
 
         msg = msg.replace('[', '\\[')
         if SHOW_FUNCNAME and func_name:

@@ -37,7 +37,7 @@ class DynamicPropMeta(type(QObjectBase)):
                 
                 dict_[k] = v.default
                 if v.notify:
-                    print('auto create signal', f'{k}_changed')
+                    print('auto create signal', f'{k}_changed', ':v')
                     dict_[f'{k}_changed'] = Signal(v.type_)
                 
                 # create slot functions for qml getter & setter
