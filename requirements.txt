@@ -1,7 +1,7 @@
 argsense >= 0.5.2
 lambda-ex >= 1.1.0
-lk-logger >= 5.4.7
-lk-utils >= 2.5.3
+lk-logger >= 5.4.8
+lk-utils >= 2.5.5
 # pyside6
 qtpy
 typing-extensions
