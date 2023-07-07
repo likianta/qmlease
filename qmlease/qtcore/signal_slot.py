@@ -12,7 +12,7 @@ from typing import cast
 import typing_extensions as t1
 from qtpy.QtCore import QObject
 from qtpy.QtCore import Signal as OriginSignal
-from qtpy.QtCore import Slot
+from qtpy.QtCore import Slot as OriginSlot
 from qtpy.QtQml import QJSValue
 
 from .._env import QT_API
@@ -49,14 +49,14 @@ def slot(*argtypes: T.ArgType0,
         nonlocal argtypes, name, result
         if QT_API == 'pyqt5' and result is None:
             __hidden_ref.append(
-                Slot(*argtypes,
-                     name=(name or func.__name__))(func)
+                OriginSlot(*argtypes,
+                           name=(name or func.__name__))(func)
             )
         else:
             __hidden_ref.append(
-                Slot(*argtypes,
-                     name=(name or func.__name__),
-                     result=result)(func)
+                OriginSlot(*argtypes,
+                           name=(name or func.__name__),
+                           result=result)(func)
             )
         
         @wraps(func)

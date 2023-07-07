@@ -83,7 +83,7 @@ class Application(QApplication):
                 this directory should include at least one sub folder, which is
                 available for qml to import.
                 the sub folders should contain one 'qmldir' file, and multiple
-                '*.qml' files. see example of './widgets_lib'.
+                '*.qml' files. see example of '../widgets'.
         """
         if not exists(qmldir):
             print(':v3p', 'the qmldir not exists! it may cause a "xxx is not '

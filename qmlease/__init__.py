@@ -26,4 +26,4 @@ from .qtcore import signal
 from .qtcore import slot
 from .style import pystyle
 
-__version__ = '3.0.3'
+__version__ = '3.0.4'

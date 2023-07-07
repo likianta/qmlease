@@ -9,10 +9,6 @@ usage:
 from argsense import cli
 
 
-# from argsense import config
-# config.CONSOLE_WIDTH = 120
-
-
 @cli.cmd()
 def run(view: str, debug=False):
     """
