@@ -20,8 +20,8 @@ lk-logger = "^5.4.8"
 lk-utils = "^2.5.5"
 qtpy = "^2.3.0"
 typing-extensions = "*"
-pyside6 = { version = "*", optional = true }
-pyside2 = { version = "*", optional = true }
+pyside6 = { version = "^6.4,<6.5", python = ">=3.8,<3.12", optional = true }
+pyside2 = { version = "^5.15", python = ">=3.8,<3.11", optional = true }
 
 [tool.poetry.extras]
 qt6 = ["pyside6"]  # pip install qmlease[qt6]
