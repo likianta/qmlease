@@ -3,6 +3,7 @@ module LKWidgets
 LKCircle        1.0     LKCircle.qml
 LKField         1.0     LKField.qml
 LKFileDrop      1.0     LKFileDrop.qml
+LKGhostBorder   1.0     LKGhostBorder.qml
 LKIcon          1.0     LKIcon.qml
 LKImage         1.0     LKImage.qml
 LKInput         1.0     LKInput.qml
@@ -28,10 +29,10 @@ LKGhostButton   1.0     Buttons/LKGhostButton.qml
 LKIconButton    1.0     Buttons/LKIconButton.qml
 LKRadioBox      1.0     Buttons/LKRadioBox.qml
 
-LKColumn        1.0     Containers/LKColumn.qml
-LKHBox          1.0     Containers/LKHBox.qml
-LKListView      1.0     Containers/LKListView.qml
-LKRow           1.0     Containers/LKRow.qml
+LKColumn        1.0     Layouts/LKColumn.qml
+LKHBox          1.0     Layouts/LKHBox.qml
+LKListView      1.0     Layouts/LKListView.qml
+LKRow           1.0     Layouts/LKRow.qml
 
 LKFrame         1.0     Panels/LKFrame.qml
 LKWindow        1.0     Panels/LKWindow.qml

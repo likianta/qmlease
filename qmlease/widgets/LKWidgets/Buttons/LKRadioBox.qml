@@ -6,23 +6,6 @@ RadioButton {
     id: root
     height: pysize.bar_height
 
-//    QtObject {
-//        id: _color_group
-//
-//        property string checked
-//        property string default_
-//        property string disabled
-//        property string hovered
-//        property string pressed
-//        property string selected
-//
-////        Component.onCompleted: {
-////            if (!this.checked) {
-////                this.checked = Qt.binding(() => this.pressed)
-////            }
-////        }
-//    }
-
     property string indicatorBgColor: 'transparent'
     property string indicatorBorderColor: pycolor.border_default
     property string indicatorFgColor: pycolor.text_default
@@ -44,12 +27,12 @@ RadioButton {
     indicator: LKRectangle {
         anchors {
             left: parent.left
-            top: parent.top
-            bottom: parent.bottom
+            verticalCenter: parent.verticalCenter
             margins: 2
         }
-        width: height
-        radius: height / 2
+        width: radius * 2
+        height: radius * 2
+        radius: pysize.indicator_radius
         border.width: 1
         border.color: root.checked ?
             root.indicatorFgColor : root.indicatorBorderColor
