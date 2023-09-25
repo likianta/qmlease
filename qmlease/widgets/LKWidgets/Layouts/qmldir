@@ -1,4 +1,4 @@
-module LKWidgets.Containers
+module LKWidgets.Layouts
 
 LKColumn    1.0     LKColumn.qml
 LKHBox      1.0     LKHBox.qml
