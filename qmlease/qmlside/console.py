@@ -51,14 +51,34 @@ class Console(QObject):
     
     # noinspection PyUnresolvedReferences
     def _handle_message(
-            self,
-            mode: QtMsgType,
-            ctx: QMessageLogContext,
-            msg: str,
+        self,
+        mode: QtMsgType,
+        ctx: QMessageLogContext,
+        msg: str,
     ) -> None:
-        # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # for debug
-        
-        # # TEST
+        """
+        params:
+            mode:
+                QtMsgType.QtCriticalMsg
+                QtMsgType.QtDebugMsg
+                QtMsgType.QtFatalMsg
+                QtMsgType.QtInfoMsg
+                QtMsgType.QtSystemMsg
+                QtMsgType.QtWarningMsg
+            ctx:
+                main properties:
+                    ctx.file:
+                        usual form: 'file:///<abspath>'
+                        special case: 'eval code'
+                    ctx.line: int, -1 for unknown line number.
+                    ctx.function: func name or None.
+            msg:
+                special case 1:
+                    `<ctx.file>:<ctx.line>:<column>: ...`
+                special case 2:  TODO: explain this case
+                    '[file_id:<id>]...'
+        """
+        # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # TEST
         # if ctx.file == 'eval code':
         #     raise Exception(msg)
         
@@ -70,17 +90,41 @@ class Console(QObject):
         else:
             start_line_no = 0
             if ctx.file:
+                # strip `<file>:<row>:<col>` prefix from `msg`.
+                if msg.startswith(ctx.file):
+                    msg = msg.replace(ctx.file, '', 1)
+                    assert (m := re.match(r':\d+:\d+: ', msg)), msg
+                    msg = msg[len(m.group()):]
+                
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
                 if IGNORE_UNPLEASENT_WARNINGS:
-                    if (
-                            not IS_WINDOWS and
+                    if not IS_WINDOWS:
+                        if (
                             'qrc:/qt-project.org/imports/QtQuick/Controls'
                             '/macOS/' in file_path
-                    ):
-                        # https://forum.qt.io/topic/131823/lots-of-typeerrors-in
-                        # -console-when-migrating-to-qt6/2
-                        return
+                        ):
+                            # https://forum.qt.io/topic/131823/lots-of
+                            # -typeerrors-in-console-when-migrating-to-qt6/2
+                            return
+                        if (
+                            'The current style does not support customization '
+                            'of this control' in msg
+                        ):
+                            # pyside6 v6.6+, recorded at 2024-01-29
+                            # the whole warning is (e.g.):
+                            #   msg = file:///Users/Likianta/Desktop/workspace
+                            #   /dev_master_likianta/qmlease/qmlease/widgets
+                            #   /LKWidgets/Buttons/LKIconButton.qml:42:21: QML
+                            #   QQuickItem: The current style does not support
+                            #   customization of this control (property:
+                            #   "background" item: QQuickItem(0x600002405c00,
+                            #   parent=0x0, geometry=0,0 0x0)). Please
+                            #   customize a non-native style (such as Basic,
+                            #   Fusion, Material, etc). For more information,
+                            #   see: https://doc.qt.io/qt-6/qtquickcontrols2
+                            #   -customize.html#customization-reference
+                            return
             else:
                 file_path = '<unknown>'
         
@@ -100,7 +144,7 @@ class Console(QObject):
                 msg = msg[len(ctx.file):].split(': ', 1)[1]
             msg += '!'
             logger_markup = ':v4s1'
-
+        
         msg = msg.replace('[', '\\[')
         if SHOW_FUNCNAME and func_name:
             print(source, ctx.function, msg, logger_markup)
