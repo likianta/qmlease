@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qmlease"
-version = "3.1.0a18"
+version = "3.1.0a19"
 homepage = "https://github.com/likianta/qmlease"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 readme = "README.md"
@@ -12,15 +12,22 @@ python = "^3.8"
 argsense = "^0.5.6"
 lk-logger = "^5.6.4"
 # lk-utils = "^2.7.2"
-lk-utils = { version = "^2.9.0a0", source = "likianta-hosted" }
+lk-utils = { version = "^2.9.0b1", source = "likianta-hosted" }
 pyside2 = { version = "^5.15", python = ">=3.8,<3.11", optional = true }
-pyside6 = { version = "^6.4,<6.5", python = ">=3.8,<3.12", optional = true }
+pyside6 = [
+    { version = ">=6.4.3,<6.5.0", python = ">=3.8,<3.12" },
+    { version = "^6.6.1", python = "==3.12" },  # FIXME
+]
 qtpy = "^2.3.0"
 typing-extensions = "*"
-watchdog = "*"
+# FIXME: watchdog doesn't support python 3.12. use another library instead?
+watchdog = { version = "^3.0.0", python = ">=3.8,<3.12" }
 
 [tool.poetry.group.dev.dependencies]
-pyside6 = { version = "^6.4,<6.5", python = ">=3.8,<3.12" }
+pyside6 = [
+    { version = ">=6.4.3,<6.5.0", python = ">=3.8,<3.12" },
+    { version = "^6.6.1", python = "==3.12" },
+]
 
 [tool.poetry.extras]
 qt6 = ["pyside6"]  # pip install qmlease[qt6]

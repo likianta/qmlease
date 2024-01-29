@@ -1,5 +1,4 @@
 import os
-from importlib.util import find_spec
 
 
 def _find_qt_api() -> str:
@@ -17,8 +16,17 @@ def _find_qt_api() -> str:
             'PyQt5'       : 'pyqt5',
             'pyside6_lite': 'pyside6_lite'
         }.items():
-            if find_spec(pkg):
-                print(':v2', f'auto detected qt api: {api}')
+            try:
+                m = __import__(pkg)
+            except ModuleNotFoundError:
+                continue
+            else:
+                print(
+                    ':v2',
+                    'auto detected qt api: {} ({})'.format(
+                        api, getattr(m, '__version__', 'version unknown')
+                    )
+                )
                 os.environ['QT_API'] = api
                 break
         else:
