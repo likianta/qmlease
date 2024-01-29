@@ -118,7 +118,7 @@ class Application(QApplication):
     
     # -------------------------------------------------------------------------
     
-    def run(self, qml_file: str, debug=False) -> None:
+    def run(self, qml_file: str, debug: bool = False) -> None:
         self._register.freeze()
         if debug:
             from ..qmlside import HotReloader
@@ -161,7 +161,7 @@ class Application(QApplication):
         from qtpy.QtWidgets import QSplashScreen, QWidget
         
         pixmap = QPixmap(file)  # noqa
-        splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)
+        splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)  # noqa
         splash.setMask(pixmap.mask())
         
         def on_close():
@@ -203,6 +203,7 @@ class Application(QApplication):
         self._on_exit_funcs.clear()
         print('[red dim]exit application[/]', ':r')
         del self.engine
+        self.engine = QQmlApplicationEngine()
         self._register.release()
 
 

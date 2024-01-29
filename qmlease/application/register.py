@@ -167,6 +167,7 @@ class Register:
     
     def release(self) -> None:
         del self._namespace
+        self._namespace = Namespace(None)
         self.__hidden_ref.clear()
     
     # -------------------------------------------------------------------------

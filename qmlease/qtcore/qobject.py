@@ -98,7 +98,7 @@ class QObject(QObjectBase, metaclass=DynamicPropMeta):
     """
     
     def __init__(self, parent=None):
-        super().__init__()
+        super().__init__(parent)
         self._auto_prop_delegate.self_qobj = self
     
     def __getitem__(self, item: str):
