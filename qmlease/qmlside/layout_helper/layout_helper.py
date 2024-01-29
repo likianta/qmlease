@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing as t
 from functools import partial
 
-from lambda_ex import grafting
+from lk_utils import bind_with
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
@@ -52,7 +52,7 @@ class LayoutHelper(QObject):
         if x := container['alignment']:
             self.auto_align(container, x)
             
-            @grafting(container[another_size_prop + '_changed'].connect)
+            @bind_with(container[another_size_prop + '_changed'].connect)
             def _():
                 self.auto_align(container, x)
         
@@ -60,7 +60,7 @@ class LayoutHelper(QObject):
             self.auto_size_children(container, orientation)  # noqa
             
             # TODO: when children count changed, auto size again.
-            @grafting(container[size_changed].connect)
+            @bind_with(container[size_changed].connect)
             def _():
                 self.auto_size_children(container, orientation)  # noqa
     
@@ -198,6 +198,7 @@ class LayoutHelper(QObject):
     
     # -------------------------------------------------------------------------
     
+    # noinspection PyUnresolvedReferences
     @slot(object, str)
     def auto_align(self, container: QObject, alignment: str):
         """
