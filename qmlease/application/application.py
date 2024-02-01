@@ -1,5 +1,4 @@
-from __future__ import annotations
-
+import os
 import typing as t
 from os.path import exists
 
@@ -22,22 +21,34 @@ class Application(QApplication):
     _on_exit_funcs: t.List[t.Callable]
     _register: Register
     
-    def __init__(self, app_name='QmlEase Demo', **kwargs):
+    def __init__(self, app_name: str = 'QmlEase', **kwargs):
         """
-        Args:
+        params:
             app_name: str
                 set application name.
-                the name can laterly be changed by calling `self.set_app_name`.
+                the name can also be changed by calling `self.set_app_name`.
             kwargs:
-                organization: str[default='dev.likianta.qmlease']
-                    set an organization name, this avoids an error from
+                organization: str. default 'dev.likianta.qmlease'
+                    set an organization name, this avoids an error from \
                     `QtQuick.Dialogs.FileDialog`.
-                    note: what did the error look like?
-                        QML Settings: The following application identifiers
-                        have not been set: QVector("organizationName",
-                        "organizationDomain")
         """
-        super().__init__([])
+        # setup debug config for qmljs
+        # ref: https://marketplace.visualstudio.com/items?itemName=orcun \
+        # -gokbulut.qml-debug
+        if x := os.getenv('QMLEASE_DEBUG_JS'):
+            # the `x` can either be '1' or a series of comma-separated \
+            # options e.g. 'host:127.0.0.1,port:1234,block,services \
+            # :DebugMessages'. if '1' is given, will use default options.
+            if x == '1':
+                options = ('host:127.0.0.1,port:12150,block,services'
+                           ':DebugMessages,QmlDebugger,V8Debugger')
+            else:
+                assert 'host' in x and 'port' in x, ('insufficient options', x)
+                options = x
+            qargs = f'-qmljsdebugger={options}'
+            super().__init__((app_name, qargs))  # noqa
+        else:
+            super().__init__()
         
         self.setApplicationName(app_name)
         self.setOrganizationName(kwargs.get(
@@ -118,14 +129,14 @@ class Application(QApplication):
     
     # -------------------------------------------------------------------------
     
-    def run(self, qml_file: str, debug: bool = False) -> None:
+    def run(self, qmlfile: str, debug: bool = False) -> None:
         self._register.freeze()
         if debug:
             from ..qmlside import HotReloader
             reloader = HotReloader(reload_scheme='clear_cache', app=app)
-            reloader.run(qml_file)
+            reloader.run(qmlfile)
         else:
-            self._run(qml_file)
+            self._run(qmlfile)
     
     def _run(self, qmlfile: str) -> None:
         """
@@ -203,7 +214,7 @@ class Application(QApplication):
         self._on_exit_funcs.clear()
         print('[red dim]exit application[/]', ':r')
         del self.engine
-        self.engine = QQmlApplicationEngine()
+        self.engine = QQmlApplicationEngine()  # noqa
         self._register.release()
 
 
