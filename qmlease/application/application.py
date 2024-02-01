@@ -46,7 +46,8 @@ class Application(QApplication):
                 assert 'host' in x and 'port' in x, ('insufficient options', x)
                 options = x
             qargs = f'-qmljsdebugger={options}'
-            super().__init__((app_name, qargs))  # noqa
+            print(qargs, ':vs')
+            super().__init__([app_name, qargs])  # noqa
         else:
             super().__init__()
         
