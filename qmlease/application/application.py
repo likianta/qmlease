@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import typing as t
 from os.path import exists
+from os import environ
 
 from lk_utils import xpath
 from qtpy.QtGui import QIcon
@@ -13,6 +14,11 @@ from .register import Register
 from .._env import IS_WINDOWS
 from .._env import QT_API
 from ..qtcore import signal
+
+ENV_VAR_PORT = "EasyQmlDebugPort"
+ENV_VAR_HOST = "EasyQmlDebugHost"
+ENV_VAR_BLOCK = "EasyQmlDebugBlock"
+ENV_VAR_SERVICES = "EasyQmlDebugServices"
 
 
 class Application(QApplication):
@@ -37,8 +43,22 @@ class Application(QApplication):
                         have not been set: QVector("organizationName",
                         "organizationDomain")
         """
-        super().__init__([])
-        
+        # setup debug config for qmljs
+        qArgs = ""
+        try:
+            qArgs += "-qmljsdebugger=port:"
+            qArgs += environ[ENV_VAR_PORT]
+            if ENV_VAR_HOST in environ:
+                qArgs += ",host:" + environ[ENV_VAR_HOST]
+            if ENV_VAR_BLOCK in environ:
+                qArgs += ",block"
+            if ENV_VAR_SERVICES in environ:
+                qArgs += ",services:" + environ[ENV_VAR_SERVICES]
+        except KeyError:
+            qArgs = ""
+        # push the debug arguments to the app
+        super().__init__([app_name, qArgs])
+
         self.setApplicationName(app_name)
         self.setOrganizationName(kwargs.get(
             'organization', 'dev.likianta.qmlease'
