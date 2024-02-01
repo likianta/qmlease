@@ -103,12 +103,6 @@ class Register:
                       .format(name, namespace), ':vp')
                 if not self._namespace.contains(namespace):
                     self._namespace.insert(namespace, Namespace())
-                print(
-                    (namespace, name),
-                    self._namespace.contains(namespace),
-                    self._namespace[namespace],
-                    ':v'
-                )
                 self._namespace[namespace].insert(name, qobj)
                 #: B
                 # exec('QmlNamedElement(qname)(QmlSingleton(cls))', {
