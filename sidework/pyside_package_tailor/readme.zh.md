@@ -4,7 +4,7 @@
 
 ```shell
 cd sidework/pyside_package_tailor
-pip install pyside6-essentials -t venv/qt_for_python
+pip install pyside6-essentials==6.4.1 -t venv/qt_for_python
 ```
 
 此时将得到 (示例):

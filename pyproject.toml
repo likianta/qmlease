@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qmlease"
-version = "3.0.5a0"
+version = "3.0.5a4"
 homepage = "https://github.com/likianta/qmlease"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 readme = "README.md"
@@ -9,37 +9,27 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-argsense = "^0.5.6"
+argsense = "^0.5.7"
 lk-logger = "^5.6.4"
-lk-utils = "^2.9.0"
-# lk-utils = { version = "^2.9.0b1", source = "likianta-hosted" }
-pyside2 = { version = "^5.15", python = ">=3.8,<3.11", optional = true }
-pyside6 = [
-    { version = ">=6.4.3,<6.5.0", python = ">=3.8,<3.12" },
-    { version = "^6.6.1", python = "==3.12" },  # FIXME
-]
+lk-utils = "^2.10.0"
+# lk-utils = { version = "^2.9.0b1", source = "likianta-host" }
 qtpy = "^2.3.0"
 typing-extensions = "*"
-# FIXME: watchdog doesn't support python 3.12. use another library instead?
-watchdog = { version = "^3.0.0", python = ">=3.8,<3.12" }
 
 [tool.poetry.group.dev.dependencies]
-pyside6 = [
+# pyside2 = { version = "^5.15", python = ">=3.8,<3.11", optional = true }
+pyside6 = [  # FIXME
     { version = ">=6.4.3,<6.5.0", python = ">=3.8,<3.12" },
-    { version = "^6.6.1", python = "==3.12" },
+    { version = ">=6.6.0,<6.7.0", python = ">=3.12,<3.13" },
 ]
-
-[tool.poetry.extras]
-qt6 = ["pyside6"]  # pip install qmlease[qt6]
-qt5 = ["pyside2"]  # pip install qmlease[qt5]
 
 [[tool.poetry.source]]
 name = "tsinghua"
 url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
-priority = "default"
+priority = "primary"
 
 [[tool.poetry.source]]
-name = "likianta-hosted"
+name = "likianta-host"
 url = "http://likianta.pro:2006/"
 priority = "supplemental"
 
