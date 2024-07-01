@@ -197,16 +197,15 @@ class Console(QObject):
         #         path, style='pretty_relpath'
         #     ), ':lv'
         # )
-        if path_helper.is_external_lib(path):
-            # if path.startswith(_BUILTIN_WIDGETS_DIR):
-            #     return '[qmlease]/widgets/{}'.format(
-            #         relpath(path, _BUILTIN_WIDGETS_DIR)
-            #     )
-            return path_helper.reformat_external_lib_path(
-                path, style='pretty_relpath'
-            )
-        else:
-            return path_helper.relpath(path)
+        return path_helper.get_relpath(path)
+        # if path_helper.is_external_path(path):
+        #     # if path.startswith(_BUILTIN_WIDGETS_DIR):
+        #     #     return '[qmlease]/widgets/{}'.format(
+        #     #         relpath(path, _BUILTIN_WIDGETS_DIR)
+        #     #     )
+        #     return path_helper.get_relpath(path)
+        # else:
+        #     return path_helper.relpath(path)
 
 
 qml_console = Console()
