@@ -93,7 +93,7 @@ class Console(QObject):
                 # strip `<file>:<row>:<col>` prefix from `msg`.
                 if msg.startswith(ctx.file):
                     msg = msg.replace(ctx.file, '', 1)
-                    assert (m := re.match(r':\d+:\d+: ', msg)), msg
+                    assert (m := re.match(r':\d+(?::\d+)?: ', msg)), msg
                     msg = msg[len(m.group()):]
                 
                 file_path = self._normalize_path(ctx.file)
@@ -145,11 +145,12 @@ class Console(QObject):
             msg += '!'
             logger_markup = ':v4s1'
         
-        msg = msg.replace('[', '\\[')
+        # msg = msg.replace('[', '\\[')
         if SHOW_FUNCNAME and func_name:
-            print(source, ctx.function, msg, logger_markup)
+            print('{}  >  {}  >  {}'.format(
+                source, ctx.function, msg), logger_markup)
         else:
-            print(source, msg, logger_markup)
+            print('{}  >  {}'.format(source, msg), logger_markup)
     
     @staticmethod
     def _normalize_path(path: str) -> str:
