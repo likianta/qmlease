@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import typing as t
 from functools import partial
 
@@ -22,9 +20,8 @@ class T:
 
 class LayoutHelper(QObject):
     
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
-        
         # see also `../../style/font.py`.
         font = QFont()
         font.setPixelSize(12)
@@ -34,9 +31,9 @@ class LayoutHelper(QObject):
     
     @slot(object, str)
     def init_view(
-            self,
-            container: QObject,
-            type_: t.Literal['row', 'column']
+        self,
+        container: QObject,
+        type_: t.Literal['row', 'column']
     ) -> None:
         if type_ == 'row':
             orientation = 'h'
@@ -69,18 +66,18 @@ class LayoutHelper(QObject):
     
     # for LKHBox.qml
     @slot(object)
-    def halign_children(self, hbox: QObject):
+    def halign_children(self, hbox: QObject) -> None:
         self._resize_children(hbox, 'h')
         self._align_children(hbox, 'h')
     
     # for LKVBox.qml
     @slot(object)
-    def valign_children(self, vbox: QObject):
+    def valign_children(self, vbox: QObject) -> None:
         self._resize_children(vbox, 'v')
         self._align_children(vbox, 'v')
     
     @staticmethod
-    def _align_children(box: QObject, orientation: T.Orientation):
+    def _align_children(box: QObject, orientation: T.Orientation) -> None:
         children = box.children()
         last = None
         
@@ -114,7 +111,7 @@ class LayoutHelper(QObject):
             last = child
     
     @staticmethod
-    def _resize_children(box: QObject, orientation: T.Orientation):
+    def _resize_children(box: QObject, orientation: T.Orientation) -> None:
         children = box.children()
         
         # stretch items in opposite direction
@@ -124,8 +121,10 @@ class LayoutHelper(QObject):
                 if child.property(prop_r) == 0:
                     qml_eval.bind_prop(child, box, prop_r)
         
-        if (orientation == 'h' and box.property('vfill')) or \
-                (orientation == 'v' and box.property('hfill')):
+        if (
+            (orientation == 'h' and box.property('vfill')) or
+            (orientation == 'v' and box.property('hfill'))
+        ):
             rstretch()
         
         # ---------------------------------------------------------------------
@@ -136,7 +135,7 @@ class LayoutHelper(QObject):
         
         elastic_items: dict[int, float] = {}  # dict[int index, float ratio]
         stretch_items: dict[int, int] = {}  # dict[int index, int _]
-        #   note: stretch_items.values() are useless (they are all zeros). it
+        #   note: stretch_items.values() are useless (they are all zeros). it -
         #   is made just for keeping the same form with elastic_items.
         
         claimed_size = 0
@@ -158,9 +157,9 @@ class LayoutHelper(QObject):
         
         def get_total_available_size_for_children() -> int:
             return (
-                    box.property(prop) -
-                    box.property('padding') * 2 -
-                    box.property('spacing') * (len(children) - 1)
+                box.property(prop) -
+                box.property('padding') * 2 -
+                box.property('spacing') * (len(children) - 1)
             )
         
         total_spare_size = get_total_available_size_for_children()
@@ -171,8 +170,8 @@ class LayoutHelper(QObject):
             for idx, item in enumerate(children):
                 if idx in elastic_items:
                     item.setProperty(prop, 0)
-                # note: no need to check if idx in stretch_items, because their
-                # size is already 0.
+                # note: no need to check if idx in stretch_items, because -
+                # their size is already 0.
             return
         
         # allocate elastic items
@@ -200,7 +199,7 @@ class LayoutHelper(QObject):
     
     # noinspection PyUnresolvedReferences
     @slot(object, str)
-    def auto_align(self, container: QObject, alignment: str):
+    def auto_align(self, container: QObject, alignment: str) -> None:
         """
         args:
             alignment: accept multiple options, separated by comma (no space
@@ -274,9 +273,9 @@ class LayoutHelper(QObject):
     
     @slot(object, str, result=bool)
     def auto_size_children(
-            self,
-            container: QObject,
-            orientation: T.Orientation
+        self,
+        container: QObject,
+        orientation: T.Orientation
     ) -> bool:
         """
         size policy:
@@ -294,8 +293,8 @@ class LayoutHelper(QObject):
             auto_pack
         
         return: is dynamical binding effective?
-            True means whenever container's size changed, this method should be
-            called again.
+            True means whenever container's size changed, this method should -
+            be called again.
         """
         prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
         # if container.property(prop_name) <= 0: return False
@@ -319,13 +318,13 @@ class LayoutHelper(QObject):
                 """
                 why `size == -1`?
                     this is a workaround.
-                    for some widgets, their size default is 0, and they will
-                    resize themselves to a proper width in their `onCompleted`
+                    for some widgets, their size default is 0, and they will -
+                    resize themselves to a proper width in their `onCompleted` -
                     stage (based on their final content length).
-                    to avoid triggering their auto resize policy, we cannot
-                    give them zero at the start. so we have to seek a solution
+                    to avoid triggering their auto resize policy, we cannot -
+                    give them zero at the start. so we have to seek a solution -
                     like this.
-                    i'm diggering qml mechanism, maybe we can find a better
+                    i'm diggering qml mechanism, maybe we can find a better -
                     solution in future.
                 """
                 stretch_items[idx] = 0
@@ -362,16 +361,16 @@ class LayoutHelper(QObject):
         return True
     
     def _auto_size_children(
-            self,
-            container: QObject,
-            orientation: T.Orientation,
-            claimed_size: int,
-            elastic_items: dict[int, float],
-            stretch_items: dict[int, int]
+        self,
+        container: QObject,
+        orientation: T.Orientation,
+        claimed_size: int,
+        elastic_items: t.Dict[int, float],
+        stretch_items: t.Dict[int, int],
     ) -> None:
         """
-        note: param `stretch_items`.values() are useless (they are all zero), 
-            it is made just for keeping same type form with `elastic_items`.
+        note: param `stretch_items`.values() are useless (they are all zero), -
+        it is made just for keeping same type form with `elastic_items`.
         """
         prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
         
@@ -387,8 +386,8 @@ class LayoutHelper(QObject):
             for idx, item in enumerate(children):
                 if idx in elastic_items:
                     item.setProperty(prop_name, 0)
-                # note: no need to check if idx in stretch_items, because their
-                # size is already 0.
+                # note: no need to check if idx in stretch_items, because -
+                # their size is already 0.
             return
         
         # allocate elastic items
@@ -414,9 +413,9 @@ class LayoutHelper(QObject):
     
     @staticmethod
     def _get_total_available_size_for_children(
-            item: QObject,
-            children_count: int,
-            orientation: T.Orientation
+        item: QObject,
+        children_count: int,
+        orientation: T.Orientation
     ) -> int:
         # print(':lp', {p: item.property(p) for p in (
         #     'width', 'height', 'spacing', 'padding',
@@ -424,25 +423,25 @@ class LayoutHelper(QObject):
         # )})
         if orientation in ('h', 'horizontal'):
             return (
-                    item.property('width')
-                    - item.property('leftPadding')
-                    - item.property('rightPadding')
-                    - item.property('spacing') * (children_count - 1)
+                item.property('width')
+                - item.property('leftPadding')
+                - item.property('rightPadding')
+                - item.property('spacing') * (children_count - 1)
             )
         else:
             return (
-                    item.property('height')
-                    - item.property('topPadding')
-                    - item.property('bottomPadding')
-                    - item.property('spacing') * (children_count - 1)
+                item.property('height')
+                - item.property('topPadding')
+                - item.property('bottomPadding')
+                - item.property('spacing') * (children_count - 1)
             )
     
     @slot('any', result=int)
     @slot('any', object, result=int)
     def calc_content_width(
-            self,
-            text: str | list[str],
-            text_item: QObject = None,
+        self,
+        text: t.Union[str, t.List[str]],
+        text_item: QObject = None,
     ) -> int:
         if text == '':
             return 0
@@ -461,9 +460,11 @@ class LayoutHelper(QObject):
     @slot(list, int, result=tuple)
     @slot(list, int, int, result=tuple)
     def calc_text_block_size(  # DELETE
-            self, lines: list[str],
-            char_width=10, line_height=20
-    ):
+        self,
+        lines: t.List[str],
+        char_width: int = 10,
+        line_height: int = 20,
+    ) -> t.Tuple[int, int]:
         lines = tuple(map(str, lines))
         # OPTM: use different char_width for non-ascii characters.
         width = max(map(len, lines)) * char_width
@@ -487,7 +488,7 @@ class LayoutHelper(QObject):
         """
         return: 0 for row, 1 for column.
         help: if container is row, it has property 'effectiveLayoutDirection'
-            (the value is Qt.LeftToRight(=0) or Qt.RightToLeft(=1)), while
+            (the value is Qt.LeftToRight(=0) or Qt.RightToLeft(=1)), while -
             column doesn't have this property(=None).
         """
         if container.property('effectiveLayoutDirection') is not None:

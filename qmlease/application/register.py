@@ -89,7 +89,7 @@ class Register:
                     }
                 }
         """
-        # print(':v', name, qobj, isinstance(qobj, QObject))
+        # print(':v', name, qobj, type(qobj), isinstance(qobj, QObject))
         
         if isinstance(qobj, QObject):
             name = name or _pascal_2_snake_case(qobj.__class__.__name__)
