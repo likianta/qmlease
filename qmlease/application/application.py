@@ -21,7 +21,7 @@ class Application(QApplication):
     _on_exit_funcs: t.List[t.Callable]
     _register: Register
     
-    def __init__(self, app_name: str = 'QmlEase', **kwargs):
+    def __init__(self, app_name: str = 'QmlEase', **kwargs) -> None:
         """
         params:
             app_name: str
@@ -176,7 +176,7 @@ class Application(QApplication):
         splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)  # noqa
         splash.setMask(pixmap.mask())
         
-        def on_close():
+        def on_close() -> None:
             nonlocal splash
             print(':v', 'close splash screen')
             splash.hide()
@@ -219,4 +219,29 @@ class Application(QApplication):
         self._register.release()
 
 
-app = Application()
+if _inst := QApplication.instance():
+    # workaround
+    #   when qmlease is mixed using with streamlit framework, for example the -
+    #   developer wants both a native ui and web ui for different purposes. -
+    #   this workaround helps to avoid streamlit rerun crashed by QApplication -
+    #   singleton.
+    # original error message:
+    #   RuntimeError: Please destroy the Application singleton before creating -
+    #   a new Application instance.
+    # related links:
+    #   https://stackoverflow.com/questions/53387733/how-to-get-the-current -
+    #   -qapplication
+    # print(
+    #     _inst,
+    #     _inst.__class__,  # <class 'qmlease.application.application.Application'>
+    #     _inst.__class__.__qualname__,  # 'Application'
+    #     _inst.__module__,  # 'qmlease.application.application'
+    #     isinstance(_inst, Application),  # False (why?)
+    #     isinstance(_inst, QApplication),  # True
+    #     ':vl'
+    # )
+    # assert _inst.__class__ is Application
+    assert _inst.__module__ == 'qmlease.application.application'
+    app = _inst
+else:
+    app = Application()
