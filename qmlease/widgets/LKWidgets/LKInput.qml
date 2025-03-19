@@ -24,7 +24,7 @@ LKRectangle {
     property bool   editable: true
     property alias  horizontalAlignment: _input.horizontalAlignment
     property alias  inputMask: _input.inputMask
-    property int    padding: pysize.padding_l
+    property int    padding: pysize.padding_m
     property bool   pressEscToLostFocus: false  // TODO
     property bool   showClearButton: false
     property bool   showIndicator: false
@@ -45,27 +45,31 @@ LKRectangle {
         id: _cursor_shape_patch
         visible: root.useIBeamCursor
         anchors.fill: parent
-        acceptedButtons: Qt.NoButton
+        // acceptedButtons: Qt.NoButton
         cursorShape: Qt.IBeamCursor
+        onClicked: {
+            _input.forceActiveFocus()
+        }
     }
 
     LKText {
         id: _placeholder
         visible: _placeholder.text && !_input.text
         anchors {
-            left: parent.left
-            right: parent.right
-            leftMargin: root.padding
-            rightMargin: root.padding
-            verticalCenter: parent.verticalCenter
+            fill: parent
         }
         color: pycolor.text_hint
+        leftPadding: root.padding
+        rightPadding: root.padding
+        verticalAlignment: Text.AlignVCenter
         // TODO: font binds to _input.font
     }
 
     Item {
         id: _input_container
-        anchors.fill: _placeholder
+        anchors {
+            fill: parent
+        }
         clip: true
 
         TextInput {
@@ -74,14 +78,17 @@ LKRectangle {
             anchors {
                 left: parent.left
                 right: _clear_button.left
-                top: parent.top
-                bottom: parent.bottom
+                // top: parent.top
+                // bottom: parent.bottom
                 leftMargin: 4
+                verticalCenter: parent.verticalCenter
             }
 //            clip: true
             color: root.textColor
             font.family: pyfont.font_default
             font.pixelSize: pyfont.size_m
+            leftPadding: root.padding
+            rightPadding: root.padding
             selectByMouse: true
 
             onActiveFocusChanged: {
@@ -159,6 +166,7 @@ LKRectangle {
             halo: true
             opacity: _input.displayText ? 1 : 0
             source: pyassets.get('lkwidgets', 'Assets/close-line.svg')
+            size: visible ? pysize.icon_size : 0
 
             onClicked: {
                 _input.text = ''
@@ -178,7 +186,7 @@ LKRectangle {
         anchors.bottom: parent.bottom
 //        anchors.bottomMargin: 1
         anchors.horizontalCenter: parent.horizontalCenter
-        width: parent.width - 2
+        width: visible ? parent.width - 2 : 0
         height: _input.activeFocus ? 2 : 0
         radius: parent.radius
         color: root.bottomColorHighlight

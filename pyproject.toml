@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "qmlease"
-version = "3.0.5a9"
+version = "3.0.5a11"
 homepage = "https://github.com/likianta/qmlease"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 readme = "README.md"
@@ -9,11 +9,11 @@ license = "MIT"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-argsense = "^0.5.7"
+argsense = "*"
 # lk-logger = "^5.6.4"
-lk-logger = { version = "^6.0.0a1", source = "likianta-host" }
-lk-utils = "^2.10.8"
-# lk-utils = { version = "^2.9.0b1", source = "likianta-host" }
+lk-logger = { version = "^6.0.0a6", source = "likianta-host" }
+lk-utils = "^3.1.1"
+# lk-utils = { version = ">=2.10.9b1,<4.0.0", source = "likianta-host" }
 qtpy = "^2.3.0"
 typing-extensions = "*"
 
@@ -32,7 +32,7 @@ priority = "primary"
 
 [[tool.poetry.source]]
 name = "likianta-host"
-url = "http://likianta.pro:2006/"
+url = "http://likianta.pro:2131/"
 priority = "supplemental"
 
 [build-system]

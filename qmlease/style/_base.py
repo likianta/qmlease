@@ -1,6 +1,6 @@
 import typing as t
 
-from lk_utils import loads
+from lk_utils import load
 from qtpy.QtQml import QQmlPropertyMap
 
 
@@ -21,7 +21,7 @@ class Base(QQmlPropertyMap):
     # -------------------------------------------------------------------------
     
     def update_from_file(self, file: str) -> None:
-        self.update(loads(file))
+        self.update(load(file))
     
     def update(self, data: dict) -> None:
         plain_data = self._resolve_references(data)
