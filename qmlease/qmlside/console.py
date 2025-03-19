@@ -1,3 +1,4 @@
+import os
 import re
 
 from lk_logger.path_helper import path_helper
@@ -18,8 +19,8 @@ else:
     from qtpy.QtCore import QtCriticalMsg  # noqa
     from qtpy.QtCore import QtWarningMsg  # noqa
 
-IGNORE_UNPLEASENT_WARNINGS = True
 SHOW_FUNCNAME = False
+SHOW_UNPLEASENT_WARNINGS = os.getenv('QMLEASE_DEBUG', '0') == '1'
 _BUILTIN_WIDGETS_DIR = xpath('../widgets', True)
 
 
@@ -98,25 +99,7 @@ class Console(QObject):
                 
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
-                if IGNORE_UNPLEASENT_WARNINGS:
-                    if (
-                        'The current style does not support customization of '
-                        'this control' in msg
-                    ):
-                        # pyside6 v6.6+, recorded at 2024-01-29
-                        # the whole warning is (e.g.):
-                        #   msg = file:///Users/Likianta/Desktop/workspace
-                        #   /dev_master_likianta/qmlease/qmlease/widgets
-                        #   /LKWidgets/Buttons/LKIconButton.qml:42:21: QML
-                        #   QQuickItem: The current style does not support
-                        #   customization of this control (property:
-                        #   "background" item: QQuickItem(0x600002405c00,
-                        #   parent=0x0, geometry=0,0 0x0)). Please
-                        #   customize a non-native style (such as Basic,
-                        #   Fusion, Material, etc). For more information,
-                        #   see: https://doc.qt.io/qt-6/qtquickcontrols2
-                        #   -customize.html#customization-reference
-                        return
+                if not SHOW_UNPLEASENT_WARNINGS:
                     if not IS_WINDOWS:
                         if (
                             'qrc:/qt-project.org/imports/QtQuick/Controls'
