@@ -3,13 +3,19 @@ import LKWidgets
 
 LKWindow {
     id: root
+    visible: false
+    width: _loader.width
+    height: _loader.height
 
     property alias source: _loader.source
     signal reloadTriggered()
 
     Loader {
         id: _loader
-        anchors.fill: parent
+        onLoaded: {
+            this.width = this.item.width
+            this.height = this.item.height
+        }
     }
 
     LKGhostButton {
@@ -24,5 +30,6 @@ LKWindow {
 
     Component.onCompleted: {
         py.qmlease.reloader.init_reloader_window(this)
+        this.visible = true
     }
 }

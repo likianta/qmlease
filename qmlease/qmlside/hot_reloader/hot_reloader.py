@@ -32,8 +32,6 @@ class HotReloader(QObject):
     @slot(object)
     def init_reloader_window(self, window: QObject) -> None:
         window['title'] = self.title
-        window['width'] = 840
-        window['height'] = 960
         window['source'] = 'file:///' + self._target_file
         
         @bind_signal(window.reloadTriggered)
@@ -50,7 +48,7 @@ class HotReloader(QObject):
             # window['source'] = self._target_file
     
     def run(self) -> None:
-        self._app.register(self, 'reloader', 'qmlease')
+        self._app.register(self, 'reloader', 'qmlease', verbose=False)
         #   we can use this in qml with "py.qmlease.reloader.<method>(...)".
         # noinspection PyProtectedMember
         self._app._run(self._get_bootloader_file(self._target_file))
