@@ -6,17 +6,17 @@ import QtQuick.Window 2.15
 
 Window {
     id: root
-    title: "Hot Reloader"
+    title: "QmlEase Reloader"
     flags: Qt.WindowStaysOnTopHint
     color: '#F2F2F2'
     // visible: true
 
+    property alias source: _loader.source
+    signal reloadTriggered()
+
     Loader {
         id: _loader
         anchors.centerIn: parent
-        Component.onCompleted: {
-            py.qmloader.set_loader(this)
-        }
     }
 
     Rectangle {
@@ -38,12 +38,8 @@ Window {
             id: _area
             anchors.fill: parent
             hoverEnabled: true
-            onClicked: py.qmloader.reload()
+            onClicked: root.reloadTriggered()
         }
-
-//        Component.onCompleted: {
-//            this.color = py.qmloader.get_bg_color()
-//        }
     }
 
     function _moveWindowCenter() {
@@ -68,6 +64,7 @@ Window {
 //        const [x, y] = _moveWindowCenter()
         const [x, y] = _moveWindowRightBottom()
         this.visible = true
-        console.log(`HotLoader started! (position at (${x}, ${y}))`)
+        // console.log(`HotLoader started! (position at (${x}, ${y}))`)
+        py.qmlease.reloader.init_reloader_window(this)
     }
 }

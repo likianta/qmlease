@@ -61,7 +61,10 @@ class HotReloader(QObject):
         we must put reloader_file and target_file in the same hard drive. -
         otherwise all relative imports in qml side will be crashed.
         """
-        reloader_file = fs.xpath('_view2.qml')
+        if 'Window {' in fs.load(target_file, 'plain'):
+            reloader_file = fs.xpath('_view.qml')
+        else:
+            reloader_file = fs.xpath('_view2.qml')
         
         if splitdrive(reloader_file)[0] == splitdrive(target_file)[0]:
             # note: check if reloader_file and target_file in the same disk -
