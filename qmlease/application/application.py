@@ -1,8 +1,7 @@
 import os
 import typing as t
-from os.path import exists
 
-from lk_utils import xpath
+from lk_utils import fs
 from qtpy.QtGui import QIcon
 from qtpy.QtQml import QQmlApplicationEngine
 from qtpy.QtQml import QQmlContext
@@ -64,7 +63,7 @@ class Application(QApplication):
         self.register = self._register.register
         
         self._ui_fine_tune()
-        self.register_qmldir(xpath('../widgets'))
+        self.register_qmldir(fs.xpath('../widgets'))
         self.on_exit = super().aboutToQuit  # noqa
     
     def _ui_fine_tune(self) -> None:
@@ -97,7 +96,7 @@ class Application(QApplication):
                 the sub folders should contain one 'qmldir' file, and multiple
                 '*.qml' files. see example of '../widgets'.
         """
-        if not exists(qmldir):
+        if not fs.exist(qmldir):
             print(':v3p', 'the qmldir not exists! it may cause a "xxx is not '
                           'installed" error in qml side.', qmldir)
         self.engine.addImportPath(qmldir)
@@ -108,25 +107,25 @@ class Application(QApplication):
         from ..qmlside import widgets_backend as wb
         from ..style import pystyle
         
-        self.register(pyassets, 'pyassets', 'global')
-        self.register(pybroad, 'pybroad', 'global')
-        self.register(pyenum, 'pyenum', 'global')
-        self.register(pylayout, 'pylayout', 'global')
-        self.register(pyside, 'pyside', 'global')
-        self.register(pystyle, 'pystyle', 'global')
-        self.register(pystyle.color, 'pycolor', 'global')
-        self.register(pystyle.font, 'pyfont', 'global')
-        self.register(pystyle.motion, 'pymotion', 'global')
-        self.register(pystyle.size, 'pysize', 'global')
+        self.register(pyassets, 'pyassets', 'global', verbose=False)
+        self.register(pybroad, 'pybroad', 'global', verbose=False)
+        self.register(pyenum, 'pyenum', 'global', verbose=False)
+        self.register(pylayout, 'pylayout', 'global', verbose=False)
+        self.register(pyside, 'pyside', 'global', verbose=False)
+        self.register(pystyle, 'pystyle', 'global', verbose=False)
+        self.register(pystyle.color, 'pycolor', 'global', verbose=False)
+        self.register(pystyle.font, 'pyfont', 'global', verbose=False)
+        self.register(pystyle.motion, 'pymotion', 'global', verbose=False)
+        self.register(pystyle.size, 'pysize', 'global', verbose=False)
         
-        self.register(wb.ListView(), 'lklistview', 'global')
-        self.register(wb.Progress(), 'lkprogress', 'global')
-        self.register(wb.ScopeEngine(), 'lkscope', 'global')
-        self.register(wb.Slider(), 'lkslider', 'global')
-        self.register(wb.logger, 'lklogger', 'global')
-        self.register(wb.util, 'lkutil', 'global')
+        self.register(wb.ListView(), 'lklistview', 'global', verbose=False)
+        self.register(wb.Progress(), 'lkprogress', 'global', verbose=False)
+        self.register(wb.ScopeEngine(), 'lkscope', 'global', verbose=False)
+        self.register(wb.Slider(), 'lkslider', 'global', verbose=False)
+        self.register(wb.logger, 'lklogger', 'global', verbose=False)
+        self.register(wb.util, 'lkutil', 'global', verbose=False)
         
-        pyassets.add_source(xpath('../widgets/LKWidgets'), 'lkwidgets')
+        pyassets.add_source(fs.xpath('../widgets/LKWidgets'), 'lkwidgets')
     
     # -------------------------------------------------------------------------
     
@@ -134,23 +133,19 @@ class Application(QApplication):
         self._register.freeze()
         if debug:
             from ..qmlside import HotReloader
-            reloader = HotReloader(reload_scheme='clear_cache', app=app)
-            reloader.run(qmlfile)
+            reloader = HotReloader(app, qmlfile)
+            reloader.run()
         else:
             self._run(qmlfile)
     
     def _run(self, qmlfile: str) -> None:
         """
-        note: do not merge this method into `run`, because
+        note: do not merge this method into `run`, because -
         `..qmlside.HotReloader` internally uses this.
         """
         self._register_backend()
-        
-        from lk_utils import normpath
-        self.engine.load('file:///' + normpath(qmlfile, force_abspath=True))
-        
+        self.engine.load('file:///' + fs.abspath(qmlfile))
         self.on_exit.connect(self._exit)
-        
         if QT_API in ('pyside2', 'pyqt5'):
             self.exec_()
         else:
@@ -166,7 +161,7 @@ class Application(QApplication):
     launch = start = open = run
     
     def show_splash_screen(self, file: str) -> None:
-        assert exists(file)
+        assert fs.exist(file)
         
         from qtpy.QtCore import Qt
         from qtpy.QtGui import QPixmap

@@ -36,6 +36,7 @@ class Register:
         qobj: t.Union[QObject, type[QObject]],
         name: str = '',
         namespace: str = '',
+        verbose: bool = True,
     ) -> None:
         """
         register an instance or a subclass of QObject to qml side.
@@ -70,7 +71,7 @@ class Register:
             effects:
                 `aaa` can be directly used as `aaa`.
                 `bbb` can be used as `py.bbb`.
-                `ccc` can be used as `py.my_first_app.ccc`.
+                `ccc` can be used as `py.my_space.ccc`.
                 `DDD` will raise an error, because class type is not allowed to
                     be registered to global namespace.
                 `EEE` will raise an error, because class type is not allowed to
@@ -99,8 +100,6 @@ class Register:
             elif namespace == 'global':
                 self._root.setContextProperty(name, qobj)
             else:
-                print('register singleton instance "{}" to "{}"'
-                      .format(name, namespace), ':vp')
                 if not self._namespace.contains(namespace):
                     self._namespace.insert(namespace, Namespace())
                 self._namespace[namespace].insert(name, qobj)
@@ -119,6 +118,16 @@ class Register:
                 # qmlRegisterSingletonInstance(
                 #     qobj.__class__, namespace, 1, 0, name, qobj
                 # )
+            if verbose:
+                print(
+                    ':rp',
+                    '[dim]registered variant to qml:[/] [cyan]{}[/]'
+                    .format(
+                        name if namespace == '' else
+                        f'py.{name}' if namespace == 'global' else
+                        f'py.{namespace}.{name}'
+                    )
+                )
         
         elif issubclass(qobj, QObject):
             name = name or qobj.__name__
@@ -133,8 +142,6 @@ class Register:
                     'cannot register a class to global namespace!'
                 )
             else:
-                print('register pytype class "{}" to "{}"'
-                      .format(name, namespace), ':vp')
                 if QmlNamedElement:
                     exec('QmlNamedElement(qname)(cls)', {
                         'QML_IMPORT_NAME'         : namespace,
@@ -156,6 +163,12 @@ class Register:
                 else:
                     # noinspection PyTypeChecker
                     qmlRegisterType(qcls, namespace, 1, 0, name)
+            if verbose:
+                print(
+                    ':rp',
+                    'registered pytype class to qml: [cyan]{} > {}[/]'
+                    .format(namespace, name)
+                )
         else:
             raise TypeError('target must be a QObject subclass or instance.')
         
