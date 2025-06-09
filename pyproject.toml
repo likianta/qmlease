@@ -1,28 +1,33 @@
-[tool.poetry]
+[project]
 name = "qmlease"
-version = "3.0.5a11"
-homepage = "https://github.com/likianta/qmlease"
+version = "3.1.0a0"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
-readme = "README.md"
-authors = ["Likianta <likianta@foxmail.com>"]
 license = "MIT"
+readme = "README.md"
+authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
+requires-python = ">=3.8"
+dynamic = ["dependencies"]
+
+[project.urls]
+homepage = "https://github.com/likianta/qmlease"
 
 [tool.poetry.dependencies]
 python = "^3.8"
-argsense = "*"
-# lk-logger = "^5.6.4"
-lk-logger = { version = "^6.0.0a6", source = "likianta-host" }
-lk-utils = "^3.1.1"
-# lk-utils = { version = ">=2.10.9b1,<4.0.0", source = "likianta-host" }
-qtpy = "^2.3.0"
-typing-extensions = "*"
+argsense = { version = "^1.0.1a0", source = "likianta" }
+lk-logger = { version = "^6.0.6a1", source = "likianta" }
+# lk-utils = "^3.1.3"
+lk-utils = { version = "^3.3.0a12", source = "likianta" }
+qtpy = "^2.4.3"
+# typing-extensions = [
+#     { version = "^4.14.0", python = "^3.9" },
+#     { version = "<4.14.0", python = "<3.9" },
+# ]
 
 [tool.poetry.group.dev.dependencies]
 # pyside2 = { version = "^5.15", python = ">=3.8,<3.11", optional = true }
-pyside6 = [  # FIXME
+pyside6 = [
     { version = ">=6.4.3,<6.5.0", python = ">=3.8,<3.12" },
-    # { version = ">=6.6.0,<6.7.0", python = ">=3.12,<3.13" },
-    { version = ">=6.7.1", python = ">=3.12,<3.13" },
+    { version = "^6.9.0", python = ">=3.12,<3.14" },
 ]
 
 [[tool.poetry.source]]
@@ -31,8 +36,8 @@ url = "https://pypi.tuna.tsinghua.edu.cn/simple/"
 priority = "primary"
 
 [[tool.poetry.source]]
-name = "likianta-host"
-url = "http://likianta.pro:2131/"
+name = "likianta"
+url = "http://47.102.108.149:2131/"
 priority = "supplemental"
 
 [build-system]

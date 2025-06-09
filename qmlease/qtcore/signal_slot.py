@@ -1,15 +1,12 @@
 """
 fix typehint of Signal and Slot.
 """
-from __future__ import annotations
-
-import typing as t0
+import typing as t
 from functools import wraps
 from typing import cast
 
 # fix typehint of Signal and Slot.
 # https://rednafi.github.io/reflections/static-typing-python-decorators.html
-import typing_extensions as t1
 from qtpy.QtCore import QObject
 from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot as OriginSlot
@@ -24,13 +21,13 @@ __hidden_ref = []
 
 
 class T:
-    ArgType0 = t0.Union[type, str]
+    ArgType0 = t.Union[type, str]
     ArgType1 = type
-    ParamSpec = t1.ParamSpec('ParamSpec')
-    SlotReturn0 = t0.Optional[type]
-    SlotReturn1 = t0.Union[str, type, None]
+    ParamSpec = t.ParamSpec('ParamSpec')
+    SlotReturn0 = t.Optional[type]
+    SlotReturn1 = t.Union[str, type, None]
     
-    Func = t0.Callable[ParamSpec, t0.Any]
+    Func = t.Callable[ParamSpec, t.Any]
 
 
 def slot(*argtypes: T.ArgType0,
@@ -92,8 +89,8 @@ def slot(*argtypes: T.ArgType0,
 
 
 def _reformat_argtypes(
-        argtypes: t0.Tuple[T.ArgType0, ...]
-) -> t0.Tuple[T.ArgType1, ...]:
+    argtypes: t.Tuple[T.ArgType0, ...]
+) -> t.Tuple[T.ArgType1, ...]:
     """
     mapping:
         # <group>:
@@ -193,4 +190,4 @@ class Signal:
     def emit(self, *args): ...
 
 
-signal = cast(t0.Type[Signal], OriginSignal)
+signal = cast(t.Type[Signal], OriginSignal)

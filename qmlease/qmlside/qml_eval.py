@@ -1,13 +1,10 @@
-from __future__ import annotations
-
 import re
 import typing as t
 from inspect import currentframe
-from textwrap import dedent
-from textwrap import indent
 
-import typing_extensions as te
 from lk_utils import xpath
+from lk_utils.textwrap import dedent
+from lk_utils.textwrap import reindent
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
@@ -47,7 +44,7 @@ class T:
         None
     ]
     
-    ParamSpec = te.ParamSpec('ParamSpec')  # TODO
+    ParamSpec = t.ParamSpec('ParamSpec')  # TODO
     QObject = t.Union[QObject, QObjectBaseWrapper]
 
 
@@ -90,13 +87,15 @@ class QmlEval(QObject):
             code = self._param_placeholder.sub(
                 lambda m: m.group()[1:], code
             )
-            func = self.engine.evaluate(dedent('''
+            func = self.engine.evaluate(dedent(
+                '''
                 (({parameters}) => {{
                     {code}
                 }})
-            ''').strip().format(
+                '''
+            ).format(
                 parameters=', '.join(kwargs.keys()),
-                code=indent(dedent(code), '    '),
+                code=reindent(code, 4),
             ), last_file, last_line - 1)
             
             args = []
@@ -117,10 +116,10 @@ class QmlEval(QObject):
     
     @staticmethod
     def bind_prop(
-            a: T.QObject,
-            b: T.QObject,
-            prop: str,
-            func: t.Optional[t.Callable] = None,
+        a: T.QObject,
+        b: T.QObject,
+        prop: str,
+        func: t.Optional[t.Callable] = None,
     ) -> None:
         if isinstance(a, QObjectBaseWrapper):
             a = a.qobj
@@ -137,11 +136,11 @@ class QmlEval(QObject):
     # -------------------------------------------------------------------------
     
     def bind_anchors_to_parent(
-            self,
-            child: T.QObject,
-            parent: T.QObject,
-            anchors: T.AnchorsA,
-            margins: T.Margins = None,
+        self,
+        child: T.QObject,
+        parent: T.QObject,
+        anchors: T.AnchorsA,
+        margins: T.Margins = None,
     ) -> None:
         if isinstance(child, QObjectBaseWrapper):
             child = child.qobj
@@ -154,11 +153,11 @@ class QmlEval(QObject):
     _split_anchors = re.compile(r'[,; ]+')
     
     def bind_anchors_to_sibling(
-            self,
-            one: T.QObject,
-            another: T.QObject,
-            anchors: T.AnchorsB1,
-            margins: T.Margins = None,
+        self,
+        one: T.QObject,
+        another: T.QObject,
+        anchors: T.AnchorsB1,
+        margins: T.Margins = None,
     ):
         if isinstance(one, QObjectBaseWrapper):
             one = one.qobj
