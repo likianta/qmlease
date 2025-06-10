@@ -1,8 +1,14 @@
-if 1:  # step1: setup lk_logger
+if 1:
     import lk_logger
     lk_logger.setup(quiet=True)
-
-if 2:  # step2: select qt api
+if 2:
+    import signal
+    import sys
+    if sys.platform == 'win32':
+        # fix `ctrl+c` to correctly kill process on windows.
+        # https://stackoverflow.com/a/37420223/9695911
+        signal.signal(signal.SIGINT, signal.SIG_DFL)
+if 3:
     from ._env import QT_API
 
 from .application import Application

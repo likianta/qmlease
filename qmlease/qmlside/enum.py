@@ -5,7 +5,7 @@ from .._env import QT_VERSION
 
 class Auto:
     
-    def __init__(self, start=0):
+    def __init__(self, start: int = 0) -> None:
         self._counter = start
     
     def __call__(self) -> int:
@@ -41,12 +41,14 @@ class _Enum:
 
 class PyEnum(QQmlPropertyMap, _Enum):
     
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         if QT_VERSION >= 6.1:
             # since 6.1. this performs much faster than `insert(k, v)`.
-            self.insert({k: v for k, v in _Enum.__dict__.items()
-                         if not k.startswith('_')})  # noqa
+            self.insert({
+                k: v for k, v in _Enum.__dict__.items()
+                if not k.startswith('_')
+            })
         else:
             for k, v in _Enum.__dict__.items():
                 if not k.startswith('_'):

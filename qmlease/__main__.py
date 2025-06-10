@@ -9,23 +9,20 @@ usage:
 from argsense import cli
 
 
-@cli.cmd()
-def run(view: str, debug=False):
+@cli
+def run(qml_file: str, debug: bool = False) -> None:
     """
-    Run target QML file.
+    run target QML file.
     
-    args:
-        view: the qml file (relative or absolute path) to load.
-        
-    kwargs:
+    params:
         debug (-d): enable hot reload.
     """
     from .application import app
-    app.run(view, debug=debug)
+    app.run(qml_file, debug=debug)
 
 
-@cli.cmd()
-def list_builtin_pyhandlers():
+@cli
+def list_builtin_pyhandlers() -> None:
     """
     List global registered pyhandler names which are available across all -
     QML files.
@@ -45,19 +42,8 @@ def list_builtin_pyhandlers():
             }
         }
     """
-    # list_ = (
-    #     'pyside',
-    #     'pystyle',
-    #     'pyalign',
-    #     'pycolor',
-    #     'pyfont',
-    #     'pymotion',
-    #     'pysize',
-    #     'pylayout',
-    #     'pyrss',
-    # )
-    # print(':ls', list_)
-    print('''
+    print(
+        '''
         - pyside
         - pystyle
             - pycolor
@@ -71,7 +57,9 @@ def list_builtin_pyhandlers():
         - pysize
         - pylayout
         - pyrss
-    ''')
+        ''',
+        ':r2'
+    )
 
 
 if __name__ == '__main__':
