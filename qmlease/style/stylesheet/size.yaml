@@ -31,6 +31,8 @@ spacing_l: 8
 spacing_xl: 24
 spacing_v_m: 4
 
+# width_m: 120
+
 # -----------------------------------------------------------------------------
 
 bar_width: 240
@@ -63,6 +65,9 @@ icon_size_l: 20
 
 indicator_size: 16
 indicator_radius: 6
+
+item_width: 120
+item_height: '$height_m'
 
 listview_height: 120
 

@@ -1,3 +1,5 @@
+from .__main__ import WidgetBackend
+
 from .listview import ListView
 from .logger import log
 from .logger import logger

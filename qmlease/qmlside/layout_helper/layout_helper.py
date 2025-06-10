@@ -5,7 +5,7 @@ from lk_utils import bind_with
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
-from ..enum_ import pyenum
+from ..enum import pyenum
 from ..qml_eval import qml_eval
 from ..._env import IS_WINDOWS
 from ...qtcore import QObject
@@ -197,6 +197,7 @@ class LayoutHelper(QObject):
     
     # -------------------------------------------------------------------------
     
+    # DELETE
     # noinspection PyUnresolvedReferences
     @slot(object, str)
     def auto_align(self, container: QObject, alignment: str) -> None:
@@ -297,22 +298,26 @@ class LayoutHelper(QObject):
             be called again.
         """
         prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
+        prop_name_2 = 'stretch{}'.format(prop_name.capitalize())
         # if container.property(prop_name) <= 0: return False
         
         children = container.children()
         
-        elastic_items: dict[int, float] = {}  # dict[int index, float ratio]
-        stretch_items: dict[int, int] = {}  # dict[int index, int _]
-        #   note: stretch_items.values() are useless (they are all zeros). it
-        #   is made just for keeping the same form with elastic_items.
+        portioned_items: dict[int, float] = {}  # dict[int index, float ratio]
+        stretched_items: dict[int, int] = {}  # dict[int index, int _]
+        #   note: stretched_items.values() are useless (they are all zeros). it
+        #   is made just for keeping the same form with portioned_items.
         
         claimed_size = 0
         for idx, item in enumerate(children):
-            size = item.property(prop_name)
+            if item.property(prop_name_2) is True:  # True|False|None
+                size = pyenum.STRETCH
+            else:
+                size = item.property(prop_name)
             if size >= 1:
                 claimed_size += size
             elif 0 < size < 1:
-                elastic_items[idx] = size
+                portioned_items[idx] = size
             elif size in (0, -1, pyenum.STRETCH, pyenum.FILL):
                 #   FIXME: too many magic numbers
                 """
@@ -327,37 +332,33 @@ class LayoutHelper(QObject):
                     i'm diggering qml mechanism, maybe we can find a better -
                     solution in future.
                 """
-                stretch_items[idx] = 0
+                stretched_items[idx] = 0
             else:
                 raise ValueError('cannot allocate negative size', idx, item)
         
-        if not elastic_items and not stretch_items:
+        if not portioned_items and not stretched_items:
             return False
         
         self._auto_size_children(
-            container, orientation, claimed_size,
-            elastic_items, stretch_items
+            container,
+            orientation,
+            claimed_size,
+            portioned_items,
+            stretched_items,
         )
-        
-        # print(':l', 'overview container and children sizes:',
-        #       (container.property('width'), container.property('height')),
-        #       {(x.property('objectName') or 'child') + f'#{idx}': (
-        #           x.property('width'), x.property('height')
-        #       ) for idx, x in enumerate(children)})
         
         # TODO: if children count is changed, trigger this method again.
         bind_func(
             container, f'{prop_name}Changed',
             partial(
                 self._auto_size_children,
-                container=container,
-                orientation=orientation,
-                claimed_size=claimed_size,
-                elastic_items=elastic_items,
-                stretch_items=stretch_items,
+                container,
+                orientation,
+                claimed_size,
+                portioned_items,
+                stretched_items,
             )
         )
-        
         return True
     
     def _auto_size_children(
@@ -365,12 +366,13 @@ class LayoutHelper(QObject):
         container: QObject,
         orientation: T.Orientation,
         claimed_size: int,
-        elastic_items: t.Dict[int, float],
-        stretch_items: t.Dict[int, int],
+        portioned_items: t.Dict[int, float],
+        stretched_items: t.Dict[int, int],
     ) -> None:
         """
-        note: param `stretch_items`.values() are useless (they are all zero), -
-        it is made just for keeping same type form with `elastic_items`.
+        note: `stretched_items.values()` are useless (they are all zeros), we -
+        make stretched_items dict type just for harmonizing the form with -
+        portioned_items.
         """
         prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
         
@@ -384,7 +386,7 @@ class LayoutHelper(QObject):
         if unclaimed_size <= 0:
             # fast finish leftovers
             for idx, item in enumerate(children):
-                if idx in elastic_items:
+                if idx in portioned_items:
                     item.setProperty(prop_name, 0)
                 # note: no need to check if idx in stretch_items, because -
                 # their size is already 0.
@@ -392,7 +394,7 @@ class LayoutHelper(QObject):
         
         # allocate elastic items
         total_unclaimed_size = unclaimed_size
-        for idx, ratio in elastic_items.items():
+        for idx, ratio in portioned_items.items():
             child = children[idx]
             size = total_unclaimed_size * ratio
             child.setProperty(prop_name, size)
@@ -400,16 +402,16 @@ class LayoutHelper(QObject):
         
         if unclaimed_size <= 0:
             return
-        if not stretch_items:
+        if not stretched_items:
             return
         
-        # allocate stretch items
+        # allocate stretched items
         total_unclaimed_size = unclaimed_size
-        stretch_items_count = len(stretch_items)
-        stretch_item_size_aver = total_unclaimed_size / stretch_items_count
-        for idx in stretch_items.keys():
+        items_count = len(stretched_items)
+        item_size_aver = total_unclaimed_size / items_count
+        for idx in stretched_items.keys():
             child = children[idx]
-            child.setProperty(prop_name, stretch_item_size_aver)
+            child.setProperty(prop_name, item_size_aver)
     
     @staticmethod
     def _get_total_available_size_for_children(

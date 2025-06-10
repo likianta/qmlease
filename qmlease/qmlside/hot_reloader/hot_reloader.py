@@ -38,6 +38,7 @@ class HotReloader(QObject):
         def _() -> None:
             # A. use "magic count" to update url but not change the source path.
             # sys.modules.clear()
+            window['source'] = ''
             self._reload_count += 1
             window['source'] = 'file:///{}?_reload_count={}'.format(
                 self._target_file, self._reload_count

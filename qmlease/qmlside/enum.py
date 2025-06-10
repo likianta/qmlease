@@ -49,10 +49,15 @@ class PyEnum(QQmlPropertyMap, _Enum):
                 k: v for k, v in _Enum.__dict__.items()
                 if not k.startswith('_')
             })
+            self.insert({
+                k.lower(): v for k, v in _Enum.__dict__.items()
+                if not k.startswith('_')
+            })
         else:
             for k, v in _Enum.__dict__.items():
                 if not k.startswith('_'):
                     self.insert(k, v)
+                    self.insert(k.lower(), v)
 
 
 pyenum = PyEnum()

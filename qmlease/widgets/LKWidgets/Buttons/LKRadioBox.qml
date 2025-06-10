@@ -6,13 +6,13 @@ RadioButton {
     id: root
     height: pysize.bar_height
 
+    property bool   ghostBorder: false
     property string indicatorBgColor: 'transparent'
     property string indicatorBorderColor: pycolor.border_default
     property string indicatorFgColor: pycolor.text_default
-    property bool   showGhostBorder: false
 
     background: LKRectangle {
-        visible: root.showGhostBorder
+        visible: root.ghostBorder
         border.width: root.hovered ? 1 : 0
         color: 'transparent'
     }

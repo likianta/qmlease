@@ -13,8 +13,13 @@ LKWindow {
     Loader {
         id: _loader
         onLoaded: {
-            this.width = this.item.width
-            this.height = this.item.height
+            if (this.item.width && this.item.height) {
+                this.width = this.item.width
+                this.height = this.item.height
+            } else {
+                this.width = 800
+                this.height = 600
+            }
         }
     }
 

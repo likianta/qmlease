@@ -1,50 +1,61 @@
 import QtQuick 2.15
-import ".."  // for LKText
-import "../Buttons"  // for LKRadioBox
-import "../Layouts"  // for LKRow
+import ".." as A
+import "../Buttons" as B
 
-LKRow {
+Flow {
     id: root
+    width: pysize.item_width
+    height: pysize.item_height
+    // width: horizontal ? childrenRect.width : pyenum.auto
+    // height: horizontal ? pysize.item_height : childrenRect.height
+    flow: horizontal ? Flow.LeftToRight : Flow.TopToBottom
+    spacing: pysize.spacing_m
 
-    property int    currentIndex  // readonly
-    property string currentItem  // readonly
-    property int    index: 0
-    property string label
-    property alias  labelItem: _label
-    property var    options  // list[str]
-    property bool   showGhostBorder: false
+    property bool  ghostBorder: true
+    property bool  horizontal: false
+    property int   index: 0
+    property alias model: _repeater.model
+    property alias title: _text.text
 
     signal checked(int index, string label)
 
-    LKText {
-        id: _label
-        text: root.label
+    A.LKText {
+        id: _text
+        height: pysize.item_height
+        horizontalAlignment: Text.AlignLeft
+        verticalAlignment: Text.AlignVCenter
     }
 
     Repeater {
-        model: root.options.length
-        delegate: LKRadioBox {
-            height: root.height
-            showGhostBorder: root.showGhostBorder
-            text: root.options[index]
+        id: _repeater
+        width: root.horizontal ? pysize.item_width : root.width
+        height: root.horizontal ? root.height : pysize.item_height
+
+        delegate: B.LKRadioBox {
+            // width: root.horizontal ? childrenRect.width : root.width
+            // height: root.height
+            ghostBorder: root.ghostBorder
+            text: modelData
 
             property int index: model.index
 
             Component.onCompleted: {
+                if (!root.horizontal) {
+                    this.width = root.width
+                }
                 if (this.index == root.index) {
                     this.checked = true
                 }
                 this.onToggled.connect(() => {
-                    root.currentIndex = this.index
-                    root.currentItem = this.text
+                    root.index = this.index
                     root.checked(this.index, this.text)
                 })
             }
         }
     }
 
-    Component.onCompleted: {
-        this.currentIndex = this.index
-        this.currentItem = this.options[this.index]
-    }
+//    Component.onCompleted: {
+//        // py.qmlease.widget.init_radio_group(this)
+//        py.qmlease.widget.init_radio_group_2(this)
+//    }
 }

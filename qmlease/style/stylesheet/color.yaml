@@ -52,7 +52,7 @@ dot_border_hovered: '$dot_hovered'
 
 frame_bg: '$panel_bg'
 
-icon_line_default: '$text_main'
+icon_line_default: '$text_default'
 
 input_bg_active: '$button_bg_active'
 input_bg_default: '$button_bg_default'
@@ -65,8 +65,8 @@ panel_bg: '$grey_2'
 progress_bg: '$grey_5'
 progress_fg: '$blue_5'
 
-text_main: '$black_5'
-text_secondary: '$black_6'
+text_default: '$black_5'
 text_hint: '$grey_5'
+text_secondary: '$black_6'
 
 win_bg: '$grey_1'
