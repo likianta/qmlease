@@ -5,7 +5,7 @@ LKRectangle {
     id: root
     width: 0
     height: pysize.button_height
-    border.width: showGhostBorder ? (_area.containsMouse ? 1 : 0) : 0
+    border.width: ghostBorder ? (_area.containsMouse ? 1 : 0) : 0
     border.color: pycolor.border_default
     color:
         _area.containsPress ? colorBgPressed :
@@ -17,8 +17,8 @@ LKRectangle {
     property string colorBgHovered: 'transparent'
     //  or pycolor.button_bg_hovered
     property string colorBgPressed: pycolor.button_bg_pressed
+    property bool   ghostBorder: false
     property int    indicatorSize: pysize.indicator_size
-    property bool   showGhostBorder: false
     property string text
     property alias  textItem: _text
     property int    __padding: pysize.padding_m
@@ -77,4 +77,3 @@ LKRectangle {
         }
     }
 }
-

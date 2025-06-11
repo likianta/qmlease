@@ -8,15 +8,15 @@ LKWindow {
 
         LKRow {
             LKRadioBox {
-                showGhostBorder: true
+                ghostBorder: true
                 text: 'AAA'
             }
             LKRadioBox {
-                showGhostBorder: true
+                ghostBorder: true
                 text: 'BBB'
             }
             LKRadioBox {
-                showGhostBorder: true
+                ghostBorder: true
                 text: 'CCC'
             }
         }
