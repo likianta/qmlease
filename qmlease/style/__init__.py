@@ -8,4 +8,5 @@ fields:
     size        width, height, radius, margin, padding, etc.
     typography  font, weight, line-height, etc. (not implemented)
 """
+from .enum import pyenum
 from .style import pystyle

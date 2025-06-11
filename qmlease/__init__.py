@@ -27,9 +27,11 @@ from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject
 from .qtcore import bind
+from .qtcore import bind_prop
 from .qtcore import bind_signal
 from .qtcore import signal
 from .qtcore import slot
+from .style import pyenum
 from .style import pystyle
 
 __version__ = '3.1.0'

@@ -2,7 +2,6 @@ from . import console
 from . import widgets_backend
 from .assets import pyassets
 from .broadcast import pybroad
-from .enum import pyenum
 from .hot_reloader import HotReloader
 from .layout_helper import pylayout
 from .model import Model

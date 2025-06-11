@@ -16,7 +16,7 @@ naming style:
 """
 import re
 
-from ._base import Base
+from .base import Base
 
 
 class Color(Base):

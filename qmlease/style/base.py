@@ -25,10 +25,10 @@ class Base(QQmlPropertyMap):
     
     def update(self, data: dict) -> None:
         plain_data = self._resolve_references(data)
-        norm__data = self._normalize(plain_data)
-        alias_data = self._create_similars(norm__data)
-        short_data = self._shortify({**norm__data, **alias_data})
-        self.data.update({**norm__data, **alias_data, **short_data})
+        norml_data = self._normalize(plain_data)
+        alias_data = self._create_similars(norml_data)
+        short_data = self._shortify({**norml_data, **alias_data})
+        self.data.update({**norml_data, **alias_data, **short_data})
         for k, v in self.data.items():
             self.insert(k, v)
     

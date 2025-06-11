@@ -4,8 +4,8 @@ import "../Buttons" as B
 
 Flow {
     id: root
-    width: pyenum.auto
-    height: pyenum.auto
+    width: pysize.auto
+    height: pysize.auto
     flow: horizontal ? Flow.LeftToRight : Flow.TopToBottom
     spacing: pysize.spacing_m
 

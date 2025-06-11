@@ -28,13 +28,22 @@ examples:
     - margin_l
     - margin_xl
 """
-from ._base import Base
+from .base import Base
+from .enum import pyenum
 
 
 class Size(Base):
-    _valid_sizes = (
-        'xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl'
-    )
+    _valid_sizes = ('xxs', 'xs', 's', 'm', 'l', 'xl', 'xxl')
+    
+    def __init__(self) -> None:
+        super().__init__()
+        for k, v in {
+            'auto': pyenum.AUTO,
+            'stretch': pyenum.STRETCH,
+            'wrap': pyenum.WRAP,
+        }.items():
+            self.data[k] = v
+            self.insert(k, v)
     
     def _normalize(self, data: dict) -> dict:
         new_data = {}
