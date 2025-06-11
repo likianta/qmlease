@@ -104,29 +104,29 @@ class Application(QApplication):
     def _register_backend(self) -> None:
         from ..pyside import pyside
         from ..qmlside import pyassets, pybroad, pylayout  # DELETE
+        from ..qmlside import widget_support
         from ..qmlside import widgets_backend as wb  # DELETE
-        from ..qmlside.widgets_backend import WidgetBackend
         from ..style import pyenum, pystyle
         
-        self.register(WidgetBackend(), 'widget', 'qmlease', verbose=False)
+        self.register(widget_support, 'widget', 'qmlease')
         
-        self.register(pyassets, 'pyassets', 'global', verbose=False)
-        self.register(pybroad, 'pybroad', 'global', verbose=False)
-        self.register(pyenum, 'pyenum', 'global', verbose=False)
-        self.register(pylayout, 'pylayout', 'global', verbose=False)
-        self.register(pyside, 'pyside', 'global', verbose=False)
-        self.register(pystyle, 'pystyle', 'global', verbose=False)
-        self.register(pystyle.color, 'pycolor', 'global', verbose=False)
-        self.register(pystyle.font, 'pyfont', 'global', verbose=False)
-        self.register(pystyle.motion, 'pymotion', 'global', verbose=False)
-        self.register(pystyle.size, 'pysize', 'global', verbose=False)
+        self.register(pyassets, 'pyassets', 'global')
+        self.register(pybroad, 'pybroad', 'global')
+        self.register(pyenum, 'pyenum', 'global')
+        self.register(pylayout, 'pylayout', 'global')
+        self.register(pyside, 'pyside', 'global')
+        self.register(pystyle, 'pystyle', 'global')
+        self.register(pystyle.color, 'pycolor', 'global')
+        self.register(pystyle.font, 'pyfont', 'global')
+        self.register(pystyle.motion, 'pymotion', 'global')
+        self.register(pystyle.size, 'pysize', 'global')
         
-        self.register(wb.ListView(), 'lklistview', 'global', verbose=False)
-        self.register(wb.Progress(), 'lkprogress', 'global', verbose=False)
-        self.register(wb.ScopeEngine(), 'lkscope', 'global', verbose=False)
-        self.register(wb.Slider(), 'lkslider', 'global', verbose=False)
-        self.register(wb.logger, 'lklogger', 'global', verbose=False)
-        self.register(wb.util, 'lkutil', 'global', verbose=False)
+        self.register(wb.ListView(), 'lklistview', 'global')
+        self.register(wb.Progress(), 'lkprogress', 'global')
+        self.register(wb.ScopeEngine(), 'lkscope', 'global')
+        self.register(wb.Slider(), 'lkslider', 'global')
+        self.register(wb.logger, 'lklogger', 'global')
+        self.register(wb.util, 'lkutil', 'global')
         
         pyassets.add_source(fs.xpath('../widgets/LKWidgets'), 'lkwidgets')
     

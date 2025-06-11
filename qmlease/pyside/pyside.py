@@ -1,6 +1,6 @@
-from __future__ import annotations
-
 import typing as t
+from textwrap import dedent
+from textwrap import indent
 
 from .register import PyRegister
 from ..qtcore import QObject
@@ -13,10 +13,10 @@ class PySide(QObject, PyRegister):
     @slot(str, list, result=object)
     @slot(str, list, dict, result=object)
     def call(
-            self,
-            func_name: str,
-            args: list = (),
-            kwargs: dict = None
+        self,
+        func_name: str,
+        args: list = (),
+        kwargs: dict = None
     ) -> t.Any:
         """ call python functions in qml side. """
         func, narg = self._pyfunc_holder[func_name]  # narg: 'number of args'
@@ -44,39 +44,41 @@ class PySide(QObject, PyRegister):
     @slot(str, result=object)
     @slot(str, dict, result=object)
     def eval(self, code: str, kwargs: dict = None) -> t.Any:
-        from textwrap import dedent, indent
-        # print(':l', kwargs, '\n' in code)
-        # print(code)
+        def exec_code_object(code: str, context: dict) -> t.Any:
+            context['__file__'] = __file__
+            context['__hook__'] = {'__result__': None}
+            # assert "__hook__['__result__'] =" in code
+            try:
+                exec(code, context)
+            except Exception as e:
+                print(':v8', code)
+                print(':v8', {
+                    k: v for k, v in context.items() if k != '__builtins__'
+                })
+                raise e
+            return context['__hook__']['__result__']
         
-        if kwargs is None: kwargs = {}
-        kwargs.update({'__file__': __file__})
-        
-        code_wrapper = dedent('''
+        full_code = dedent(
+            '''
             def __selfunc__():
                 # the source code can use `__selfunc__` for recursive call.
                 {source_code}
-            __return_hook__ = __selfunc__()
-        ''').format(source_code=indent(dedent(code), '    '))
-        try:
-            exec(code_wrapper, kwargs)
-        except Exception as e:
-            print(':lv4', code_wrapper, kwargs, e)
-            raise e
-        
-        # if kwargs['__return_hook__'] is not None:
-        #     print(kwargs['__return_hook__'])
-        return kwargs['__return_hook__']
+            __hook__['__result__'] = __selfunc__()
+            '''
+        ).format(source_code=indent(dedent(code).strip(), '    '))
+        return exec_code_object(full_code, kwargs or {})
     
     @slot(str, name='def')
     def def_(self, code_block: str) -> None:
         import re
-        from textwrap import dedent
         code_block = dedent(code_block)
         funcname = re.search(r'^def (\w+)', code_block).group(1)
-        code_wrapper = dedent('''
+        code_wrapper = dedent(
+            '''
             {source_code}
             __func_hook__ = {funcname}
-        ''').format(source_code=code_block, funcname=funcname)
+            '''
+        ).format(source_code=code_block, funcname=funcname)
         exec(code_wrapper, hook := {})
         self.register(hook['__func_hook__'], name=funcname)
 

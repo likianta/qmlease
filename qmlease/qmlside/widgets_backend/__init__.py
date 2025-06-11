@@ -1,5 +1,6 @@
-from .__main__ import WidgetBackend
+from .widget_support import widget_support
 
+# DELETE or REFACTOR
 from .listview import ListView
 from .logger import log
 from .logger import logger

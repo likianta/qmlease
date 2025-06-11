@@ -36,7 +36,6 @@ class Register:
         qobj: t.Union[QObject, type[QObject]],
         name: str = '',
         namespace: str = '',
-        verbose: bool = True,
     ) -> None:
         """
         register an instance or a subclass of QObject to qml side.
@@ -118,16 +117,16 @@ class Register:
                 # qmlRegisterSingletonInstance(
                 #     qobj.__class__, namespace, 1, 0, name, qobj
                 # )
-            if verbose:
-                print(
-                    ':rp',
-                    '[dim]registered variant to qml:[/] [cyan]{}[/]'
-                    .format(
-                        name if namespace == '' else
-                        f'py.{name}' if namespace == 'global' else
-                        f'py.{namespace}.{name}'
-                    )
-                )
+            # if verbose:
+            #     print(
+            #         ':rp',
+            #         '[dim]registered variant to qml:[/] [cyan]{}[/]'
+            #         .format(
+            #             name if namespace == '' else
+            #             f'py.{name}' if namespace == 'global' else
+            #             f'py.{namespace}.{name}'
+            #         )
+            #     )
         
         elif issubclass(qobj, QObject):
             name = name or qobj.__name__
@@ -163,12 +162,12 @@ class Register:
                 else:
                     # noinspection PyTypeChecker
                     qmlRegisterType(qcls, namespace, 1, 0, name)
-            if verbose:
-                print(
-                    ':rp',
-                    'registered pytype class to qml: [cyan]{} > {}[/]'
-                    .format(namespace, name)
-                )
+            # if verbose:
+            #     print(
+            #         ':rp',
+            #         'registered pytype class to qml: [cyan]{} > {}[/]'
+            #         .format(namespace, name)
+            #     )
         else:
             raise TypeError('target must be a QObject subclass or instance.')
         

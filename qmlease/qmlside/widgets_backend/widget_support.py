@@ -14,7 +14,7 @@ from ...style import pyenum
 from ...style import pystyle
 
 
-class WidgetBackend(QObject):
+class WidgetSupport(QObject):
     _font_metrics: QFontMetrics
     
     def __init__(self) -> None:
@@ -55,6 +55,15 @@ class WidgetBackend(QObject):
             if item['width'] == pyenum.AUTO:
                 
                 def wrap_model_width() -> None:
+                    # print(
+                    #     ':v',
+                    #     item['title'],
+                    #     item['model'],
+                    #     item['width'],
+                    #     self.get_best_width(
+                    #         (item['title'], *item['model']), item['spacing']
+                    #     )
+                    # )
                     item['width'] = self.get_best_width(
                         (item['title'], *item['model']), item['spacing']
                     )
@@ -133,3 +142,6 @@ class WidgetBackend(QObject):
                 item['height'] = rect.height()
         
         sync_size(item['childrenRect'])
+
+
+widget_support = WidgetSupport()
