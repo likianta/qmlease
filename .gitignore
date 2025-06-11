@@ -6,6 +6,7 @@
 /sidework/pyside_package_tailor/dist/*.zip
 /sidework/pyside_package_tailor/other_resources/
 /sidework/pyside_package_tailor/venv/qt_for_python/*
+/unittests/untitled*
 /wiki/
 
 __pycache__/

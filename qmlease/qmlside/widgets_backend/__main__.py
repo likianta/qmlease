@@ -65,7 +65,7 @@ class WidgetBackend(QObject):
                 else:
                     item.modelChanged.connect(wrap_model_width)
             
-            if item['height'] == pystyle.AUTO:
+            if item['height'] == pyenum.AUTO:
                 self._set_size_wrapped(item, 'height')
         
         @bind_signal(item.horizontalChanged)
@@ -118,13 +118,15 @@ class WidgetBackend(QObject):
         
     @staticmethod
     def _set_size_wrapped(
-        item: QObject, prop: t.Optional[t.Literal['width', 'height']] = None
+        item: QObject,
+        dimension: t.Optional[t.Literal['width', 'height']] = None
     ) -> None:
         @bind_signal(item.childrenRectChanged)
         def sync_size(rect: QRectF):
-            if prop == 'width':
+            print(rect, ':v')
+            if dimension == 'width':
                 item['width'] = rect.width()
-            elif prop == 'height':
+            elif dimension == 'height':
                 item['height'] = rect.height()
             else:
                 item['width'] = rect.width()

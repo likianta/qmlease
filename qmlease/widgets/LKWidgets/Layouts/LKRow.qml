@@ -1,12 +1,12 @@
 import QtQuick 2.15
 
 Row {
-    height: childrenRect.height
+    // height: childrenRect.height
     spacing: pysize.spacing_m
 
     property string alignment: 'vcenter'
     //  see `/qmlease/qmlside/layout_helper/layout_helper.py : def auto_align :
-    //      docstring`.
+    //  docstring`.
     property bool   autoSize: false
 
     Component.onCompleted: {

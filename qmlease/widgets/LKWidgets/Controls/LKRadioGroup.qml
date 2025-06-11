@@ -5,7 +5,7 @@ import "../Buttons" as B
 Flow {
     id: root
     width: pysize.auto
-    height: pysize.auto
+    // height: pysize.auto
     flow: horizontal ? Flow.LeftToRight : Flow.TopToBottom
     spacing: pysize.spacing_m
 
@@ -26,21 +26,15 @@ Flow {
 
     Repeater {
         id: _repeater
-        width: root.horizontal ? pysize.item_width : root.width
-        height: root.horizontal ? root.height : pysize.item_height
-
         delegate: B.LKRadioBox {
-            // width: root.horizontal ? childrenRect.width : root.width
-            // height: root.height
+            width: root.horizontal ? implicitWidth : root.width
+            // height: pysize.item_height
             ghostBorder: root.ghostBorder
             text: modelData
 
             property int index: model.index
 
             Component.onCompleted: {
-                if (!root.horizontal) {
-                    this.width = root.width
-                }
                 if (this.index == root.index) {
                     this.checked = true
                 }
