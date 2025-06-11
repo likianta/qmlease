@@ -36,17 +36,13 @@ class HotReloader(QObject):
         
         @bind_signal(window.reloadTriggered)
         def _() -> None:
-            # A. use "magic count" to update url but not change the source path.
             # sys.modules.clear()
-            window['source'] = ''
+            # window['source'] = ''
+            self._app.engine.clearComponentCache()
             self._reload_count += 1
             window['source'] = 'file:///{}?_reload_count={}'.format(
                 self._target_file, self._reload_count
             )
-            # B. clear component cache to force reload.
-            # window['source'] = ''
-            # self._app.engine.clearComponentCache()
-            # window['source'] = self._target_file
     
     def run(self) -> None:
         self._app.register(self, 'reloader', 'qmlease', verbose=False)

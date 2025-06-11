@@ -1,5 +1,4 @@
 import typing as t
-from functools import partial
 
 from qtpy.QtCore import QRectF
 from qtpy.QtGui import QFont
@@ -25,7 +24,9 @@ class WidgetBackend(QObject):
         if IS_WINDOWS:
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
-        
+    
+    @slot(str)
+    @slot(str, object)
     def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
         if text == '':
             return 0
@@ -84,22 +85,12 @@ class WidgetBackend(QObject):
         def size_children_widths() -> None:
             for child in _children:
                 if child.property('width') == pyenum.STRETCH:
-                    _bind_prop(_parent, child, 'width')
+                    bind_prop(_parent, 'width', child, effect_now=True)
                     
         def size_children_heights() -> None:
             for child in _children:
                 if child.property('height') == pyenum.STRETCH:
-                    _bind_prop(_parent, child, 'height')
-        
-        def _bind_prop(src, dst, prop, effect_now: bool = True) -> None:
-            getattr(dst, f'{prop}Changed').connect(
-                partial(_set_prop, src, dst, prop)
-            )
-            if effect_now:
-                dst[prop] = src[prop]
-        
-        def _set_prop(src, dst, prop) -> None:
-            dst[prop] = src[prop]
+                    bind_prop(_parent, 'height', child, effect_now=True)
         
         if strategy == 'default':
             size_children_widths()
@@ -129,12 +120,8 @@ class WidgetBackend(QObject):
     def _set_size_wrapped(
         item: QObject, prop: t.Optional[t.Literal['width', 'height']] = None
     ) -> None:
-        
-        def sync_size(
-            item: QObject,
-            rect: QRectF,
-            prop: t.Optional[t.Literal['width', 'height']]
-        ) -> None:
+        @bind_signal(item.childrenRectChanged)
+        def sync_size(rect: QRectF):
             if prop == 'width':
                 item['width'] = rect.width()
             elif prop == 'height':
@@ -143,8 +130,4 @@ class WidgetBackend(QObject):
                 item['width'] = rect.width()
                 item['height'] = rect.height()
         
-        bind_prop(
-            item, 'childrenRect', item,
-            custom_handler=partial(sync_size, item, prop=prop)
-        )
-        sync_size(item, item['childrenRect'], prop)
+        sync_size(item['childrenRect'])

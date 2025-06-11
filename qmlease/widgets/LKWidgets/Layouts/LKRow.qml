@@ -1,7 +1,7 @@
 import QtQuick 2.15
 
 Row {
-    height: pysize.wrap
+    height: childrenRect.height
     spacing: pysize.spacing_m
 
     property string alignment: 'vcenter'

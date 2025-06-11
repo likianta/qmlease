@@ -3,7 +3,8 @@ import ".."
 
 Rectangle {
     id: root
-    width: pyenum.WRAP
+    width: _text.contentWidth * 1.5
+    // width: py.qmlease.widget.estimate_line_width(text) + pysize.padding * 2
     height: pysize.button_height
     radius: pysize.button_radius
     border.width: pysize.border_width_m
@@ -21,8 +22,8 @@ Rectangle {
     property string bgColorHovered: pycolor.button_bg_hovered
     property string bgColorPressed: pycolor.button_bg_pressed
 //    property alias  borderColor: root.border.color
-    property string text
-    property string textColor: pycolor.text_main
+    property alias  text: _text.text
+    property string textColor: pycolor.text_default
 
     signal clicked()
 
@@ -48,20 +49,14 @@ Rectangle {
 
     LKText {
         id: _text
-        anchors.fill: parent
-        horizontalAlignment: Text.AlignHCenter
-        verticalAlignment: Text.AlignVCenter
+        // anchors.fill: parent
+        anchors.centerIn: parent
+        // horizontalAlignment: Text.AlignHCenter
+        // verticalAlignment: Text.AlignVCenter
         color: root.enabled ? root.textColor : pycolor.text_disabled
-        text: root.text
     }
 
     Component.onCompleted: {
-        if (this.width == pyenum.WRAP) {
-            this.width = Qt.binding(() => {
-                return _text.contentWidth * 1.5
-            })
-        }
-
         this.color = Qt.binding(() => {
             if (this.enabled) {
                 if (this.pressed) {

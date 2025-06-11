@@ -3,7 +3,6 @@ copied from lambda_ex.grafting
 """
 import typing as t
 from functools import partial
-from typing import Callable
 
 from qtpy.QtCore import QObject
 from qtpy.QtCore import Signal
@@ -11,7 +10,11 @@ from qtpy.QtCore import Signal
 _grafted = set()
 
 
-def bind(trigger: Callable, *args, emit_now=False, **kwargs) -> Callable:
+class T:
+    AsIs = t.TypeVar('AsIs', bound=t.Callable)
+
+
+def bind(trigger: T.AsIs, *args, emit_now: bool = False, **kwargs) -> T.AsIs:
     def decorator(func):
         uid = (id(trigger), id(func))
         if uid in _grafted:
@@ -52,19 +55,9 @@ def bind_prop(
     
     if effect_now:
         handler()
-    
-    # class _EffectNow:
-    #     def __call__(self):
-    #         handler()
-    #
-    #     @staticmethod
-    #     def effect():
-    #         handler()
-    #
-    # return _EffectNow()
 
 
-def bind_signal(signal: Callable, emit_now=False) -> Callable:
+def bind_signal(signal: T.AsIs, emit_now: bool = False) -> T.AsIs:
     assert isinstance(signal, Signal)
     
     def decorator(func):
@@ -83,5 +76,7 @@ def bind_signal(signal: Callable, emit_now=False) -> Callable:
 
 # TODO: experimental
 def bind_func(qobj: QObject, signal: str, func: t.Callable) -> None:
-    eval('qobj.{signal}.connect(func)'.format(signal=signal),
-         {'qobj': qobj, 'func': func})
+    eval(
+        'qobj.{signal}.connect(func)'.format(signal=signal),
+        {'qobj': qobj, 'func': func}
+    )

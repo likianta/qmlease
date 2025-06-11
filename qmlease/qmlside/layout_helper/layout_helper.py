@@ -1,16 +1,16 @@
 import typing as t
 from functools import partial
 
-from lk_utils import bind_with
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
-from ..enum import pyenum
 from ..qml_eval import qml_eval
 from ..._env import IS_WINDOWS
 from ...qtcore import QObject
-from ...qtcore import bind_func  # noqa
+from ...qtcore import bind_func
+from ...qtcore import bind_signal
 from ...qtcore import slot
+from ...style import pyenum
 
 
 class T:
@@ -49,7 +49,7 @@ class LayoutHelper(QObject):
         if x := container['alignment']:
             self.auto_align(container, x)
             
-            @bind_with(container[another_size_prop + '_changed'].connect)
+            @bind_signal(container[another_size_prop + '_changed'])
             def _():
                 self.auto_align(container, x)
         
@@ -57,7 +57,7 @@ class LayoutHelper(QObject):
             self.auto_size_children(container, orientation)  # noqa
             
             # TODO: when children count changed, auto size again.
-            @bind_with(container[size_changed].connect)
+            @bind_signal(container[size_changed])
             def _():
                 self.auto_size_children(container, orientation)  # noqa
     
