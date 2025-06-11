@@ -298,8 +298,6 @@ class LayoutHelper(QObject):
             be called again.
         """
         prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
-        prop_name_2 = 'stretch{}'.format(prop_name.capitalize())
-        # if container.property(prop_name) <= 0: return False
         
         children = container.children()
         
@@ -310,16 +308,13 @@ class LayoutHelper(QObject):
         
         claimed_size = 0
         for idx, item in enumerate(children):
-            if item.property(prop_name_2) is True:  # True|False|None
-                size = pyenum.STRETCH
-            else:
-                size = item.property(prop_name)
+            size = item.property(prop_name)
             if size >= 1:
                 claimed_size += size
             elif 0 < size < 1:
                 portioned_items[idx] = size
             elif size in (0, -1, pyenum.STRETCH, pyenum.FILL):
-                #   FIXME: too many magic numbers
+                #   FIXME: too many magic numbers, leave only `pyenum.STRETCH`.
                 """
                 why `size == -1`?
                     this is a workaround.

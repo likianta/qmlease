@@ -28,6 +28,42 @@ def bind(trigger: Callable, *args, emit_now=False, **kwargs) -> Callable:
     return decorator
 
 
+def bind_prop(
+    emitter: QObject,
+    emitter_prop: str,
+    receiver: t.Optional[QObject] = None,
+    receiver_prop: t.Optional[str] = None,
+    custom_handler: t.Callable = None,
+    effect_now: bool = False,
+) -> None:
+    if receiver is None:
+        receiver = emitter
+        assert receiver_prop
+    else:
+        if receiver_prop is None:
+            receiver_prop = emitter_prop
+    
+    def _default_handler():
+        receiver.setProperty(receiver_prop, emitter.property(emitter_prop))
+    
+    handler = custom_handler or _default_handler
+    
+    getattr(emitter, f'{emitter_prop}Changed').connect(handler)
+    
+    if effect_now:
+        handler()
+    
+    # class _EffectNow:
+    #     def __call__(self):
+    #         handler()
+    #
+    #     @staticmethod
+    #     def effect():
+    #         handler()
+    #
+    # return _EffectNow()
+
+
 def bind_signal(signal: Callable, emit_now=False) -> Callable:
     assert isinstance(signal, Signal)
     

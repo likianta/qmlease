@@ -1,15 +1,17 @@
 import typing as t
 from functools import partial
 
+from qtpy.QtCore import QRectF
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
-from ..enum import pyenum
 from ..layout_helper import pylayout
 from ..._env import IS_WINDOWS
 from ...qtcore import QObject
+from ...qtcore import bind_prop
 from ...qtcore import bind_signal
 from ...qtcore import slot
+from ...style import pyenum
 from ...style import pystyle
 
 
@@ -38,48 +40,37 @@ class WidgetBackend(QObject):
     
     @slot(list, result=int)
     @slot(list, int, result=int)
-    def get_best_width(
-        self, texts: t.Iterable[str], padding: int = None
-    ) -> int:
-        return max(map(self.estimate_line_width, texts)) + (padding or 0) * 2
+    def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
+        return max(map(self.estimate_line_width, texts)) + padding * 2
     
     @slot(object)
     def init_radio_group(self, item: QObject) -> None:
         if item['horizontal']:
-            if not item['width']:
-                item['width'] = pyenum.STRETCH
-            if not item['height']:
+            if item['width'] == pyenum.AUTO:
+                self._set_size_wrapped(item, 'width')
+            if item['height'] == pyenum.AUTO:
                 item['height'] = pystyle.size['item_height']
         else:
             if item['width'] == pyenum.AUTO:
-                @bind_signal(item.repeaterComplete)
-                def _() -> None:
+                
+                def wrap_model_width() -> None:
                     item['width'] = self.get_best_width(
-                        (item['text'], *item['model']), item['spacing']
+                        (item['title'], *item['model']), item['spacing']
                     )
                     print(':v', 'finalize radio group width', item['width'])
-            # if not item['height']:
-            #     item['height'] = pyenum.WRAP
+                
+                if item['model']:
+                    wrap_model_width()
+                else:
+                    item.modelChanged.connect(wrap_model_width)
+            
+            if item['height'] == pystyle.AUTO:
+                self._set_size_wrapped(item, 'height')
         
         @bind_signal(item.horizontalChanged)
         def _no_more_changed() -> None:
             print('LKRadioControl.horizontal should not be changed after its '
                   'instantiation!', ':v6')
-    
-    @slot(object)
-    def init_radio_group_2(self, item: QObject) -> None:
-        def finalize_width():
-            item['width'] = self.get_best_width(
-                (item['title'], *item['model']), item['spacing']
-            )
-            print(':v', 'finalize radio group width', item['width'])
-            
-        if item['width'] == pyenum.AUTO:
-            if item['model']:
-                finalize_width()
-            else:
-                item.modelChanged.connect(finalize_width)
-            item['width'] = pystyle.size['item_width']
     
     @slot(object)
     @slot(object, str)
@@ -133,3 +124,27 @@ class WidgetBackend(QObject):
         # else:
         #     size_children_widths()
         #     size_children_heights()
+        
+    @staticmethod
+    def _set_size_wrapped(
+        item: QObject, prop: t.Optional[t.Literal['width', 'height']] = None
+    ) -> None:
+        
+        def sync_size(
+            item: QObject,
+            rect: QRectF,
+            prop: t.Optional[t.Literal['width', 'height']]
+        ) -> None:
+            if prop == 'width':
+                item['width'] = rect.width()
+            elif prop == 'height':
+                item['height'] = rect.height()
+            else:
+                item['width'] = rect.width()
+                item['height'] = rect.height()
+        
+        bind_prop(
+            item, 'childrenRect', item,
+            custom_handler=partial(sync_size, item, prop=prop)
+        )
+        sync_size(item, item['childrenRect'], prop)

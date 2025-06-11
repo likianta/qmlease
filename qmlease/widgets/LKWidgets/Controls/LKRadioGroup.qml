@@ -4,10 +4,8 @@ import "../Buttons" as B
 
 Flow {
     id: root
-    width: pysize.item_width
-    height: pysize.item_height
-    // width: horizontal ? childrenRect.width : pyenum.auto
-    // height: horizontal ? pysize.item_height : childrenRect.height
+    width: pyenum.auto
+    height: pyenum.auto
     flow: horizontal ? Flow.LeftToRight : Flow.TopToBottom
     spacing: pysize.spacing_m
 
@@ -54,8 +52,7 @@ Flow {
         }
     }
 
-//    Component.onCompleted: {
-//        // py.qmlease.widget.init_radio_group(this)
-//        py.qmlease.widget.init_radio_group_2(this)
-//    }
+    Component.onCompleted: {
+        py.qmlease.widget.init_radio_group(this)
+    }
 }
