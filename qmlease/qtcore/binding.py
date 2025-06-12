@@ -32,27 +32,45 @@ def bind(trigger: T.AsIs, *args, emit_now: bool = False, **kwargs) -> T.AsIs:
 
 
 def bind_prop(
-    emitter: QObject,
-    emitter_prop: str,
-    receiver: t.Optional[QObject] = None,
-    receiver_prop: t.Optional[str] = None,
+    *args,
+    # emitter: QObject,
+    # emitter_prop: str,
+    # receiver: t.Optional[QObject] = None,
+    # receiver_prop: t.Optional[str] = None,
     custom_handler: t.Callable = None,
     effect_now: bool = False,
 ) -> None:
-    if receiver is None:
-        receiver = emitter
-        assert receiver_prop
-    else:
-        if receiver_prop is None:
-            receiver_prop = emitter_prop
+    # if receiver is None:
+    #     receiver = emitter
+    #     assert receiver_prop
+    # else:
+    #     if receiver_prop is None:
+    #         receiver_prop = emitter_prop
     
-    def _default_handler():
+    if len(args) == 3:
+        if isinstance(args[2], str):
+            emitter = args[0]
+            emitter_prop = args[1]
+            receiver = emitter
+            receiver_prop = args[2]
+        else:
+            emitter = args[0]
+            emitter_prop = args[1]
+            receiver = args[2]
+            receiver_prop = emitter_prop
+    elif len(args) == 4:
+        emitter = args[0]
+        emitter_prop = args[1]
+        receiver = args[2]
+        receiver_prop = args[3]
+    else:
+        raise Exception(args, len(args))
+    
+    def default_handler() -> None:
         receiver.setProperty(receiver_prop, emitter.property(emitter_prop))
     
-    handler = custom_handler or _default_handler
-    
+    handler = custom_handler or default_handler
     getattr(emitter, f'{emitter_prop}Changed').connect(handler)
-    
     if effect_now:
         handler()
 
