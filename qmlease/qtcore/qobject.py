@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import typing as t
 from functools import partial
 
@@ -15,11 +13,11 @@ __all__ = ['QObject', 'QObjectBaseWrapper']
 class PartialDelegate:
     self_qobj: 'QObject'
     
-    def get(self, key):
+    def get(self, key: str) -> t.Any:
         # print(self.self_qobj, key, ':v')
         return getattr(self.self_qobj, key)
     
-    def set(self, key, value):
+    def set(self, key: str, value: t.Any) -> None:
         # print(self.self_qobj, key, value, ':v')
         setattr(self.self_qobj, key, value)
 
@@ -38,13 +36,13 @@ class DynamicPropMeta(type(QObjectBase)):
                 dict_[k] = v.default
                 if v.notify:
                     print('auto create signal', f'{k}_changed', ':v')
-                    dict_[f'{k}_changed'] = Signal(v.type_)
+                    dict_[f'{k}_changed'] = Signal(v.type)
                 
                 # create slot functions for qml getter & setter
                 assert f'get_{k}' not in dict_
                 func = partial(delegate.get, key=k)
                 dict_[f'get_{k}'] = func
-                slot(name=f'get_{k}', result=v.type_)(func)
+                slot(name=f'get_{k}', result=v.type)(func)
                 
                 if not v.const:
                     assert f'set_{k}' not in dict_
@@ -54,7 +52,7 @@ class DynamicPropMeta(type(QObjectBase)):
                     #       /typeerror-got-multiple-values-for-argument-after
                     #       -applying-functools-partial
                     dict_[f'set_{k}'] = func
-                    slot(v.type_, name=f'set_{k}')(func)
+                    slot(v.type, name=f'set_{k}')(func)
         
         dict_['_auto_prop_delegate'] = delegate
         dict_['_custom_props'] = tuple(custom_props)
@@ -124,6 +122,9 @@ class QObject(QObjectBase, metaclass=DynamicPropMeta):
     
     def set_auto_prop(self, key: str, new: t.Any) -> None:
         setattr(self, key, new)
+        
+    def has_prop(self, key: str) -> bool:
+        return self[key] is not None
     
     @slot(str, result=object)
     def qget(self, name: str) -> t.Any:
@@ -181,7 +182,7 @@ class QObjectBaseWrapper:
     def __setitem__(self, key: str, value: t.Any):
         self.qobj.setProperty(key, value)
     
-    def children(self) -> list[QObjectBaseWrapper]:
+    def children(self) -> t.List['QObjectBaseWrapper']:
         out = []
         for i in QObjectBase.children(self.qobj):
             if i.property('enabled') is None:
