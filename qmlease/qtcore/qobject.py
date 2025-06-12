@@ -1,13 +1,11 @@
 import typing as t
 from functools import partial
 
-from qtpy.QtCore import QObject as QObjectBase
+from qtpy.QtCore import QObject as OriginQObject
 from qtpy.QtCore import Signal
 
 from .property import AutoProp
 from .signal_slot import slot
-
-__all__ = ['QObject', 'QObjectBaseWrapper']
 
 
 class PartialDelegate:
@@ -22,7 +20,7 @@ class PartialDelegate:
         setattr(self.self_qobj, key, value)
 
 
-class DynamicPropMeta(type(QObjectBase)):
+class DynamicPropMeta(type(OriginQObject)):
     # https://stackoverflow.com/a/63411358/9695911
     
     def __new__(cls, name, bases, dict_):
@@ -35,7 +33,7 @@ class DynamicPropMeta(type(QObjectBase)):
                 
                 dict_[k] = v.default
                 if v.notify:
-                    print('auto create signal', f'{k}_changed', ':v')
+                    # print('auto create signal', f'{k}_changed', ':v')
                     dict_[f'{k}_changed'] = Signal(v.type)
                 
                 # create slot functions for qml getter & setter
@@ -61,7 +59,7 @@ class DynamicPropMeta(type(QObjectBase)):
         return super().__new__(cls, name, bases, dict_)
 
 
-class QObject(QObjectBase, metaclass=DynamicPropMeta):
+class QObject(OriginQObject, metaclass=DynamicPropMeta):
     """
     features:
         alternative to `property` and `setProperty`:
@@ -95,20 +93,21 @@ class QObject(QObjectBase, metaclass=DynamicPropMeta):
             }
     """
     
-    def __init__(self, parent=None):
+    def __init__(self, parent: OriginQObject = None) -> None:
         super().__init__(parent)
         self._auto_prop_delegate.self_qobj = self
     
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> t.Any:
         return self.property(item)
     
-    def __setitem__(self, key: str, value: t.Any):
+    def __setitem__(self, key: str, value: t.Any) -> None:
         self.setProperty(key, value)
     
-    def __getattr__(self, item):  # behave as is. just eliminate IDE warning
+    def __getattr__(self, item: str) -> t.Any:
+        # behave as is. just eliminate IDE warning
         return super().__getattribute__(item)
     
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: t.Any) -> None:
         if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
             if getattr(self, key) != value:
                 super().__setattr__(key, value)
@@ -116,15 +115,28 @@ class QObject(QObjectBase, metaclass=DynamicPropMeta):
                 return
         super().__setattr__(key, value)
     
+    @property
+    def qobj(self) -> t.Self:
+        return self
+    
+    def children(self) -> t.List['QObject']:
+        out = []
+        for child in OriginQObject.children(self):
+            if child.property('enabled') is None:
+                # a weird item, it is invisible and unreasonable to exist.
+                continue
+            out.append(QObjectDelegate(child))
+        return out
+    
+    def has_prop(self, key: str) -> bool:
+        return self[key] is not None
+    
     def get_auto_prop(self, key: str) -> t.Any:
         print(self, key, ':v')
         return getattr(self, key)
     
     def set_auto_prop(self, key: str, new: t.Any) -> None:
         setattr(self, key, new)
-        
-    def has_prop(self, key: str) -> bool:
-        return self[key] is not None
     
     @slot(str, result=object)
     def qget(self, name: str) -> t.Any:
@@ -135,39 +147,16 @@ class QObject(QObjectBase, metaclass=DynamicPropMeta):
         setattr(self, name, value)
 
 
-def enhance_origin_qobj(qobj: QObjectBase) -> QObject:  # DELETE
-    def getitem(self, item: str):
-        return self.property(item)
+class QObjectDelegate:
     
-    def setitem(self, key: str, value: t.Any):
-        self.setProperty(key, value)
-    
-    setattr(qobj, '__QObject_getitem__', getitem)
-    setattr(qobj, '__QObject_setitem__', setitem)
-    
-    return qobj
-
-
-class QObjectBaseWrapper:
-    """
-    a wrapper for QObjectBase, to enhance it's features.
-    see also `.signal_slot : def slot : decorator : func_wrapper`.
-    """
-    
-    def __init__(self, qobj: QObjectBase):
-        """
-        if you have only QObjectBase instance, you can pass it here to get the
-        similar features like `QObject`.
-        """
+    def __init__(self, qobj: OriginQObject):
         self.qobj = qobj
     
-    def __getattr__(self, item):
-        if isinstance(item, str):
-            # if item.endswith('_changed'):
-            #     return getattr(self.qobj, item.replace('_changed', 'Changed'))
-            if item != 'qobj' and item != 'children':
-                return getattr(_getattr(self, 'qobj'), item)
-        return _getattr(self, item)
+    def __getattr__(self, item: str):
+        if item == 'qobj' or item == 'children':
+            return _getattr(self, item)
+        else:
+            return getattr(_getattr(self, 'qobj'), item)
     
     def __setattr__(self, key, value):
         if isinstance(key, str):
@@ -182,13 +171,13 @@ class QObjectBaseWrapper:
     def __setitem__(self, key: str, value: t.Any):
         self.qobj.setProperty(key, value)
     
-    def children(self) -> t.List['QObjectBaseWrapper']:
+    def children(self) -> t.List['QObjectDelegate']:
         out = []
-        for i in QObjectBase.children(self.qobj):
+        for i in OriginQObject.children(self.qobj):
             if i.property('enabled') is None:
                 # a weird item, it is invisible and unreasonable to exist.
                 continue
-            out.append(QObjectBaseWrapper(i))
+            out.append(QObjectDelegate(i))
         return out
 
 
@@ -206,8 +195,8 @@ def _setattr(self, key, value) -> None:
 
 
 def _qgetattr(self, key) -> t.Any:
-    return QObjectBase.__getattribute__(self, key)
+    return OriginQObject.__getattribute__(self, key)
 
 
 def _qsetattr(self, key, value) -> None:
-    QObjectBase.__setattr__(self, key, value)
+    OriginQObject.__setattr__(self, key, value)

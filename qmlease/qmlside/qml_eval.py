@@ -11,7 +11,7 @@ from qtpy.QtQml import QQmlComponent
 from qtpy.QtQml import QQmlEngine
 
 from ..qtcore import bind_signal
-from ..qtcore.qobject import QObjectBaseWrapper
+from ..qtcore.qobject import QObjectDelegate
 
 
 class T:
@@ -45,7 +45,7 @@ class T:
     ]
     
     ParamSpec = t.ParamSpec('ParamSpec')  # TODO
-    QObject = t.Union[QObject, QObjectBaseWrapper]
+    QObject = t.Union[QObject, QObjectDelegate]
 
 
 class QmlEval(QObject):
@@ -57,12 +57,12 @@ class QmlEval(QObject):
         super().__init__(None)
         # self.engine = app.engine
         self.engine = QQmlEngine()
-        self.engine.installExtensions(QJSEngine.AllExtensions)
+        self.engine.installExtensions(QJSEngine.AllExtensions)  # noqa
         self._comp = None
         self._qobj = None
     
     @property
-    def qobj(self) -> QObject:
+    def qobj(self) -> t.Any:
         if self._qobj is None:
             self._comp = QQmlComponent(self.engine, xpath('qml_eval.qml'))
             if self._comp.isError():
@@ -100,10 +100,8 @@ class QmlEval(QObject):
             
             args = []
             for v in kwargs.values():
-                if isinstance(v, QObjectBaseWrapper):
+                if isinstance(v, (QObject, QObjectDelegate)):
                     args.append(self.engine.newQObject(v.qobj))
-                elif isinstance(v, QObject):
-                    args.append(self.engine.newQObject(v))
                 else:
                     args.append(v)
             result = func.call(args)  # noqa
@@ -121,11 +119,7 @@ class QmlEval(QObject):
         prop: str,
         func: t.Optional[t.Callable] = None,
     ) -> None:
-        if isinstance(a, QObjectBaseWrapper):
-            a = a.qobj
-        if isinstance(b, QObjectBaseWrapper):
-            b = b.qobj
-        
+        a, b = a.qobj, b.qobj
         if func:
             eval(f'b.{prop}Changed', {'b': b}).connect(func)
         else:
@@ -142,11 +136,7 @@ class QmlEval(QObject):
         anchors: T.AnchorsA,
         margins: T.Margins = None,
     ) -> None:
-        if isinstance(child, QObjectBaseWrapper):
-            child = child.qobj
-        if isinstance(parent, QObjectBaseWrapper):
-            parent = parent.qobj
-        self.qobj.bindAnchorsToParent(child, parent, anchors, margins)
+        self.qobj.bindAnchorsToParent(child.qobj, parent.qobj, anchors, margins)
     
     bind_anchors = bind_anchors_to_parent
     
@@ -159,11 +149,6 @@ class QmlEval(QObject):
         anchors: T.AnchorsB1,
         margins: T.Margins = None,
     ):
-        if isinstance(one, QObjectBaseWrapper):
-            one = one.qobj
-        if isinstance(another, QObjectBaseWrapper):
-            another = another.qobj
-        
         norm_anchors: T.AnchorsB2 = []
         if anchors:
             if isinstance(anchors, str):
@@ -178,6 +163,7 @@ class QmlEval(QObject):
                     if isinstance(a, tuple):
                         norm_anchors.append(a)
                     else:
+                        # noinspection PyTypeChecker
                         norm_anchors.append((a, a))
         if norm_anchors:
             norm_anchors = [
@@ -186,7 +172,9 @@ class QmlEval(QObject):
                 else x
                 for x in norm_anchors
             ]
-        self.qobj.bindAnchorsToSibling(one, another, norm_anchors, margins)
+        self.qobj.bindAnchorsToSibling(
+            one.qobj, another.qobj, norm_anchors, margins
+        )
 
 
 qml_eval = QmlEval()

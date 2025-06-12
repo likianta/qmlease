@@ -73,7 +73,7 @@ def slot(
             *args: T.ParamSpec.args,
             **kwargs: T.ParamSpec.kwargs
         ) -> T.Func:
-            from .qobject import QObjectBaseWrapper
+            from .qobject import QObjectDelegate
             new_args = []
             new_kwargs = {}
             
@@ -81,7 +81,7 @@ def slot(
                 if isinstance(arg, QJSValue):
                     new_args.append(arg.toVariant())
                 elif isinstance(arg, QObject):
-                    new_args.append(QObjectBaseWrapper(arg))
+                    new_args.append(QObjectDelegate(arg))
                 else:
                     new_args.append(arg)
             
@@ -89,7 +89,7 @@ def slot(
                 if isinstance(v, QJSValue):
                     new_kwargs[k] = v.toVariant()
                 elif isinstance(v, QObject):
-                    new_kwargs[k] = QObjectBaseWrapper(v)
+                    new_kwargs[k] = QObjectDelegate(v)
                 else:
                     new_kwargs[k] = v
             

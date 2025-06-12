@@ -1,8 +1,7 @@
-from .image_provider import ImageProvider
-from .image_provider import LocalImageProvider
-from .widget_support import widget_support
-
-# DELETE or REFACTOR
+"""
+DELETE: this folder is going to be deleted. new work is going on -
+    "./widget_support".
+"""
 from .listview import ListView
 from .logger import log
 from .logger import logger
@@ -10,5 +9,4 @@ from .progress import Progress
 from .scope import ScopeEngine
 from .slider import Slider
 from .util import util
-
-# see registers in `qmlease/application.py : def register_backend`.
+# see registers in `/qmlease/application/application.py : def register_backend`.
