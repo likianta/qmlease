@@ -67,7 +67,8 @@ class WidgetSupport(QObject):
                     item['width'] = self.get_best_width(
                         (item['title'], *item['model']), item['spacing']
                     )
-                    print(':v', 'finalize radio group width', item['width'])
+                    print(':v', 'finalize radio group width',
+                          item['title'], item['width'])
                 
                 if item['model']:
                     wrap_model_width()

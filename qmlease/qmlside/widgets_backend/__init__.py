@@ -1,3 +1,5 @@
+from .image_provider import ImageProvider
+from .image_provider import LocalImageProvider
 from .widget_support import widget_support
 
 # DELETE or REFACTOR

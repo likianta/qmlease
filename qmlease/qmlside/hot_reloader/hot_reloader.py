@@ -45,7 +45,7 @@ class HotReloader(QObject):
             )
     
     def run(self) -> None:
-        self._app.register(self, 'reloader', 'qmlease', verbose=False)
+        self._app.register(self, 'reloader', 'qmlease')
         #   we can use this in qml with "py.qmlease.reloader.<method>(...)".
         # noinspection PyProtectedMember
         self._app._run(self._get_bootloader_file(self._target_file))

@@ -97,8 +97,8 @@ class Application(QApplication):
                 '*.qml' files. see example of '../widgets'.
         """
         if not fs.exist(qmldir):
-            print(':v3p', 'the qmldir not exists! it may cause a "xxx is not '
-                          'installed" error in qml side.', qmldir)
+            print('the qmldir not exists! it may cause a "xxx is not '
+                  'installed" error in qml side.', qmldir, ':v6p')
         self.engine.addImportPath(qmldir)
     
     def _register_backend(self) -> None:
