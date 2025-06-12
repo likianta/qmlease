@@ -31,7 +31,8 @@ class WidgetSupport(QObject):
         assert item['alignment'] in (
             'left', 'right', 'hcenter', 'hfill'
         ), item['alignment']
-        layout.align_children(item, item['alignment'])
+        if item['alignment'] != 'left':
+            layout.align_children(item, item['alignment'])
         if item['autoSize']:
             layout.size_children(item, 'column')
     
@@ -79,7 +80,8 @@ class WidgetSupport(QObject):
         assert item['alignment'] in (
             'top', 'bottom', 'vcenter', 'vfill'
         ), item['alignment']
-        layout.align_children(item, item['alignment'])
+        if item['alignment'] != 'top':
+            layout.align_children(item, item['alignment'])
         if item['autoSize']:
             layout.size_children(item, 'row')
     

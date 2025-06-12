@@ -4,6 +4,7 @@ from os.path import splitdrive
 from lk_utils import fs
 
 from ...qtcore import QObject
+from ...qtcore import bind_prop
 from ...qtcore import bind_signal
 from ...qtcore import slot
 
@@ -46,8 +47,16 @@ class HotReloader(QObject):
             
             @bind_signal(window.loaded)
             def _(item: QObject) -> None:
-                window['width'] = item.property('width') or 800
-                window['height'] = item.property('height') or 600
+                # window['width'] = item.property('width') or 800
+                # window['height'] = item.property('height') or 600
+                if item['width']:
+                    window['width'] = item['width']
+                else:
+                    bind_prop(window, 'width', item, True)
+                if item['height']:
+                    window['height'] = item['height']
+                else:
+                    bind_prop(window, 'height', item, True)
         
         @bind_signal(window.reloadTriggered)
         def _() -> None:

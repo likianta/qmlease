@@ -32,7 +32,7 @@ def bind(trigger: T.AsIs, *args, emit_now: bool = False, **kwargs) -> T.AsIs:
 
 
 def bind_prop(
-    *args,
+    *args: t.Union[QObject, str, bool],
     # emitter: QObject,
     # emitter_prop: str,
     # receiver: t.Optional[QObject] = None,
@@ -40,31 +40,35 @@ def bind_prop(
     custom_handler: t.Callable = None,
     effect_now: bool = False,
 ) -> None:
-    # if receiver is None:
-    #     receiver = emitter
-    #     assert receiver_prop
-    # else:
-    #     if receiver_prop is None:
-    #         receiver_prop = emitter_prop
-    
-    if len(args) == 3:
-        if isinstance(args[2], str):
-            emitter = args[0]
-            emitter_prop = args[1]
-            receiver = emitter
-            receiver_prop = args[2]
-        else:
-            emitter = args[0]
-            emitter_prop = args[1]
-            receiver = args[2]
-            receiver_prop = emitter_prop
-    elif len(args) == 4:
-        emitter = args[0]
-        emitter_prop = args[1]
+    """
+    args form:
+        1. (emitter, emitter_prop, receiver_prop)
+        2. (emitter, emitter_prop, receiver_prop, effect_now)
+        3. (emitter, emitter_prop, receiver)
+        4. (emitter, emitter_prop, receiver, effect_now)
+        5. (emitter, emitter_prop, receiver, receiver_prop)
+        6. (emitter, emitter_prop, receiver, receiver_prop, effect_now)
+    """
+    assert len(args) in (3, 4, 5)
+    args += (None, None)
+    emitter = args[0]
+    emitter_prop = args[1]
+    if isinstance(args[2], str):  # 1.2.
+        receiver = emitter
+        receiver_prop = args[2]
+        if isinstance(args[3], bool):  # 2.
+            effect_now = args[3]
+    else:  # 3.4.5.6.
         receiver = args[2]
-        receiver_prop = args[3]
-    else:
-        raise Exception(args, len(args))
+        if args[3] is None:  # 3.
+            receiver_prop = emitter_prop
+        elif isinstance(args[3], bool):  # 4.
+            receiver_prop = emitter_prop
+            effect_now = args[3]
+        else:  # 5.6.
+            receiver_prop = args[3]
+            if isinstance(args[4], bool):  # 6.
+                effect_now = args[4]
     
     def default_handler() -> None:
         receiver.setProperty(receiver_prop, emitter.property(emitter_prop))

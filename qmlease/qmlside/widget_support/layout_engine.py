@@ -52,9 +52,9 @@ class LayoutEngine:
     def align_children(self, parent: QObject, alignment: T.Alignment) -> None:
         for child in parent.children():
             if alignment == 'hfill':
-                bind_prop(parent, 'width', child)
+                bind_prop(parent, 'width', child, True)
             elif alignment == 'vfill':
-                bind_prop(parent, 'height', child)
+                bind_prop(parent, 'height', child, True)
                 self._qobj.centerChild(parent.qobj, child.qobj, 'vcenter')
             else:
                 self._qobj.centerChild(parent.qobj, child.qobj, alignment)
