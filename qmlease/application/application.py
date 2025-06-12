@@ -132,11 +132,14 @@ class Application(QApplication):
     
     # -------------------------------------------------------------------------
     
-    def run(self, qmlfile: str, debug: bool = False) -> None:
+    def run(self, qmlfile: str, debug: bool = False, **kwargs) -> None:
         self._register.freeze()
         if debug:
+            # note: cannot move the import statement to the top, otherwise the -
+            # script will be shut down immediately with no reason. this is -
+            # weird.
             from ..qmlside import HotReloader
-            reloader = HotReloader(app, qmlfile)
+            reloader = HotReloader(app, qmlfile, **kwargs)
             reloader.run()
         else:
             self._run(qmlfile)
@@ -153,10 +156,10 @@ class Application(QApplication):
             self.exec_()
         else:
             self.exec()
-        #   warning: do not use `sys.exit(self.exec())`, because
-        #   `self.__hidden_ref` will be released before qml triggered
-        #   `Component.onDestroyed`. then there will be an error 'cannot call
-        #   from null!'
+        #   warning: do not use `sys.exit(self.exec())`, because -
+        #   `self.__hidden_ref` will be released before qml triggered -
+        #   `Component.onDestroyed`. then there will raise an error: "cannot -
+        #   call from null!"
     
     # alias for compatible.
     #   https://ux.stackexchange.com/questions/106001/do-we-open-or-launch-or

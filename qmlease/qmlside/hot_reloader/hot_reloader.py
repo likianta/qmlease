@@ -1,3 +1,4 @@
+import typing as t
 from os.path import splitdrive
 
 from lk_utils import fs
@@ -17,6 +18,7 @@ class HotReloader(QObject):
         app: 'Application',
         target_file: str,
         title: str = 'QmlEase Reloader',
+        window_size: t.Tuple[int, int] = None,
     ) -> None:
         """
         params:
@@ -26,6 +28,7 @@ class HotReloader(QObject):
         super().__init__(None)
         self.title = title
         self._app = app
+        self._force_window_size = window_size
         self._reload_count = 0
         self._target_file = fs.abspath(target_file)
     
@@ -33,6 +36,18 @@ class HotReloader(QObject):
     def init_reloader_window(self, window: QObject) -> None:
         window['title'] = self.title
         window['source'] = 'file:///' + self._target_file
+        
+        if self._force_window_size:
+            window['width'] = self._force_window_size[0]
+            window['height'] = self._force_window_size[1]
+        else:
+            window['width'] = 800
+            window['height'] = 600
+            
+            @bind_signal(window.loaded)
+            def _(item: QObject) -> None:
+                window['width'] = item.property('width') or 800
+                window['height'] = item.property('height') or 600
         
         @bind_signal(window.reloadTriggered)
         def _() -> None:

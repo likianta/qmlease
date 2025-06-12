@@ -10,15 +10,20 @@ from argsense import cli
 
 
 @cli
-def run(qml_file: str, debug: bool = False) -> None:
+def run(qml_file: str, debug: bool = False, **kwargs) -> None:
     """
     run target QML file.
     
     params:
         debug (-d): enable hot reload.
+        **kwargs:
+            window_size (-s): e.g. "800x600"
     """
     from .application import app
-    app.run(qml_file, debug=debug)
+    if x := kwargs.get('window_size'):
+        w, h = map(int, x.split('x'))
+        kwargs['window_size'] = (w, h)
+    app.run(qml_file, debug=debug, **kwargs)
 
 
 @cli

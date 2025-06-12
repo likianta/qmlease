@@ -4,23 +4,25 @@ import LKWidgets
 LKWindow {
     id: root
     visible: false
-    width: _loader.width
-    height: _loader.height
+//    width: _loader.width
+//    height: _loader.height
 
     property alias source: _loader.source
+    signal loaded(var item)
     signal reloadTriggered()
 
     Loader {
         id: _loader
-        onLoaded: {
-            if (this.item.width && this.item.height) {
-                this.width = this.item.width
-                this.height = this.item.height
-            } else {
-                this.width = 800
-                this.height = 600
-            }
-        }
+        onLoaded: root.loaded(this.item)
+//        onLoaded: {
+//            if (this.item.width && this.item.height) {
+//                this.width = this.item.width
+//                this.height = this.item.height
+//            } else {
+//                this.width = 800
+//                this.height = 600
+//            }
+//        }
     }
 
     LKGhostButton {
