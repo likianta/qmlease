@@ -12,6 +12,7 @@ Flow {
     property bool  ghostBorder: true
     property bool  horizontal: false
     property int   index: 0
+    property int   itemWidth: 0
     property alias model: _repeater.model
     property alias title: _text.text
 
@@ -20,6 +21,7 @@ Flow {
     A.LKText {
         id: _text
         height: pysize.item_height
+        font.bold: true
         horizontalAlignment: Text.AlignLeft
         verticalAlignment: Text.AlignVCenter
     }
@@ -27,7 +29,11 @@ Flow {
     Repeater {
         id: _repeater
         delegate: B.LKRadioBox {
-            width: root.horizontal ? implicitWidth : root.width
+            width: (
+                root.horizontal ?
+                (root.itemWidth ?? implicitWidth) :
+                root.width
+            )
             // height: pysize.item_height
             ghostBorder: root.ghostBorder
             text: modelData

@@ -65,7 +65,7 @@ class PySide(QObject, PyRegister):
                 {source_code}
             __hook__['__result__'] = __selfunc__()
             '''
-        ).format(source_code=indent(dedent(code).strip(), '    '))
+        ).format(source_code=indent(dedent(code).strip(), '    ').lstrip())
         return exec_code_object(full_code, kwargs or {})
     
     @slot(str, name='def')

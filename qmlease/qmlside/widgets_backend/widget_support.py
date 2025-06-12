@@ -1,4 +1,5 @@
 import typing as t
+import uuid
 
 from qtpy.QtCore import QRectF
 from qtpy.QtGui import QFont
@@ -44,6 +45,18 @@ class WidgetSupport(QObject):
     def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
         return max(map(self.estimate_line_width, texts)) + padding * 2
     
+    @slot(result=str)
+    def generate_random_id(self) -> str:
+        return uuid.uuid1().hex
+    
+    # -------------------------------------------------------------------------
+    
+    @slot(object)
+    def init_column(self, item: QObject) -> None:
+        pylayout.auto_align(item, item['alignment'])
+        if item['autoSize']:
+            self.size_children(item, 'column')
+    
     @slot(object)
     def init_radio_group(self, item: QObject) -> None:
         if item['horizontal']:
@@ -82,6 +95,15 @@ class WidgetSupport(QObject):
         def _no_more_changed() -> None:
             print('LKRadioControl.horizontal should not be changed after its '
                   'instantiation!', ':v6')
+    
+    @slot(object)
+    def init_row(self, item: QObject) -> None:
+        pylayout.auto_align(item, item['alignment'])
+        if item['autoSize']:
+            self.size_children(item, 'row')
+    
+    # -------------------------------------------------------------------------
+    # general
     
     @slot(object)
     @slot(object, str)
@@ -132,8 +154,8 @@ class WidgetSupport(QObject):
         dimension: t.Optional[t.Literal['width', 'height']] = None
     ) -> None:
         @bind_signal(item.childrenRectChanged)
-        def sync_size(rect: QRectF):
-            print(rect, ':v')
+        def sync_size(rect: QRectF) -> None:
+            # print(rect, ':v')
             if dimension == 'width':
                 item['width'] = rect.width()
             elif dimension == 'height':

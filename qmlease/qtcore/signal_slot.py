@@ -3,7 +3,6 @@ fix typehint of Signal and Slot.
 """
 import typing as t
 from functools import wraps
-from typing import cast
 
 # fix typehint of Signal and Slot.
 # https://rednafi.github.io/reflections/static-typing-python-decorators.html
@@ -26,18 +25,27 @@ class T:
     ParamSpec = t.ParamSpec('ParamSpec')
     SlotReturn0 = t.Optional[type]
     SlotReturn1 = t.Union[str, type, None]
-    
     Func = t.Callable[ParamSpec, t.Any]
 
 
-def slot(*argtypes: T.ArgType0,
-         name: str = '',
-         result: T.SlotReturn0 = None) -> T.Func:
+def slot(
+    *argtypes: T.ArgType0,
+    name: str = '',
+    result: T.SlotReturn0 = None
+) -> T.Func:
     """
-    args:
-        argtypes: see `def _reformat_argtypes()`.
-        name: str
-        result: see `def _reformat_result()`.
+    example:
+        @slot(str, int, object)
+        def foo(msg: str, flag: int, item: QObject):
+            ...
+        
+        @slot(result=bool)
+        def bar() -> bool:
+            ...
+    
+    valid types in slot(..., result=...):
+                        ^^^         ^^^
+        see `_reformat_argtypes : docstring`
     """
     argtypes = _reformat_argtypes(argtypes)
     result = _reformat_result(result)
@@ -46,20 +54,24 @@ def slot(*argtypes: T.ArgType0,
         nonlocal argtypes, name, result
         if QT_API == 'pyqt5' and result is None:
             __hidden_ref.append(
-                OriginSlot(*argtypes,
-                           name=(name or func.__name__))(func)
+                OriginSlot(
+                    *argtypes,
+                    name=(name or func.__name__)
+                )(func)
             )
         else:
             __hidden_ref.append(
-                OriginSlot(*argtypes,
-                           name=(name or func.__name__),
-                           result=result)(func)
+                OriginSlot(
+                    *argtypes,
+                    name=(name or func.__name__),
+                    result=result
+                )(func)
             )
         
         @wraps(func)
         def func_wrapper(
-                *args: T.ParamSpec.args,
-                **kwargs: T.ParamSpec.kwargs
+            *args: T.ParamSpec.args,
+            **kwargs: T.ParamSpec.kwargs
         ) -> T.Func:
             from .qobject import QObjectBaseWrapper
             new_args = []
@@ -190,4 +202,4 @@ class Signal:
     def emit(self, *args): ...
 
 
-signal = cast(t.Type[Signal], OriginSignal)
+signal = t.cast(t.Type[Signal], OriginSignal)

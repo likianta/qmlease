@@ -5,21 +5,14 @@ Item {
 
     property bool   active: false
     property string scope: 'global'
-    property string __sid: generateRandomId()
     property var    __registeredFuncs: Object()
+    property string __sid: py.qmlease.widget.generate_random_id()
 
     signal triggered(string fid)
 
-    function generateRandomId() {
-        return pyside.eval(`
-            from uuid import uuid1
-            return uuid1().hex
-        `)
-    }
-
     function register(key, modifier, func) {
         const sid = root.__sid
-        const fid = root.generateRandomId()
+        const fid = py.qmlease.widget.generate_random_id()
         lkscope.register_func(
             root.scope, sid, fid, root, key, modifier
         )
