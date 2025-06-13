@@ -52,9 +52,9 @@ class LayoutEngine:
     def align_children(self, parent: QObject, alignment: T.Alignment) -> None:
         for child in parent.children():
             if alignment == 'hfill':
-                bind_prop(parent, 'width', child, True)
+                bind_prop(child, 'width', parent, True)
             elif alignment == 'vfill':
-                bind_prop(parent, 'height', child, True)
+                bind_prop(child, 'height', parent, True)
                 self._qobj.centerChild(parent.qobj, child.qobj, 'vcenter')
             else:
                 self._qobj.centerChild(parent.qobj, child.qobj, alignment)
@@ -152,12 +152,12 @@ class LayoutEngine:
         def size_children_widths() -> None:
             for child in _children:
                 if child.property('width') == pyenum.STRETCH:
-                    bind_prop(_parent, 'width', child, effect_now=True)
+                    bind_prop(child, 'width', _parent, effect_now=True)
         
         def size_children_heights() -> None:
             for child in _children:
                 if child.property('height') == pyenum.STRETCH:
-                    bind_prop(_parent, 'height', child, effect_now=True)
+                    bind_prop(child, 'height', _parent, effect_now=True)
         
         if policy == 'default':
             size_children_widths()

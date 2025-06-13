@@ -42,33 +42,45 @@ def bind_prop(
 ) -> None:
     """
     args form:
-        1. (emitter, emitter_prop, receiver_prop)
-        2. (emitter, emitter_prop, receiver_prop, effect_now)
-        3. (emitter, emitter_prop, receiver)
-        4. (emitter, emitter_prop, receiver, effect_now)
-        5. (emitter, emitter_prop, receiver, receiver_prop)
-        6. (emitter, emitter_prop, receiver, receiver_prop, effect_now)
+        1. (receiver, receiver_prop, emitter_prop)
+        2. (receiver, receiver_prop, emitter_prop, effect_now)
+        3. (receiver, receiver_prop, emitter)
+        4. (receiver, receiver_prop, emitter, effect_now)
+        5. (receiver, receiver_prop, emitter, emitter_prop)
+        6. (receiver, receiver_prop, emitter, emitter_prop, effect_now)
+        
+    examples:
+        bind_prop(item, 'width', 'height')
+            when item height changed, update width equal to height.
+        bind_prop(child, 'width', parent)
+            when parent width changed, update child width equal to parent's.
+        bind_prop(child, 'width', parent, 'height')
+            when parent height changed, update child width equal to parent's.
+        bind_prop(child, 'width', parent, 'height', True)
+            same like above, but trigger the change event right now.
     """
     assert len(args) in (3, 4, 5)
     args += (None, None)
-    emitter = args[0]
-    emitter_prop = args[1]
+    receiver = args[0]
+    receiver_prop = args[1]
     if isinstance(args[2], str):  # 1.2.
-        receiver = emitter
-        receiver_prop = args[2]
+        emitter = receiver
+        emitter_prop = args[2]
         if isinstance(args[3], bool):  # 2.
             effect_now = args[3]
     else:  # 3.4.5.6.
-        receiver = args[2]
+        emitter = args[2]
         if args[3] is None:  # 3.
-            receiver_prop = emitter_prop
+            emitter_prop = receiver_prop
         elif isinstance(args[3], bool):  # 4.
-            receiver_prop = emitter_prop
+            emitter_prop = receiver_prop
             effect_now = args[3]
         else:  # 5.6.
-            receiver_prop = args[3]
+            emitter_prop = args[3]
             if isinstance(args[4], bool):  # 6.
                 effect_now = args[4]
+    if receiver_prop == emitter_prop:
+        assert receiver is not emitter
     
     def default_handler() -> None:
         receiver.setProperty(receiver_prop, emitter.property(emitter_prop))

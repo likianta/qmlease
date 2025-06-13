@@ -7,7 +7,7 @@ class TestBackend(QObject):
     @slot(object)
     def handle(self, item):
         bind_prop(
-            item, 'childrenRect', 'width',
+            item, 'width', 'childrenRect',
             custom_handler=partial(self._sync_size_to_children_rect, item),
             # effect_now=True
         )

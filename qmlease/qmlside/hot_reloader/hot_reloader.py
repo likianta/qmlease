@@ -52,11 +52,11 @@ class HotReloader(QObject):
                 if item['width']:
                     window['width'] = item['width']
                 else:
-                    bind_prop(window, 'width', item, True)
+                    bind_prop(item, 'width', window, True)
                 if item['height']:
                     window['height'] = item['height']
                 else:
-                    bind_prop(window, 'height', item, True)
+                    bind_prop(item, 'height', window, True)
         
         @bind_signal(window.reloadTriggered)
         def _() -> None:
