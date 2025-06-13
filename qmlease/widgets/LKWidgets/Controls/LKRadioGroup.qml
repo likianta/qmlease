@@ -15,6 +15,7 @@ Flow {
     property int   itemWidth: 0
     property alias model: _repeater.model
     property alias title: _text.text
+    property alias titleWidth: _text.width
 
     signal checked(int index, string label)
 

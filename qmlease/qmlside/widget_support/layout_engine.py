@@ -55,9 +55,9 @@ class LayoutEngine:
                 bind_prop(child, 'width', parent, True)
             elif alignment == 'vfill':
                 bind_prop(child, 'height', parent, True)
-                self._qobj.centerChild(parent.qobj, child.qobj, 'vcenter')
+                self._qobj.alignChild(parent.qobj, child.qobj, 'vcenter')
             else:
-                self._qobj.centerChild(parent.qobj, child.qobj, alignment)
+                self._qobj.alignChild(parent.qobj, child.qobj, alignment)
     
     def auto_size_children(
         self,

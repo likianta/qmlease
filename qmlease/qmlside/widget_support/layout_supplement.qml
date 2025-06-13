@@ -6,7 +6,7 @@
 import QtQml 2.0
 
 QtObject {
-    function centerChild(parent, child, anchor) {
+    function alignChild(parent, child, anchor) {
         switch (anchor) {
             case 'hcenter':
                 child.anchors.horizontalCenter = Qt.binding(

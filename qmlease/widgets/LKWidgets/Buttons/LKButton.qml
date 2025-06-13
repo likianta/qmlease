@@ -49,10 +49,10 @@ Rectangle {
 
     LKText {
         id: _text
-        // anchors.fill: parent
-        anchors.centerIn: parent
-        // horizontalAlignment: Text.AlignHCenter
-        // verticalAlignment: Text.AlignVCenter
+        // anchors.centerIn: parent
+        anchors.fill: parent
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
         color: root.enabled ? root.textColor : pycolor.text_disabled
     }
 
