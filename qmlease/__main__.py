@@ -18,6 +18,7 @@ def run(qml_file: str, debug: bool = False, **kwargs) -> None:
         debug (-d): enable hot reload.
         **kwargs:
             window_size (-s): e.g. "800x600"
+            print_with_varnames (-v): bool
     """
     from .application import app
     if x := kwargs.get('window_size'):
@@ -68,4 +69,6 @@ def list_builtin_pyhandlers() -> None:
 
 
 if __name__ == '__main__':
+    # pox -m qmlease run unittests/untitled.qml -d
+    # pox -m qmlease run unittests/untitled.qml -d -v :true
     cli.run()

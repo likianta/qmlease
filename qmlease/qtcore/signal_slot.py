@@ -6,7 +6,7 @@ from functools import wraps
 
 # fix typehint of Signal and Slot.
 # https://rednafi.github.io/reflections/static-typing-python-decorators.html
-from qtpy.QtCore import QObject
+from qtpy.QtCore import QObject as OriginQObject
 from qtpy.QtCore import Signal as OriginSignal
 from qtpy.QtCore import Slot as OriginSlot
 from qtpy.QtQml import QJSValue
@@ -80,7 +80,7 @@ def slot(
             for arg in args:
                 if isinstance(arg, QJSValue):
                     new_args.append(arg.toVariant())
-                elif isinstance(arg, QObject):
+                elif isinstance(arg, OriginQObject):
                     new_args.append(QObjectDelegate(arg))
                 else:
                     new_args.append(arg)
@@ -88,7 +88,7 @@ def slot(
             for k, v in kwargs.items():
                 if isinstance(v, QJSValue):
                     new_kwargs[k] = v.toVariant()
-                elif isinstance(v, QObject):
+                elif isinstance(v, OriginQObject):
                     new_kwargs[k] = QObjectDelegate(v)
                 else:
                     new_kwargs[k] = v
@@ -136,10 +136,10 @@ def _reformat_argtypes(
     
     str_2_type = {
         'any'     : QJSValue,
-        'item'    : QObject,
-        'object'  : QObject,
+        'item'    : OriginQObject,
+        'object'  : OriginQObject,
         'pyobject': QJSValue,
-        'qobject' : QObject,
+        'qobject' : OriginQObject,
         '...'     : QJSValue,
     }
     
@@ -149,10 +149,10 @@ def _reformat_argtypes(
                 t = str_2_type[t]
             else:
                 raise Exception(f'Argtype `{t}` is not convertable!')
-        elif t in (bool, bytes, float, int, str, QObject):
+        elif t in (bool, bytes, float, int, str, OriginQObject):
             pass
         elif t in (object,):
-            t = QObject
+            t = OriginQObject
         elif t in (dict, list, set, tuple):
             t = QJSValue
         else:

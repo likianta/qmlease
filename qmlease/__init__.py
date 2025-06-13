@@ -11,6 +11,7 @@ if 2:
 if 3:
     from ._env import QT_API
 
+from . import qtcore
 from .application import Application
 from .application import app
 from .pyside import pyside

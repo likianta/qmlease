@@ -3,8 +3,10 @@ from textwrap import dedent
 from textwrap import indent
 
 from .register import PyRegister
-from ..qtcore import QObject
 from ..qtcore import slot
+from ..qtcore.qobject import OriginQObject
+from ..qtcore.qobject import QObject
+from ..qtcore.qobject import QObjectDelegate
 
 
 class PySide(QObject, PyRegister):
@@ -45,6 +47,9 @@ class PySide(QObject, PyRegister):
     @slot(str, dict, result=object)
     def eval(self, code: str, kwargs: dict = None) -> t.Any:
         def exec_code_object(code: str, context: dict) -> t.Any:
+            for k, v in context.items():
+                if isinstance(v, OriginQObject):
+                    context[k] = QObjectDelegate(v)
             context['__file__'] = __file__
             context['__hook__'] = {'__result__': None}
             # assert "__hook__['__result__'] =" in code
@@ -52,8 +57,8 @@ class PySide(QObject, PyRegister):
                 exec(code, context)
             except Exception as e:
                 print(':v8', code)
-                print(':v8', {
-                    k: v for k, v in context.items() if k != '__builtins__'
+                print(':v8l', {
+                    k: v for k, v in context.items() if not k.startswith('__')
                 })
                 raise e
             return context['__hook__']['__result__']

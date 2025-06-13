@@ -4,5 +4,6 @@ from .binding import bind_prop
 from .binding import bind_signal
 from .property import AutoProp
 from .qobject import QObject
+from .qobject import QObjectDelegate
 from .signal_slot import signal
 from .signal_slot import slot

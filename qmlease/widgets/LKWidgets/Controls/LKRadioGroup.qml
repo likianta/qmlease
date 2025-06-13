@@ -4,7 +4,7 @@ import "../Buttons" as B
 
 Flow {
     id: root
-    width: pysize.auto
+    // width: pysize.auto
     // height: pysize.auto
     flow: horizontal ? Flow.LeftToRight : Flow.TopToBottom
     spacing: pysize.spacing_m
@@ -32,10 +32,10 @@ Flow {
         delegate: B.LKRadioBox {
             width: (
                 root.horizontal ?
-                (root.itemWidth ?? implicitWidth) :
+                (root.itemWidth > 0 ? root.itemWidth : implicitWidth) :
                 root.width
             )
-            // height: pysize.item_height
+            height: pysize.item_height
             ghostBorder: root.ghostBorder
             text: modelData
 

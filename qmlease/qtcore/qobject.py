@@ -116,6 +116,10 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
         super().__setattr__(key, value)
     
     @property
+    def class_name(self) -> str:
+        return self.__class__.__name__
+    
+    @property
     def qobj(self) -> t.Self:
         return self
     
@@ -149,54 +153,65 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
 
 class QObjectDelegate:
     
-    def __init__(self, qobj: OriginQObject):
+    def __init__(self, qobj: OriginQObject) -> None:
         self.qobj = qobj
     
-    def __getattr__(self, item: str):
-        if item == 'qobj' or item == 'children':
+    def __getattr__(self, item: str) -> t.Any:
+        if item in ('qobj', 'children', 'class_name'):
             return _getattr(self, item)
         else:
             return getattr(_getattr(self, 'qobj'), item)
     
-    def __setattr__(self, key, value):
+    def __setattr__(self, key: str, value: t.Any) -> None:
         if isinstance(key, str):
             if key != 'qobj':
                 setattr(_getattr(self, 'qobj'), key, value)
                 return
         _setattr(self, key, value)
     
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> t.Any:
         return self.qobj.property(item)
     
-    def __setitem__(self, key: str, value: t.Any):
+    def __setitem__(self, key: str, value: t.Any) -> None:
         self.qobj.setProperty(key, value)
+        
+    @property
+    def class_name(self) -> str:
+        # e.g. 'LKColumn_QMLTYPE_18' -> 'LKColumn'
+        # noinspection PyTypeChecker
+        return self.qobj.metaObject().className().split('_QMLTYPE_')[0]
     
     def children(self) -> t.List['QObjectDelegate']:
         out = []
-        for i in OriginQObject.children(self.qobj):
-            if i.property('enabled') is None:
-                # a weird item, it is invisible and unreasonable to exist.
-                continue
-            out.append(QObjectDelegate(i))
+        if self.class_name == 'Repeater':
+            for i in range(self.qobj.property('count')):
+                # noinspection PyUnresolvedReferences
+                out.append(QObjectDelegate(self.qobj.itemAt(i)))
+        else:
+            for i in OriginQObject.children(self.qobj):
+                if i.property('enabled') is None:
+                    # a weird item, it is invisible and unreasonable to exist.
+                    continue
+                out.append(QObjectDelegate(i))
         return out
 
 
 # -----------------------------------------------------------------------------
 # magic methods
 
-def _getattr(self, key) -> t.Any:
+def _getattr(self, key: str) -> t.Any:
     """ the primitive `getattr` method. """
     return object.__getattribute__(self, key)
 
 
-def _setattr(self, key, value) -> None:
+def _setattr(self, key: str, value: t.Any) -> None:
     """ the primitive `setattr` method. """
     object.__setattr__(self, key, value)
 
 
-def _qgetattr(self, key) -> t.Any:
+def _qgetattr(self, key: str) -> t.Any:
     return OriginQObject.__getattribute__(self, key)
 
 
-def _qsetattr(self, key, value) -> None:
+def _qsetattr(self, key: str, value: t.Any) -> None:
     OriginQObject.__setattr__(self, key, value)

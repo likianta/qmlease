@@ -1,7 +1,9 @@
 import typing as t
 from os.path import splitdrive
 
+import lk_logger
 from lk_utils import fs
+from qtpy.QtQuick import QQuickItem
 
 from ...qtcore import QObject
 from ...qtcore import bind_prop
@@ -20,6 +22,7 @@ class HotReloader(QObject):
         target_file: str,
         title: str = 'QmlEase Reloader',
         window_size: t.Tuple[int, int] = None,
+        print_with_varnames: bool = None
     ) -> None:
         """
         params:
@@ -32,6 +35,8 @@ class HotReloader(QObject):
         self._force_window_size = window_size
         self._reload_count = 0
         self._target_file = fs.abspath(target_file)
+        if print_with_varnames:
+            lk_logger.update(show_varnames=True)
     
     @slot(object)
     def init_reloader_window(self, window: QObject) -> None:
@@ -47,8 +52,9 @@ class HotReloader(QObject):
             
             @bind_signal(window.loaded)
             def _(item: QObject) -> None:
-                # window['width'] = item.property('width') or 800
-                # window['height'] = item.property('height') or 600
+                if isinstance(item, QQuickItem):
+                    # print(':v5', 'ignore QQuickItem object', item)
+                    return
                 if item['width']:
                     window['width'] = item['width']
                 else:
