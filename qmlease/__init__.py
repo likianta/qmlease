@@ -22,7 +22,6 @@ from .qmlside import pyassets
 from .qmlside import console
 from .qmlside import qml_eval
 from .qmlside import widgets_backend
-from .qmlside import widget_support
 from .qmlside.widgets_backend import log
 from .qmlside.widgets_backend import logger
 from .qmlside.widgets_backend import util
@@ -35,5 +34,6 @@ from .qtcore import signal
 from .qtcore import slot
 from .style import pyenum
 from .style import pystyle
+from .widget_support import widget_support
 
 __version__ = '3.1.0'

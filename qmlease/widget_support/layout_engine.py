@@ -11,11 +11,11 @@ from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
 from qtpy.QtQml import QQmlEngine
 
-from ...qtcore import QObject
-from ...qtcore import bind_func
-from ...qtcore import bind_prop
-from ...qtcore import bind_signal
-from ...style import pyenum
+from ..qtcore import QObject
+from ..qtcore import bind_func
+from ..qtcore import bind_prop
+from ..qtcore import bind_signal
+from ..style import pyenum
 
 
 class T:

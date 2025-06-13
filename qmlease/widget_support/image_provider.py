@@ -12,8 +12,8 @@ from qtpy.QtCore import QSize
 from qtpy.QtGui import QImage
 from qtpy.QtQuick import QQuickImageProvider
 from uuid import uuid1
-from ...qtcore import QObject
-from ...qtcore import signal
+from ..qtcore import QObject
+from ..qtcore import signal
 
 
 class T:

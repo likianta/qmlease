@@ -9,4 +9,3 @@ from .model import SimpleModel
 from .qml_eval import eval_js
 from .qml_eval import qml_eval
 from .resource_manager import BaseResourceManager
-from .widget_support import widget_support

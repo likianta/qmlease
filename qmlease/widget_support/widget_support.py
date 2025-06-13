@@ -5,12 +5,12 @@ from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
 from .layout_engine import layout
-from ..._env import IS_WINDOWS
-from ...qtcore import QObject
-from ...qtcore import bind_signal
-from ...qtcore import slot
-from ...style import pyenum
-from ...style import pystyle
+from .._env import IS_WINDOWS
+from ..qtcore import QObject
+from ..qtcore import bind_signal
+from ..qtcore import slot
+from ..style import pyenum
+from ..style import pystyle
 
 
 class WidgetSupport(QObject):

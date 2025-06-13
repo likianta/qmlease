@@ -104,9 +104,9 @@ class Application(QApplication):
     def _register_backend(self) -> None:
         from ..pyside import pyside
         from ..qmlside import pyassets, pybroad, pylayout  # DELETE
-        from ..qmlside import widget_support
         from ..qmlside import widgets_backend as wb  # DELETE
         from ..style import pyenum, pystyle
+        from ..widget_support import widget_support
         
         self.register(widget_support, 'widget', 'qmlease')
         
