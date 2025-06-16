@@ -38,7 +38,7 @@ def bind_prop(
     # receiver: t.Optional[QObject] = None,
     # receiver_prop: t.Optional[str] = None,
     custom_handler: t.Callable = None,
-    effect_now: bool = False,
+    effect_now: bool = None,
 ) -> None:
     """
     args form:
@@ -109,8 +109,8 @@ def bind_signal(signal: T.AsIs, emit_now: bool = False) -> T.AsIs:
 
 
 # TODO: experimental
-def bind_func(qobj: QObject, signal: str, func: t.Callable) -> None:
+def bind_func(qobj: QObject, signal_name: str, func: t.Callable) -> None:
     eval(
-        'qobj.{signal}.connect(func)'.format(signal=signal),
+        'qobj.{signal}.connect(func)'.format(signal=signal_name),
         {'qobj': qobj, 'func': func}
     )

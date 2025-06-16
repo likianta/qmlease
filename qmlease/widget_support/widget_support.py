@@ -24,17 +24,55 @@ class WidgetSupport(QObject):
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
     
-    # -------------------------------------------------------------------------
+    @slot(object)
+    def auto_size(self, item: QObject) -> None:
+        pass
+    
+    @slot(object)
+    @slot(object, str)
+    def check_size_in_details(self, item: QObject, remark: str = '') -> None:
+        print(
+            '{} ({})'.format(remark, item.class_name) if remark else
+            item.class_name,
+            (item['width'], item['height']),
+            (item['implicitWidth'], item['implicitHeight']),
+            # item['childrenRect'],
+            (item['childrenRect'].width(), item['childrenRect'].height()),
+        )
+    
+    @slot(str)
+    @slot(str, object)
+    def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
+        if text == '':
+            return 0
+        if '\n' in text:
+            text = max(text.splitlines(), key=len)
+        
+        if item_ref is None:
+            metrics = self._font_metrics
+        else:
+            metrics = QFontMetrics(item_ref.property('font'))
+        return int(metrics.horizontalAdvance(text) * 1.2)
+    
+    @slot(list, result=int)
+    @slot(list, int, result=int)
+    def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
+        return max(map(self.estimate_line_width, texts)) + padding * 2
+    
+    @slot(result=str)
+    def generate_random_id(self) -> str:
+        return uuid.uuid1().hex
     
     @slot(object)
     def init_column(self, item: QObject) -> None:
+        layout.size_self(item)
         assert item['alignment'] in (
             'left', 'right', 'hcenter', 'hfill'
         ), item['alignment']
         if item['alignment'] != 'left':
             layout.align_children(item, item['alignment'])
         if item['autoSize']:
-            layout.size_children(item, 'column')
+            layout.size_children(item, 'vertical')
     
     @slot(object)
     def init_radio_group(self, item: QObject) -> None:
@@ -77,48 +115,14 @@ class WidgetSupport(QObject):
     
     @slot(object)
     def init_row(self, item: QObject) -> None:
+        layout.size_self(item)
         assert item['alignment'] in (
             'top', 'bottom', 'vcenter', 'vfill'
         ), item['alignment']
         if item['alignment'] != 'top':
             layout.align_children(item, item['alignment'])
         if item['autoSize']:
-            layout.size_children(item, 'row')
-    
-    @slot(object)
-    @slot(object, str)
-    def size_children(
-        self,
-        item: QObject,
-        policy: t.Literal['default', 'row', 'column'] = 'default'
-    ) -> None:
-        layout.size_children(item, policy)
-    
-    # -------------------------------------------------------------------------
-    # general
-    
-    @slot(str)
-    @slot(str, object)
-    def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
-        if text == '':
-            return 0
-        if '\n' in text:
-            text = max(text.splitlines(), key=len)
-        
-        if item_ref is None:
-            metrics = self._font_metrics
-        else:
-            metrics = QFontMetrics(item_ref.property('font'))
-        return int(metrics.horizontalAdvance(text) * 1.2)
-    
-    @slot(list, result=int)
-    @slot(list, int, result=int)
-    def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
-        return max(map(self.estimate_line_width, texts)) + padding * 2
-    
-    @slot(result=str)
-    def generate_random_id(self) -> str:
-        return uuid.uuid1().hex
+            layout.size_children(item, 'horizontal')
 
 
 widget_support = WidgetSupport()

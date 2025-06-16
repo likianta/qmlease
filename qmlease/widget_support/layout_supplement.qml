@@ -32,4 +32,20 @@ QtObject {
                 break
         }
     }
+
+    function inferSize(item, dimension) {
+        if (dimension == 'horizontal') {
+            item.width = Qt.binding(() => item.implicitWidth)
+        } else {
+            item.height = Qt.binding(() => item.implicitHeight)
+        }
+    }
+
+    function wrapSize(item, dimension) {
+        if (dimension == 'horizontal') {
+            item.width = Qt.binding(() => item.childrenRect.width)
+        } else {
+            item.height = Qt.binding(() => item.childrenRect.height)
+        }
+    }
 }

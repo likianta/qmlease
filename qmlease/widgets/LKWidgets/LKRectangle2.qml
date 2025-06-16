@@ -2,9 +2,10 @@
 import QtQuick 2.15
 
 Rectangle {
-    border.color:
+    border.color: (
         mousePressed ? borderColor2 :
         (mouseEntered ? borderColor1 : borderColor0)
+    )
     color: mousePressed ? color2 : (mouseEntered ? color1 : color0)
     radius: pysize.radius_m
 

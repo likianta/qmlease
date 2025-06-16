@@ -12,7 +12,6 @@ from qtpy.QtQml import QQmlComponent
 from qtpy.QtQml import QQmlEngine
 
 from ..qtcore import QObject
-from ..qtcore import bind_func
 from ..qtcore import bind_prop
 from ..qtcore import bind_signal
 from ..style import pyenum
@@ -59,115 +58,93 @@ class LayoutEngine:
             else:
                 self._qobj.alignChild(parent.qobj, child.qobj, alignment)
     
-    def auto_size_children(
+    def size_children(
         self,
-        container: QObject,
-        orientation: T.Orientation
-    ) -> bool:
+        item: QObject,
+        dimension: t.Optional[T.Orientation] = None,
+    ) -> None:
+        if dimension is None:
+            self.size_children(item, 'horizontal')
+            self.size_children(item, 'vertical')
+            return
+        
+        parent, children = item, item.children()
+        # del item
+        prop_name = 'width' if dimension == 'horizontal' else 'height'
+        
+        portioned_items: dict[int, float] = {}  # dict[int index, float ratio]
+        stretched_items: dict[int, int] = {}  # dict[int index, int _]
+        #   note: stretched_items.values() are useless (they are all zeros). -
+        #   we use dict is just for keeping the same form with portioned_items.
+        
         """
         size policy:
             0: auto stretch to spared space.
             0 ~ 1: the ratio of spared space.
             1+: regular pixel point.
-
-        workflow:
-            1. get total space
-            2. consume used space
-            3. allocate unused space
-
-        TODO: method rename (candidate names):
-            mobilize
-            auto_pack
-
-        return: is dynamical binding effective?
-            True means whenever container's size changed, this method should -
-            be called again.
         """
-        prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
-        
-        children = container.children()
-        
-        portioned_items: dict[int, float] = {}  # dict[int index, float ratio]
-        stretched_items: dict[int, int] = {}  # dict[int index, int _]
-        #   note: stretched_items.values() are useless (they are all zeros). it
-        #   is made just for keeping the same form with portioned_items.
-        
         claimed_size = 0
         for idx, item in enumerate(children):
-            size = item.property(prop_name)
+            # size = item[prop_name] or getattr(item['childrenRect'], prop_name)()
+            size = item[prop_name]
             if size >= 1:
                 claimed_size += size
             elif 0 < size < 1:
                 portioned_items[idx] = size
-            elif size in (0, -1, pyenum.STRETCH, pyenum.FILL):
-                #   FIXME: too many magic numbers, leave only `pyenum.STRETCH`.
-                """
-                why `size == -1`?
-                    this is a workaround.
-                    for some widgets, their size default is 0, and they will -
-                    resize themselves to a proper width in their `onCompleted` -
-                    stage (based on their final content length).
-                    to avoid triggering their auto resize policy, we cannot -
-                    give them zero at the start. so we have to seek a solution -
-                    like this.
-                    i'm diggering qml mechanism, maybe we can find a better -
-                    solution in future.
-                """
+            elif size == pyenum.STRETCH:
                 stretched_items[idx] = 0
-            else:
-                raise ValueError('cannot allocate negative size', idx, item)
+            elif size < 0:
+                raise Exception(idx, item, size)
         
         if not portioned_items and not stretched_items:
-            return False
+            return
         
         self._auto_size_children(
-            container,
-            orientation,
+            parent,
+            dimension,
             claimed_size,
             portioned_items,
             stretched_items,
         )
         
-        # TODO: if children count is changed, trigger this method again.
-        bind_func(
-            container, f'{prop_name}Changed',
+        # # TODO: if children count is changed, trigger this method again.
+        getattr(parent, f'{prop_name}Changed').connect(
             partial(
                 self._auto_size_children,
-                container,
-                orientation,
+                parent,
+                dimension,
                 claimed_size,
                 portioned_items,
                 stretched_items,
             )
         )
-        return True
-    
-    def size_children(
-        self,
-        item: QObject,
-        policy: t.Literal['default', 'row', 'column'] = 'default'
-    ) -> None:
-        _parent, _children = item, item.children()
-        
-        def size_children_widths() -> None:
-            for child in _children:
-                if child.property('width') == pyenum.STRETCH:
-                    bind_prop(child, 'width', _parent, effect_now=True)
-        
-        def size_children_heights() -> None:
-            for child in _children:
-                if child.property('height') == pyenum.STRETCH:
-                    bind_prop(child, 'height', _parent, effect_now=True)
-        
-        if policy == 'default':
-            size_children_widths()
-            size_children_heights()
-        elif policy == 'row':
-            self.auto_size_children(item, 'horizontal')
-            size_children_heights()
-        elif policy == 'column':
-            self.auto_size_children(item, 'vertical')
-            size_children_widths()
+        # return True
+            
+    def size_self(self, item: QObject) -> None:
+        for prop_name in ('width', 'height'):
+            if item[prop_name] in (pyenum.AUTO, pyenum.WRAP):
+                if item['implicit{}'.format(prop_name.capitalize())]:
+                    self._qobj.inferSize(
+                        item.qobj,
+                        'horizontal' if prop_name == 'width' else 'vertical'
+                    )
+                else:
+                    self._qobj.wrapSize(
+                        item.qobj,
+                        'horizontal' if prop_name == 'width' else 'vertical'
+                    )
+            # elif item[prop_name] == pyenum.STRETCH:
+            #     bind_prop(item, prop_name, item.parent(), True)
+            # elif 0 < item[prop_name] < 1:
+            #     def _update(item, parent, prop, ratio):
+            #         item[prop] = parent[prop] * ratio
+            #
+            #     bind_prop(
+            #         item, prop_name, item.parent(), True,
+            #         custom_handler=partial(
+            #             _update, item, item.parent(), prop_name, item[prop_name]
+            #         )
+            #     )
     
     @staticmethod
     def size_wrapped(
@@ -195,27 +172,23 @@ class LayoutEngine:
         portioned_items: t.Dict[int, float],
         stretched_items: t.Dict[int, int],
     ) -> None:
-        """
-        note: `stretched_items.values()` are useless (they are all zeros), we -
-        make stretched_items dict type just for harmonizing the form with -
-        portioned_items.
-        """
-        prop_name = 'width' if orientation in ('h', 'horizontal') else 'height'
+        prop_name = 'width' if orientation == 'horizontal' else 'height'
         
         children = container.children()
         total_spare_size = self._get_total_available_size_for_children(
-            container, len(children), orientation)
+            container, len(children), orientation
+        )
         unclaimed_size = total_spare_size - claimed_size
-        # print(container.property(prop_name), total_spare_size, claimed_size,
-        #       unclaimed_size, orientation, len(children), ':l')
+        # print(
+        #     container[prop_name], orientation, total_spare_size, claimed_size,
+        #     unclaimed_size, len(children), portioned_items, stretched_items,
+        #     ':vl'
+        # )
         
         if unclaimed_size <= 0:
             # fast finish leftovers
-            for idx, item in enumerate(children):
-                if idx in portioned_items:
-                    item.setProperty(prop_name, 0)
-                # note: no need to check if idx in stretch_items, because -
-                # their size is already 0.
+            for idx in (*portioned_items.keys(), *stretched_items.keys()):
+                children[idx][prop_name] = 0
             return
         
         # allocate elastic items
@@ -223,12 +196,14 @@ class LayoutEngine:
         for idx, ratio in portioned_items.items():
             child = children[idx]
             size = total_unclaimed_size * ratio
-            child.setProperty(prop_name, size)
+            child[prop_name] = size
             unclaimed_size -= size
         
-        if unclaimed_size <= 0:
-            return
         if not stretched_items:
+            return
+        if unclaimed_size <= 0:
+            for idx in stretched_items.keys():
+                children[idx][prop_name] = 0
             return
         
         # allocate stretched items
@@ -236,8 +211,7 @@ class LayoutEngine:
         items_count = len(stretched_items)
         item_size_aver = total_unclaimed_size / items_count
         for idx in stretched_items.keys():
-            child = children[idx]
-            child.setProperty(prop_name, item_size_aver)
+            children[idx][prop_name] = item_size_aver
     
     @staticmethod
     def _get_total_available_size_for_children(
@@ -249,7 +223,7 @@ class LayoutEngine:
         #     'width', 'height', 'spacing', 'padding',
         #     'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
         # )})
-        if orientation in ('h', 'horizontal'):
+        if orientation == 'horizontal':
             return (
                 item.property('width')
                 - item.property('leftPadding')

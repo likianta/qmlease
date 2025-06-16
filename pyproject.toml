@@ -1,6 +1,6 @@
 [project]
 name = "qmlease"
-version = "3.1.0a25"
+version = "3.1.0a28"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 license = "MIT"
 readme = "README.md"
@@ -33,7 +33,7 @@ remote-ipython = { version = "^1.0.0b11", source = "likianta" }
 wat = "^0.6.0"
 
 [project.optional-dependencies]
-ui = ["pyside6"]
+ui = ["pyside6"]  # pip install qmlease[ui]
 
 [[tool.poetry.source]]
 name = "tsinghua"

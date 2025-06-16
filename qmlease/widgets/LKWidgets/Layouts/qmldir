@@ -1,6 +1,8 @@
 module LKWidgets.Layouts
 
 LKColumn    1.0     LKColumn.qml
+LKColumn2   1.0     LKColumn2.qml
 LKHBox      1.0     LKHBox.qml
 LKListView  1.0     LKListView.qml
 LKRow       1.0     LKRow.qml
+LKRow2      1.0     LKRow2.qml

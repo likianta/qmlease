@@ -123,6 +123,9 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
     def qobj(self) -> t.Self:
         return self
     
+    def parent(self) -> 'QObject':
+        return t.cast(QObject, QObjectDelegate(OriginQObject.parent(self)))
+    
     def children(self) -> t.List['QObject']:
         out = []
         for child in OriginQObject.children(self):
@@ -157,7 +160,7 @@ class QObjectDelegate:
         self.qobj = qobj
     
     def __getattr__(self, item: str) -> t.Any:
-        if item in ('qobj', 'children', 'class_name'):
+        if item in ('qobj', 'parent', 'children', 'class_name'):
             return _getattr(self, item)
         else:
             return getattr(_getattr(self, 'qobj'), item)
@@ -180,6 +183,9 @@ class QObjectDelegate:
         # e.g. 'LKColumn_QMLTYPE_18' -> 'LKColumn'
         # noinspection PyTypeChecker
         return self.qobj.metaObject().className().split('_QMLTYPE_')[0]
+    
+    def parent(self) -> 'QObject':
+        return t.cast(QObject, QObjectDelegate(self.qobj.parent()))
     
     def children(self) -> t.List['QObjectDelegate']:
         out = []

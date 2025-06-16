@@ -50,8 +50,9 @@ class HotReloader(QObject):
             window['width'] = 800
             window['height'] = 600
             
-            @bind_signal(window.loaded)
+            @bind_signal(window.reloaded)
             def _(item: QObject) -> None:
+                # print(item['width'], item['height'], ':v')
                 if isinstance(item, QQuickItem):
                     # print(':v5', 'ignore QQuickItem object', item)
                     return
@@ -66,6 +67,7 @@ class HotReloader(QObject):
         
         @bind_signal(window.reloadTriggered)
         def _() -> None:
+            print(':di')
             # sys.modules.clear()
             # window['source'] = ''
             self._app.engine.clearComponentCache()
