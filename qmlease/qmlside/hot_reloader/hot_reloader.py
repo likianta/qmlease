@@ -34,6 +34,7 @@ class HotReloader(QObject):
         self._app = app
         self._force_window_size = window_size
         self._reload_count = 0
+        self._separate_window = 'Window {' in fs.load(target_file, 'plain')
         self._target_file = fs.abspath(target_file)
         if print_with_varnames:
             lk_logger.update(show_varnames=True)
@@ -42,6 +43,20 @@ class HotReloader(QObject):
     def init_reloader_window(self, window: QObject) -> None:
         window['title'] = self.title
         window['source'] = 'file:///' + self._target_file
+        
+        @bind_signal(window.reloadTriggered)
+        def _() -> None:
+            print(':di')
+            # sys.modules.clear()
+            # window['source'] = ''
+            self._app.engine.clearComponentCache()
+            self._reload_count += 1
+            window['source'] = 'file:///{}?_reload_count={}'.format(
+                self._target_file, self._reload_count
+            )
+        
+        if self._separate_window:
+            return
         
         if self._force_window_size:
             window['width'] = self._force_window_size[0]
@@ -64,17 +79,6 @@ class HotReloader(QObject):
                     window['height'] = item['height']
                 else:
                     bind_prop(item, 'height', window, True)
-        
-        @bind_signal(window.reloadTriggered)
-        def _() -> None:
-            print(':di')
-            # sys.modules.clear()
-            # window['source'] = ''
-            self._app.engine.clearComponentCache()
-            self._reload_count += 1
-            window['source'] = 'file:///{}?_reload_count={}'.format(
-                self._target_file, self._reload_count
-            )
     
     def run(self) -> None:
         self._app.register(self, 'reloader', 'qmlease')
@@ -82,13 +86,12 @@ class HotReloader(QObject):
         # noinspection PyProtectedMember
         self._app._run(self._get_bootloader_file(self._target_file))
     
-    @staticmethod
-    def _get_bootloader_file(target_file: str) -> str:
+    def _get_bootloader_file(self, target_file: str) -> str:
         """
         we must put reloader_file and target_file in the same hard drive. -
         otherwise all relative imports in qml side will be crashed.
         """
-        if 'Window {' in fs.load(target_file, 'plain'):
+        if self._separate_window:
             reloader_file = fs.xpath('_view.qml')
         else:
             reloader_file = fs.xpath('_view2.qml')

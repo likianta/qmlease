@@ -10,21 +10,23 @@ from argsense import cli
 
 
 @cli
-def run(qml_file: str, debug: bool = False, **kwargs) -> None:
+def run(
+    qml_file: str, debug: bool = False, verbose: bool = True, **kwargs
+) -> None:
     """
     run target QML file.
     
     params:
         debug (-d): enable hot reload.
+        verbose (-v):
         **kwargs:
             window_size (-s): e.g. "800x600"
-            print_with_varnames (-v): bool
     """
     from .application import app
     if x := kwargs.get('window_size'):
         w, h = map(int, x.split('x'))
         kwargs['window_size'] = (w, h)
-    app.run(qml_file, debug=debug, **kwargs)
+    app.run(qml_file, debug=debug, print_with_varnames=verbose, **kwargs)
 
 
 @cli
@@ -70,5 +72,4 @@ def list_builtin_pyhandlers() -> None:
 
 if __name__ == '__main__':
     # pox -m qmlease run unittests/untitled.qml -d
-    # pox -m qmlease run unittests/untitled.qml -d -v :true
     cli.run()
