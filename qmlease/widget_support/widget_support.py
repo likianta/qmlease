@@ -25,6 +25,19 @@ class WidgetSupport(QObject):
         self._font_metrics = QFontMetrics(font)
     
     @slot(object)
+    def align_field_title_widths(self, column: QObject) -> None:
+        field_items = []
+        for item in column.children():
+            if item.class_name == 'LKField2':
+                field_items.append(item)
+        longest_title_width = max(
+            (self.estimate_line_width(x['title']) for x in field_items)
+        )
+        print(len(field_items), longest_title_width, ':v')
+        for item in field_items:
+            item['titleWidth'] = longest_title_width
+    
+    @slot(object)
     def auto_size(self, item: QObject) -> None:
         pass
     
@@ -123,6 +136,10 @@ class WidgetSupport(QObject):
             layout.align_children(item, item['alignment'])
         if item['autoSize']:
             layout.size_children(item, 'horizontal')
+    
+    @slot(object)
+    def resize_row(self, item: QObject) -> None:
+        layout.size_children(item, 'horizontal')
 
 
 widget_support = WidgetSupport()

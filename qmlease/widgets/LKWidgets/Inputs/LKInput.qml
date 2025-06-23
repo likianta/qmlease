@@ -1,8 +1,9 @@
 import QtQuick 2.15
 import QtQuick.Controls 2.15
-import "Buttons"
+import ".." as A
+import "../Buttons" as B
 
-LKRectangle {
+A.LKRectangle {
     id: root
     width: pysize.edit_width
     height: pysize.edit_height
@@ -18,7 +19,7 @@ LKRectangle {
     property string borderColorActive: pycolor.input_border_active
     property string bottomColorHighlight: pycolor.input_indicator_active
     property string cursorColor: pyenum.DEFAULT
-    property string textColor: pycolor.text_main
+    property string textColor: pycolor.text_default
 
     property alias  displayText: _input.displayText
     property bool   editable: true
@@ -52,7 +53,7 @@ LKRectangle {
         }
     }
 
-    LKText {
+    A.LKText {
         id: _placeholder
         visible: _placeholder.text && !_input.text
         anchors {
@@ -155,7 +156,7 @@ LKRectangle {
             }
         }
 
-        LKIconButton {
+        B.LKIconButton {
             id: _clear_button
             visible: root.showClearButton
             anchors {

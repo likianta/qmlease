@@ -1,4 +1,5 @@
 import QtQuick 2.15
+import ".." as A
 
 Item {
     id: root
@@ -14,7 +15,7 @@ Item {
     property int       widthA: 0
     property int       widthB: 0
 
-    LKText {
+    A.LKText {
         id: _text
 //        visible: Boolean(text)
         anchors {

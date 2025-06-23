@@ -1,0 +1,6 @@
+module LKWidgets.Inputs
+
+LKField   1.0  LKField.qml
+LKField2  1.0  LKField2.qml
+LKInput   1.0  LKInput.qml
+# LKInput2  1.0  LKInput2.qml

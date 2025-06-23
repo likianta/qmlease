@@ -72,54 +72,42 @@ class LayoutEngine:
         # del item
         prop_name = 'width' if dimension == 'horizontal' else 'height'
         
-        portioned_items: dict[int, float] = {}  # dict[int index, float ratio]
-        stretched_items: dict[int, int] = {}  # dict[int index, int _]
+        solid_items: t.Dict[int, int] = {}
+        portioned_items: t.Dict[int, float] = {}  # dict[int index, float ratio]
+        stretched_items: t.Dict[int, int] = {}  # dict[int index, int _]
         #   note: stretched_items.values() are useless (they are all zeros). -
         #   we use dict is just for keeping the same form with portioned_items.
         
-        """
-        size policy:
-            0: auto stretch to spared space.
-            0 ~ 1: the ratio of spared space.
-            1+: regular pixel point.
-        """
-        claimed_size = 0
-        for idx, item in enumerate(children):
-            # size = item[prop_name] or getattr(item['childrenRect'], prop_name)()
-            size = item[prop_name]
-            if size >= 1:
-                claimed_size += size
-            elif 0 < size < 1:
-                portioned_items[idx] = size
-            elif size == pyenum.STRETCH:
-                stretched_items[idx] = 0
-            elif size < 0:
-                raise Exception(idx, item, size)
-        
-        if not portioned_items and not stretched_items:
-            return
-        
-        self._auto_size_children(
+        resize = partial(
+            self._size_children,
             parent,
             dimension,
-            claimed_size,
+            solid_items,
             portioned_items,
             stretched_items,
         )
         
-        # # TODO: if children count is changed, trigger this method again.
-        getattr(parent, f'{prop_name}Changed').connect(
-            partial(
-                self._auto_size_children,
-                parent,
-                dimension,
-                claimed_size,
-                portioned_items,
-                stretched_items,
-            )
-        )
-        # return True
-            
+        def _solid_resize(idx, item, prop_name):
+            solid_items[idx] = item[prop_name]
+            resize()
+        
+        for idx, item in enumerate(children):
+            size = item[prop_name]
+            if size >= 1:
+                solid_items[idx] = size
+                getattr(item, f'{prop_name}Changed').connect(partial(
+                    _solid_resize, idx, item, prop_name
+                ))
+            elif 0 < size < 1:
+                portioned_items[idx] = size
+            elif size == pyenum.STRETCH:
+                stretched_items[idx] = size
+            else:  # < 0
+                raise Exception(idx, item, size)
+        
+        getattr(parent, f'{prop_name}Changed').connect(resize)
+        resize()
+    
     def size_self(self, item: QObject) -> None:
         for prop_name in ('width', 'height'):
             if item[prop_name] in (pyenum.AUTO, pyenum.WRAP):
@@ -164,20 +152,49 @@ class LayoutEngine:
         
         sync_size(item['childrenRect'])
         
-    def _auto_size_children(
+    @staticmethod
+    def _get_total_available_size_for_children(
+        item: QObject,
+        children_count: int,
+        orientation: T.Orientation,
+    ) -> int:
+        # print(':lp', {p: item.property(p) for p in (
+        #     'width', 'height', 'spacing', 'padding',
+        #     'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
+        # )})
+        if orientation == 'horizontal':
+            return (
+                item.property('width')
+                - item.property('leftPadding')
+                - item.property('rightPadding')
+                - item.property('spacing') * (children_count - 1)
+            )
+        else:
+            return (
+                item.property('height')
+                - item.property('topPadding')
+                - item.property('bottomPadding')
+                - item.property('spacing') * (children_count - 1)
+            )
+    
+    def _size_children(
         self,
         container: QObject,
         orientation: T.Orientation,
-        claimed_size: int,
+        solid_items: t.Dict[int, int],
         portioned_items: t.Dict[int, float],
         stretched_items: t.Dict[int, int],
     ) -> None:
+        if not portioned_items and not stretched_items:
+            return
+        
         prop_name = 'width' if orientation == 'horizontal' else 'height'
         
         children = container.children()
         total_spare_size = self._get_total_available_size_for_children(
             container, len(children), orientation
         )
+        claimed_size = sum(solid_items.values())
         unclaimed_size = total_spare_size - claimed_size
         # print(
         #     container[prop_name], orientation, total_spare_size, claimed_size,
@@ -212,31 +229,6 @@ class LayoutEngine:
         item_size_aver = total_unclaimed_size / items_count
         for idx in stretched_items.keys():
             children[idx][prop_name] = item_size_aver
-    
-    @staticmethod
-    def _get_total_available_size_for_children(
-        item: QObject,
-        children_count: int,
-        orientation: T.Orientation,
-    ) -> int:
-        # print(':lp', {p: item.property(p) for p in (
-        #     'width', 'height', 'spacing', 'padding',
-        #     'leftPadding', 'rightPadding', 'topPadding', 'bottomPadding'
-        # )})
-        if orientation == 'horizontal':
-            return (
-                item.property('width')
-                - item.property('leftPadding')
-                - item.property('rightPadding')
-                - item.property('spacing') * (children_count - 1)
-            )
-        else:
-            return (
-                item.property('height')
-                - item.property('topPadding')
-                - item.property('bottomPadding')
-                - item.property('spacing') * (children_count - 1)
-            )
 
 
 layout = LayoutEngine()
