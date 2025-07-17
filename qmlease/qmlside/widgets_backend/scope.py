@@ -189,7 +189,7 @@ class ScopeEngine(QObject):
     
     @staticmethod
     def _compose_kid(key: int, modifier: int) -> T.KID:
-        if QT_VERSION >= 6.4:
+        if QT_VERSION >= (6, 4, 0):
             # https://www.qt.io/blog/qt-for-python-release-6.4-is-finally-here
             #   open this link and search "Modifier" (seen in comment zone).
             return (key, (

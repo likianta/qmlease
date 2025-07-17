@@ -8,10 +8,10 @@ from qtpy.QtQml import qmlRegisterType
 
 from .._env import QT_VERSION
 
-if QT_VERSION >= 6.3:
+if QT_VERSION >= (6, 3, 0):
     # https://www.qt.io/blog/qt-for-python-details-on-the-new-6.3-release
     from qtpy.QtQml import QmlNamedElement
-elif QT_VERSION >= 6.0:
+elif QT_VERSION >= (6, 0, 0):
     from qtpy.QtQml import QmlElement
 else:
     QmlNamedElement = None

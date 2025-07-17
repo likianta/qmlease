@@ -12,7 +12,7 @@ from .._env import IS_WINDOWS
 from .._env import QT_VERSION
 from ..qtcore import QObject
 
-if QT_VERSION >= 6.4:
+if QT_VERSION >= (6, 4, 0):
     from qtpy.QtCore import qCritical as QtCriticalMsg
     from qtpy.QtCore import qWarning as QtWarningMsg
 else:

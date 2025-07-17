@@ -1,4 +1,5 @@
 import os
+import typing as t
 
 
 def _find_qt_api() -> str:
@@ -50,14 +51,16 @@ def _find_qt_api() -> str:
     return api
 
 
-def _get_qt_version() -> float:
+def _get_qt_version() -> t.Tuple[int, int, int]:
     """
     return <major>.<minor> version of the qt api.
     """
     from qtpy import QT_VERSION  # e.g. '5.15.2'
-    return float('.'.join(QT_VERSION.split('.')[:2]))
+    assert QT_VERSION.count('.') == 2
+    # noinspection PyTypeChecker
+    return tuple(map(int, QT_VERSION.split('.')))
 
 
 IS_WINDOWS: bool = os.name == 'nt'
 QT_API: str = _find_qt_api()
-QT_VERSION: float = _get_qt_version()
+QT_VERSION: t.Tuple[int, int, int] = _get_qt_version()

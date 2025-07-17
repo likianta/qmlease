@@ -10,6 +10,7 @@ if 2:
         signal.signal(signal.SIGINT, signal.SIG_DFL)
 if 3:
     from ._env import QT_API
+    from ._env import QT_VERSION
 
 from . import qtcore
 from .application import Application
