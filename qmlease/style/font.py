@@ -3,22 +3,23 @@ import typing as t
 from lk_utils import load
 from qtpy.QtWidgets import QApplication
 
-from .size import Size
+from .base import Base
+from .base import T
 from .._env import IS_WINDOWS
 
 
-class Font(Size):
+class Font(Base):
     
     def update_from_file(self, file: str) -> None:
         data: dict = load(file)
-        if 'font_default' not in data:
+        if not data.get('font_default'):
             if IS_WINDOWS:
                 data['font_default'] = self._search_font(
                     'Microsoft YaHei UI', strict=True
                 )
             else:
                 data['font_default'] = QApplication.font().family()
-        if 'font_monospace' not in data:
+        if not data.get('font_monospaced'):
             if IS_WINDOWS:
                 data['font_monospaced'] = self._search_font(
                     'Cascadia Code', 'Consolas', 'Courier New', strict=True
@@ -26,8 +27,30 @@ class Font(Size):
             else:
                 data['font_monospaced'] = 'DejaVu Sans Mono'
                 #   candidates: Monospace, Ubuntu Mono, etc.
+        # data['font_monospaced_with_fallback'] = '"{}","{}"'.format(
+        #     data['font_monospaced'], data['font_default']
+        # )
         self.update(data)
-
+    
+    def _normalize(self, data: T.Data) -> T.Data:
+        return data
+    
+    def _create_similars(self, data: T.Data) -> T.Data:
+        return data
+    
+    def _shortify(self, data: T.Data) -> T.Data:
+        for k, v in data:
+            if k.endswith('_default'):
+                yield k[:-8], v
+            elif k.endswith('_m'):
+                yield k[:-2], v
+            elif k.endswith('_monospaced'):
+                yield k[:-1], v
+                yield k[:-6], v
+            # elif 'monospaced' in k:
+            #     yield k.replace('monospaced', 'mono'), v
+            #     yield k.replace('monospaced', 'monospace'), v
+    
     def _search_font(
         self, *candidates: str, strict: bool = False
     ) -> t.Optional[str]:
@@ -74,13 +97,3 @@ class Font(Size):
                     raise Exception
         else:
             raise NotImplementedError
-    
-    def _shortify(self, data: dict) -> dict:
-        out = {}
-        for k, v in data.items():
-            if k.endswith('_m'):
-                out[k[:-2]] = v
-            elif k.endswith('monospaced'):
-                out[k[:-1]] = v
-                out[k[:-6]] = v
-        return out

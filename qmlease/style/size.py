@@ -29,6 +29,7 @@ examples:
     - margin_xl
 """
 from .base import Base
+from .base import T
 from .enum import pyenum
 
 
@@ -45,25 +46,21 @@ class Size(Base):
             self.data[k] = v
             self.insert(k, v)
     
-    def _normalize(self, data: dict) -> dict:
-        new_data = {}
-        for k, v in data.items():
+    def _normalize(self, data: T.Data) -> T.Data:
+        for k, v in data:
             if '_' in k:
                 a, b = k.rsplit('_', 1)
                 if b in self._valid_sizes:
-                    new_data[k] = v
+                    yield k, v
                 else:
-                    new_data[f'{k}_m'] = v
+                    yield f'{k}_m', v
             else:
-                new_data[f'{k}_m'] = v
-        return new_data
+                yield f'{k}_m', v
     
-    def _create_similars(self, data: dict) -> dict:
-        return {}
+    def _create_similars(self, data: T.Data) -> T.Data:
+        return data
     
-    def _shortify(self, data: dict) -> dict:
-        new_data = {}
-        for k, v in data.items():
+    def _shortify(self, data: T.Data) -> T.Data:
+        for k, v in data:
             if k.endswith('_m'):
-                new_data[k[:-2]] = v
-        return new_data
+                yield k[:-2], v

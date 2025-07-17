@@ -1,7 +1,7 @@
 """
 fields:
     field       details
-    --------------------------------------------------------
+    ----------  -------------------------------------------------
     align       (not implemented)
     color       color, gradient, opacity
     motion      duration, easing type

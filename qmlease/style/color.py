@@ -17,6 +17,7 @@ naming style:
 import re
 
 from .base import Base
+from .base import T
 
 
 class Color(Base):
@@ -33,20 +34,18 @@ class Color(Base):
     #     'inactive', 'normal', 'pressed', 'selected',
     # )
     
-    def _normalize(self, data: dict) -> dict:
-        new_data = {}
+    def _normalize(self, data: T.Data) -> T.Data:
         digit_tail = re.compile(r'([a-zA-Z_]+)(\d+)$')
-        for k, v in data.items():
+        for k, v in data:
             if k == v:
                 # e.g. {'black': 'black'}
-                k = k + '_default'
-                new_data[k] = v
+                yield k + '_default', v
             elif m := digit_tail.search(k):
                 # e.g. {'black_5': '#393355',
                 #       'black5' : '#393355'}
                 a, b = m.groups()
                 k = a.rstrip('_') + '_' + b
-                new_data[k] = v
+                yield k, v
             elif '_' not in k:
                 # e.g. {'active': '#E9F0FB',
                 #       'text'  : '#393355'}
@@ -54,26 +53,23 @@ class Color(Base):
                     k = 'common_' + k
                 else:
                     k = k + '_default'
-                new_data[k] = v
+                yield k, v
             else:
                 # e.g. {'frame_bg_default' : '#F1F1F3',
                 #       'frame_bg'         : '#F1F1F3',
                 #       'button_bg_hovered': '#E9F0FB'}
                 a, b = k.rsplit('_', 1)
                 if b in self._valid_states:
-                    new_data[k] = v
+                    yield k, v
                 else:
-                    k = k + '_default'
-                    new_data[k] = v
-        return new_data
+                    yield k + '_default', v
     
-    def _create_similars(self, data: dict) -> dict:
-        new_data = {}
+    def _create_similars(self, data: T.Data) -> T.Data:
         resolved = set()
         similar_states_dict = {
             y: x for x in self._similar_states for y in x
         }
-        for k, v in data.items():
+        for k, v in data:
             if k in resolved:
                 continue
             if '_' in k:
@@ -81,32 +77,24 @@ class Color(Base):
                 if b in similar_states_dict:
                     for c in similar_states_dict[b]:
                         if c != b:
-                            if f'{a}_{c}' not in data:
-                                new_data[f'{a}_{c}'] = v
-                            resolved.add(f'{a}_{c}')
+                            if (k1 := f'{a}_{c}') not in data:
+                                yield k1, v
+                            resolved.add(k1)
                 elif b.isdigit():
                     #   e.g. 'red_7' -> 'red7'
-                    if f'{a}{b}' not in data:
-                        new_data[f'{a}{b}'] = v
-                    resolved.add(f'{a}{b}')
+                    if (k1 := f'{a}{b}') not in data:
+                        yield k1, v
+                    resolved.add(k1)
             resolved.add(k)
-        return new_data
     
-    def _shortify(self, data: dict) -> dict:
-        new_data = {}
-        for k, v in data.items():
-            if k.startswith('common_') and k.endswith('_default'):
-                new_data[k[7:]] = v
-                new_data[k[7:-8]] = v
-                new_data[k[:-8]] = v
-                continue
-            else:
-                if k.startswith('common_'):
-                    new_data[k[7:]] = v
-                    continue
-                elif k.endswith('_default'):
-                    new_data[k[:-8]] = v
-                    continue
-            if k.endswith('_5'):
-                new_data[k[:-2]] = v
-        return new_data
+    def _shortify(self, data: T.Data) -> T.Data:
+        pattern = re.compile(r'(common_)?(\w*?)(_default|_5)?')
+        for k, v in data:
+            a, b, c = pattern.fullmatch(k).groups()
+            assert b, (k, v)
+            if a and c:
+                yield f'{b}_{c}', v
+                yield f'{b}', v
+                yield f'{a}_{b}', v
+            elif a or c:
+                yield f'{b}', v

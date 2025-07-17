@@ -18,21 +18,21 @@ blue_5: '#1732BC'
 blue_7: '#C5D8F9'
 blue_9: '#E9F0FB'
 
-grey_1: '#f5f7fd'
-grey_2: '#F1F1F3'
-grey_5: '#d3d3d3'
-grey_6: '#C2BABA'
-grey_7: '#9b9090'
+gray_1: '#f5f7fd'
+gray_2: '#F1F1F3'
+gray_5: '#d3d3d3'
+gray_6: '#C2BABA'
+gray_7: '#9b9090'
 
 red_5: '$red'
 
 # -----------------------------------------------------------------------------
 
 active: '$blue_9'
-inactive: '$grey_5'
+inactive: '$gray_5'
 
 border_active: '$blue_5'
-border_default: '$grey_5'
+border_default: '$gray_5'
 border_glow: '$border_active'
 border_inactive: '$inactive'
 
@@ -43,11 +43,11 @@ button_bg_hovered: '$blue_9'
 button_bg_pressed: '$blue_7'
 
 dot_active: '$blue_1'
-dot_default: '$grey_5'
+dot_default: '$gray_5'
 dot_hovered: '$dot_active'
 dot_selected: '$dot_active'
 dot_border_active: '$blue_5'
-dot_border_default: '$grey_6'
+dot_border_default: '$gray_6'
 dot_border_hovered: '$dot_hovered'
 
 frame_bg: '$panel_bg'
@@ -60,13 +60,13 @@ input_border_active: '$border_active'
 input_border_default: '$border_default'
 input_indicator_active: '$border_glow'
 
-panel_bg: '$grey_2'
+panel_bg: '$gray_2'
 
-progress_bg: '$grey_5'
+progress_bg: '$gray_5'
 progress_fg: '$blue_5'
 
 text_default: '$black_5'
-text_hint: '$grey_5'
+text_hint: '$gray_5'
 text_secondary: '$black_6'
 
-win_bg: '$grey_1'
+win_bg: '$gray_1'

@@ -4,10 +4,14 @@ from lk_utils import load
 from qtpy.QtQml import QQmlPropertyMap
 
 
+class T:
+    Data = t.Iterable[t.Tuple[str, t.Any]]
+
+
 class Base(QQmlPropertyMap):
     data: dict
     
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self.data = {}
     
@@ -25,50 +29,31 @@ class Base(QQmlPropertyMap):
     
     def update(self, data: dict) -> None:
         plain_data = self._resolve_references(data)
-        norml_data = self._normalize(plain_data)
-        alias_data = self._create_similars(norml_data)
-        short_data = self._shortify({**norml_data, **alias_data})
-        self.data.update({**norml_data, **alias_data, **short_data})
+        norml_data = tuple(self._normalize(plain_data))
+        alias_data = tuple(self._create_similars(norml_data))
+        short_data = tuple(self._shortify(norml_data + alias_data))
+        self.data.update(dict(norml_data + alias_data + short_data))
+        # print(sorted(self.data.items()), ':vlp2')
         for k, v in self.data.items():
             self.insert(k, v)
     
     @staticmethod
-    def _resolve_references(data: dict) -> dict:
-        resolved = set()
-        
-        def eval_reference(value: str) -> t.Any:
-            # assert value.startswith('$')
-            base_key = value[1:]
-            base_value = data[base_key]
-            if isinstance(base_value, str) and base_value.startswith('$'):
-                final_value = eval_reference(base_value)
-                data[base_key] = final_value
-                resolved.add(base_key)
-                return final_value
+    def _resolve_references(data: t.Dict[str, t.Any]) -> T.Data:
+        def get_real_value(key: str) -> t.Any:
+            val = data[key]
+            if isinstance(val, str) and val.startswith('$'):
+                return get_real_value(val[1:])
             else:
-                resolved.add(base_key)
-                return base_value
-        
-        for i, (k, v) in enumerate(tuple(data.items())):
-            if k in resolved:
-                continue
-            if isinstance(v, str) and v.startswith('$'):
-                try:
-                    data[k] = eval_reference(v)
-                except KeyError as e:
-                    print(':v8',
-                          'failed dynamically assign value to key. '
-                          '(source key does not exist!) '
-                          'index: {}, key: {}, value: {}'.format(i, k, v))
-                    raise e
-        
-        return data
+                return val
+            
+        for k in data.keys():
+            yield k, get_real_value(k)
     
-    def _normalize(self, data: dict) -> dict:
+    def _normalize(self, data: T.Data) -> T.Data:
         raise NotImplementedError
     
-    def _create_similars(self, data: dict) -> dict:
+    def _create_similars(self, data: T.Data) -> T.Data:
         raise NotImplementedError
     
-    def _shortify(self, data: dict) -> dict:
+    def _shortify(self, data: T.Data) -> T.Data:
         raise NotImplementedError
