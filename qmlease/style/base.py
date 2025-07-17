@@ -56,7 +56,7 @@ class Base(QQmlPropertyMap):
                 try:
                     data[k] = eval_reference(v)
                 except KeyError as e:
-                    print(':v4',
+                    print(':v8',
                           'failed dynamically assign value to key. '
                           '(source key does not exist!) '
                           'index: {}, key: {}, value: {}'.format(i, k, v))

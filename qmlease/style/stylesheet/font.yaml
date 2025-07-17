@@ -11,8 +11,6 @@ color_dark_1: '$color_general_7'
 color_dark_5: '#393355'
 color_light_5: '#F2F2F2'
 
-font_default: ''
-
 size_xs: 6
 size_s: 9
 size_m: 12
