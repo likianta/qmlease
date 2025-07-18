@@ -146,7 +146,7 @@ class Logger(QObject):
     #   but we'd better to sync it with current theme (`../../style/color.py`).
     _color_stripe = {
         'blue'   : '#202AB5',
-        'grey'   : '#97A5A5',
+        'gray'   : '#97A5A5',
         'green'  : '#008000',
         'magenta': '#A109A0',
         'red'    : '#FF0000',
