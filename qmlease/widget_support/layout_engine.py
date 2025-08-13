@@ -33,6 +33,10 @@ class LayoutEngine:
         self.__qobj = None
     
     @property
+    def js_engine(self) -> t.Any:
+        return self._qobj
+    
+    @property
     def _qobj(self) -> t.Any:
         if self.__qobj is None:
             # laterly init when qml app is running.

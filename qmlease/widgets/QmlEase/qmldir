@@ -1,0 +1,6 @@
+module QmlEase
+
+GhostBorder  1.0  Effect/GhostBorder.qml
+Row          1.0  Layout/Row.qml
+Text         1.0  Text.qml
+Window       1.0  Window.qml

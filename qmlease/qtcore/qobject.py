@@ -3,6 +3,7 @@ from functools import partial
 
 from qtpy.QtCore import QObject as OriginQObject
 from qtpy.QtCore import Signal
+from qtpy.QtQml import QJSValue
 
 from .property import AutoProp
 from .signal_slot import slot
@@ -98,7 +99,11 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
         self._auto_prop_delegate.self_qobj = self
     
     def __getitem__(self, item: str) -> t.Any:
-        return self.property(item)
+        x = self.property(item)
+        if isinstance(x, QJSValue):
+            return x.toVariant()
+        else:
+            return x
     
     def __setitem__(self, key: str, value: t.Any) -> None:
         self.setProperty(key, value)
@@ -173,7 +178,11 @@ class QObjectDelegate:
         _setattr(self, key, value)
     
     def __getitem__(self, item: str) -> t.Any:
-        return self.qobj.property(item)
+        x = self.qobj.property(item)
+        if isinstance(x, QJSValue):
+            return x.toVariant()
+        else:
+            return x
     
     def __setitem__(self, key: str, value: t.Any) -> None:
         self.qobj.setProperty(key, value)

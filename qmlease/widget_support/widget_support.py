@@ -1,5 +1,5 @@
 import typing as t
-import uuid
+from uuid import uuid1
 
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
@@ -39,7 +39,8 @@ class WidgetSupport(QObject):
     
     @slot(object)
     def auto_size(self, item: QObject) -> None:
-        pass
+        layout.size_self(item)
+        layout.align_children(item, item['alignment'])
     
     @slot(object)
     @slot(object, str)
@@ -67,6 +68,15 @@ class WidgetSupport(QObject):
             metrics = QFontMetrics(item_ref.property('font'))
         return int(metrics.horizontalAdvance(text) * 1.2)
     
+    @slot(str, result=dict)
+    @slot(dict, result=dict)
+    def fill_sidebar_item(self, data: t.Union[str, dict]) -> dict:
+        if isinstance(data, str):
+            return {'text': data, 'icon': '', 'color': ''}
+        else:
+            # assert data['text']
+            return {'text': '', 'icon': '', 'color': '', **data}
+    
     @slot(list, result=int)
     @slot(list, int, result=int)
     def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
@@ -74,7 +84,7 @@ class WidgetSupport(QObject):
     
     @slot(result=str)
     def generate_random_id(self) -> str:
-        return uuid.uuid1().hex
+        return uuid1().hex
     
     @slot(object)
     def init_column(self, item: QObject) -> None:
@@ -86,6 +96,34 @@ class WidgetSupport(QObject):
             layout.align_children(item, item['alignment'])
         if item['autoSize']:
             layout.size_children(item, 'vertical')
+    
+    @slot(object)
+    def init_ghost_border(self, item: QObject) -> None:
+        assert len(item.children()) == 2
+        child = item.children()[1]
+        
+        layout.js_engine.alignChild(item.qobj, child.qobj, 'center')
+        
+        paddings = (0, 0, 0, 0)
+        if item['alignment'] == 'center' and (p := item['padding']):
+            # from PySide6.QtQml import QJSValue
+            # assert isinstance(x, QJSValue)
+            # print(x, x.toString(), x.toVariant(), ':v')
+            # p = x.toVariant()
+            if isinstance(p, int):
+                paddings = (p,) * 4
+            elif len(p) == 2:
+                paddings = (p[0], p[1], p[0], p[1])
+            else:
+                paddings = tuple(p)
+            print(p, paddings, ':v')
+            
+        layout.js_engine.wrapSize2(
+            item.qobj,
+            child.qobj,
+            paddings[1] + paddings[3],  # hside
+            paddings[0] + paddings[2],  # vside
+        )
     
     @slot(object)
     def init_radio_group(self, item: QObject) -> None:

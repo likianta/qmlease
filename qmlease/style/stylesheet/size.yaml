@@ -16,7 +16,8 @@ padding_m: 4
 padding_l: 8
 padding_h_m: 4
 padding_h_l: 8
-padding_v_m: 2
+padding_v_s: 2
+padding_v_m: 4
 
 radius_xs: 1
 radius_s: 2

@@ -1,0 +1,3 @@
+module QmlEase.Effect
+
+GhostBorder  1.0  GhostBorder.qml
