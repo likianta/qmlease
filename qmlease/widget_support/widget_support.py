@@ -42,18 +42,6 @@ class WidgetSupport(QObject):
         layout.size_self(item)
         layout.align_children(item, item['alignment'])
     
-    @slot(object)
-    @slot(object, str)
-    def check_size_in_details(self, item: QObject, remark: str = '') -> None:
-        print(
-            '{} ({})'.format(remark, item.class_name) if remark else
-            item.class_name,
-            (item['width'], item['height']),
-            (item['implicitWidth'], item['implicitHeight']),
-            # item['childrenRect'],
-            (item['childrenRect'].width(), item['childrenRect'].height()),
-        )
-    
     @slot(str)
     @slot(str, object)
     def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
@@ -102,28 +90,26 @@ class WidgetSupport(QObject):
         assert len(item.children()) == 2
         child = item.children()[1]
         
-        layout.js_engine.alignChild(item.qobj, child.qobj, 'center')
+        x = item['padding']
+        if isinstance(x, int):
+            paddings = (x,) * 4
+        elif len(x) == 2:
+            paddings = (x[0], x[1], x[0], x[1])
+        else:
+            paddings = tuple(x)
+        print(x, paddings, ':v')
         
-        paddings = (0, 0, 0, 0)
-        if item['alignment'] == 'center' and (p := item['padding']):
-            # from PySide6.QtQml import QJSValue
-            # assert isinstance(x, QJSValue)
-            # print(x, x.toString(), x.toVariant(), ':v')
-            # p = x.toVariant()
-            if isinstance(p, int):
-                paddings = (p,) * 4
-            elif len(p) == 2:
-                paddings = (p[0], p[1], p[0], p[1])
-            else:
-                paddings = tuple(p)
-            print(p, paddings, ':v')
-            
         layout.js_engine.wrapSize2(
             item.qobj,
             child.qobj,
             paddings[1] + paddings[3],  # hside
             paddings[0] + paddings[2],  # vside
         )
+        
+        if paddings[0]:
+            child['y'] = paddings[0]
+        if paddings[3]:
+            child['x'] = paddings[3]
     
     @slot(object)
     def init_radio_group(self, item: QObject) -> None:
@@ -174,6 +160,18 @@ class WidgetSupport(QObject):
             layout.align_children(item, item['alignment'])
         if item['autoSize']:
             layout.size_children(item, 'horizontal')
+    
+    @slot(object)
+    @slot(object, str)
+    def inspect_size(self, item: QObject, remark: str = '') -> None:
+        print(
+            '{} ({})'.format(remark, item.class_name) if remark else
+            item.class_name,
+            (item['width'], item['height']),
+            (item['implicitWidth'], item['implicitHeight']),
+            # item['childrenRect'],
+            (item['childrenRect'].width(), item['childrenRect'].height()),
+        )
     
     @slot(object)
     def resize_row(self, item: QObject) -> None:

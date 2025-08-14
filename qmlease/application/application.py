@@ -129,6 +129,7 @@ class Application(QApplication):
         self.register(wb.util, 'lkutil', 'global')
         
         pyassets.add_source(fs.xpath('../widgets/LKWidgets'), 'lkwidgets')
+        pyassets.add_source(fs.xpath('../widgets/QmlEase/Assets'), 'qmlease')
     
     # -------------------------------------------------------------------------
     

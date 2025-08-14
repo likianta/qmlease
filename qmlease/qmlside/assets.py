@@ -1,9 +1,6 @@
-from __future__ import annotations
-
 from os import getcwd
-from os.path import basename
 
-from lk_utils import normpath
+from lk_utils import fs
 
 from ..qtcore import QObject
 from ..qtcore import slot
@@ -11,20 +8,19 @@ from ..qtcore import slot
 
 class Assets(QObject):
     
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._cwd = 'file:///' + getcwd().replace('\\', '/')
         self._src = self._cwd
         self._custom_sources = {}  # type: dict[str, str]
     
-    def set_root(self, dir_: str) -> None:
-        self._src = 'file:///' + normpath(dir_, force_abspath=True)
+    def set_root(self, dir: str) -> None:
+        self._src = 'file:///' + fs.abspath(dir)
     
-    def add_source(self, src: str, name: str = None) -> None:
+    def add_source(self, src_dir: str, name: str = None) -> None:
         if name is None:
-            name = basename(src)
-        self._custom_sources[name] = \
-            'file:///' + normpath(src, force_abspath=True)
+            name = fs.basename(src_dir)
+        self._custom_sources[name] = 'file:///' + fs.abspath(src_dir)
     
     @slot(result=str)
     @slot(str, result=str)
@@ -32,7 +28,7 @@ class Assets(QObject):
         if relpath == '':
             return self._src
         else:
-            return normpath(f'{self._src}/{relpath}')
+            return fs.normpath(f'{self._src}/{relpath}')
     
     @slot(result=str)
     @slot(str, result=str)
@@ -40,12 +36,12 @@ class Assets(QObject):
         if relpath == '':
             return self._cwd
         else:
-            return normpath(f'{self._cwd}/{relpath}')
+            return fs.normpath(f'{self._cwd}/{relpath}')
     
     @slot(str, result=str)
     @slot(str, str, result=str)
     def get(self, src_name: str, relpath: str = '') -> str:
-        return normpath(f'{self._custom_sources[src_name]}/{relpath}')
+        return fs.normpath(f'{self._custom_sources[src_name]}/{relpath}')
 
 
 pyassets = Assets()

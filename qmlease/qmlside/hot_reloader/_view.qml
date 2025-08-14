@@ -57,7 +57,7 @@ Window {
         const scr_width = Screen.width
         const scr_height = Screen.height
         root.x = scr_width - 20 - root.width
-        root.y = scr_height - 20 - root.height
+        root.y = scr_height - 80 - root.height
         return [root.x, root.y]
     }
 

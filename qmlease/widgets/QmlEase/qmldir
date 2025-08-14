@@ -1,6 +1,10 @@
 module QmlEase
 
+CheckBox     1.0  Button/CheckBox.qml
 GhostBorder  1.0  Effect/GhostBorder.qml
+Icon         1.0  Icon.qml
+IconButton   1.0  Button/IconButton.qml
+Rectangle    1.0  Rectangle.qml
 Row          1.0  Layout/Row.qml
 Text         1.0  Text.qml
 Window       1.0  Window.qml
