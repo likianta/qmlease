@@ -169,7 +169,6 @@ class WidgetSupport(QObject):
             item.class_name,
             (item['width'], item['height']),
             (item['implicitWidth'], item['implicitHeight']),
-            # item['childrenRect'],
             (item['childrenRect'].width(), item['childrenRect'].height()),
         )
     

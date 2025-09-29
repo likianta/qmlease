@@ -4,7 +4,7 @@ import ".."
 
 Item {
     id: root
-    width: 0
+    width: pysize.wrap
     height: pysize.button_height
     clip: false
 
@@ -14,9 +14,9 @@ Item {
     property string colorBgPressed: pycolor.button_bg_pressed
     property int    currentIndex: 0
     property alias  displayText: _display.text
-    property int    dropdownHeight: 0
     property string dropdownBgColor: colorBgDefault
     property string dropdownBorderColor: _display.border.color
+    property alias  dropdownHeight: _dropdown.height
     property bool   expandable: true
     property alias  expanded: _dropdown.opened
     //  this is readonly. it is controled by _dropdown's opened and closed
@@ -24,13 +24,13 @@ Item {
     property bool   editable: false  // TODO
     property int    indicatorSize: pysize.indicator_size
     property var    model  // list[str]
-    property bool   wheelEnabled: true
-    property bool   wheelLoop: false
+//    property bool   wheelEnabled: false
+//    property bool   wheelLoop: false
     property int    __padding: pysize.padding_m
 
     signal selected(int index, string text)
 
-    component MyItem: LKRectangle {
+    component ListItem: LKRectangle {
         width: root.width
         height: pysize.button_height
         border.width: 0
@@ -53,8 +53,10 @@ Item {
         property alias  pressed: _area.containsPress
         property string text
         property alias  textItem: _text
+        // property bool   wheelEnabled: false
 
         signal clicked()
+        signal scrolled(int index)
 
         LKText {
             id: _text
@@ -73,38 +75,40 @@ Item {
             anchors.fill: parent
             hoverEnabled: true
             onClicked: parent.clicked()
-            onWheel: (whl) => {
-                if (root.wheelEnabled) {
-                    // we should use `var` here, not `let` or `const`.
-                    // this is a bug in qt 5 and qt 6.0~6.1. see also
-                    //  https://bugreports.qt.io/browse/QTBUG-91917
-                    var delta = -Math.round(whl.angleDelta.y / 120)
-                    var nextIndex = root.currentIndex + delta
-                    if (nextIndex < 0) {
-                        if (root.wheelLoop) {
-                            nextIndex = root.model.length - 1
-                        } else {
-                            nextIndex = 0
-                        }
-                    } else if (nextIndex >= root.model.length) {
-                        if (root.wheelLoop) {
-                            nextIndex = 0
-                        } else {
-                            nextIndex = root.model.length - 1
-                        }
-                    }
-                    if (root.currentIndex != nextIndex) {
-                        root.currentIndex = nextIndex
-                    }
-                }
-            }
+//            onWheel: (whl) => {
+//                if (parent.wheelEnabled) {
+//                    // we should use `var` here, not `let` or `const`.
+//                    // this is a bug in qt 5 and qt 6.0~6.1. see also
+//                    //  https://bugreports.qt.io/browse/QTBUG-91917
+//                    var delta = -Math.round(whl.angleDelta.y / 120)
+//                    var nextIndex = root.currentIndex + delta
+//                    if (nextIndex < 0) {
+//                        if (root.wheelLoop) {
+//                            nextIndex = root.model.length - 1
+//                        } else {
+//                            nextIndex = 0
+//                        }
+//                    } else if (nextIndex >= root.model.length) {
+//                        if (root.wheelLoop) {
+//                            nextIndex = 0
+//                        } else {
+//                            nextIndex = root.model.length - 1
+//                        }
+//                    }
+//                    // if (root.currentIndex != nextIndex) {
+//                    //     root.currentIndex = nextIndex
+//                    // }
+//                    parent.scrolled(nextIndex)
+//                }
+//            }
         }
     }
 
-    MyItem {
+    ListItem {
         id: _display
         border.width: 1
         text: root.model[root.currentIndex]
+        // wheelEnabled: false
 
         onClicked: {
             if (root.expandable) {
@@ -140,7 +144,11 @@ Item {
         id: _dropdown
         y: _display.height + root.__padding
         width: root.width
-        height: root.dropdownHeight
+//        height: (
+//            childrenRect.height > pysize.listview_height ?
+//            pysize.listview_height : childrenRect.height
+//        )
+        height: pysize.listview_height
         clip: true
         closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
 
@@ -165,8 +173,11 @@ Item {
             model: root.model
             spacing: pysize.spacing_s
 
-            delegate: MyItem {
+            ScrollBar.vertical: ScrollBar { }
+
+            delegate: ListItem {
                 text: modelData
+                // wheelEnabled: root.wheelEnabled
                 property int index: model.index
                 onClicked: {
                     root.currentIndex = this.index
@@ -175,31 +186,15 @@ Item {
                 }
             }
         }
-
-        Component.onCompleted: {
-            if (this.height == 0) {
-                const totalHeight = (
-                    pysize.margin_s * 2 +
-                    pysize.button_height
-                ) * root.model.length + (
-                    pysize.spacing_m * (root.model.length - 1)
-                )
-                if (totalHeight > pysize.listview_height) {
-                    this.height = pysize.listview_height
-                } else {
-                    this.height = totalHeight
-                }
-            }
-        }
     }
 
     Component.onCompleted: {
-        if (this.width == 0) {
+        if (this.width == pysize.wrap) {
             // get longest item of model
-            const longestContent = pyside.eval(`
-                return max(map(str, model), key=len)
-            `, {'model': root.model})
-//            console.log(longestContent)
+            const longestContent = pyside.eval(
+                `return max(map(str, model), key=len)`,
+                {'model': root.model}
+            )
 
             _display.text = longestContent
             this.width = (
