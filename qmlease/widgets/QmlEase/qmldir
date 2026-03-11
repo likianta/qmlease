@@ -1,10 +1,12 @@
+# This theme is inspired by: PrimerCSS, DaisyUI, Material You and Streamlit.
+
 module QmlEase
 
-CheckBox     1.0  Button/CheckBox.qml
-GhostBorder  1.0  Effect/GhostBorder.qml
-Icon         1.0  Icon.qml
-IconButton   1.0  Button/IconButton.qml
-Rectangle    1.0  Rectangle.qml
-Row          1.0  Layout/Row.qml
-Text         1.0  Text.qml
-Window       1.0  Window.qml
+CheckBox     1.0  Buttons/CheckBox.qml
+GhostBorder  1.0  Visual/GhostBorder.qml
+HBox         1.0  Layouts/HBox.qml
+Icon         1.0  Visual/Icon.qml
+IconButton   1.0  Buttons/IconButton.qml
+Rectangle    1.0  Visual/Rectangle.qml
+Text         1.0  Visual/Text.qml
+Window       1.0  Layouts/Window.qml
