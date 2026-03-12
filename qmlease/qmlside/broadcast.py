@@ -1,19 +1,19 @@
 import typing as t
 
 from ..qtcore import QObject
-from ..qtcore import signal
-from ..qtcore import slot
+from ..qtcore import Signal
+from ..qtcore import Slot
 
 
 class BroadCast(QObject):
-    cast = signal(str)
+    cast = Signal(str)
     
     def __init__(self):
         super().__init__()
         self._channels = {}  # type: dict[str, t.Callable]
         self.cast.connect(self._handle)
     
-    @slot(str, 'any')
+    @Slot(str, 'any')
     def register(self, channel: str, func: t.Callable):
         self._channels[channel] = func
     

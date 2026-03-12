@@ -1,14 +1,14 @@
 from qtpy.QtCore import QObject
 
-from ...qtcore import slot
+from ...qtcore import Slot
 
 strict_mode = False
 
 
 class ResourceManager(QObject):
     
-    @slot(str, result=object)
-    @slot(str, dict, result=object)
+    @Slot(str, result=object)
+    @Slot(str, dict, result=object)
     def get(self, name: str, kwargs: dict = None):
         return self._get(name, **(kwargs or {}))
     
@@ -22,7 +22,7 @@ class ResourceManager(QObject):
 
 class BaseResourceManager(QObject):
     
-    @slot(str, result=str)
+    @Slot(str, result=str)
     def get(self, name: str) -> str:
         assert hasattr(self, name)
         return getattr(self, name)

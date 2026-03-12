@@ -8,7 +8,7 @@ from .layout_engine import layout
 from .._env import IS_WINDOWS
 from ..qtcore import QObject
 from ..qtcore import bind_signal
-from ..qtcore import slot
+from ..qtcore import Slot
 from ..style import pyenum
 from ..style import pystyle
 
@@ -24,7 +24,7 @@ class WidgetSupport(QObject):
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
     
-    @slot(object)
+    @Slot(object)
     def align_field_title_widths(self, column: QObject) -> None:
         field_items = []
         for item in column.children():
@@ -37,13 +37,13 @@ class WidgetSupport(QObject):
         for item in field_items:
             item['titleWidth'] = longest_title_width
     
-    @slot(object)
+    @Slot(object)
     def auto_size(self, item: QObject) -> None:
         layout.size_self(item)
         layout.align_children(item, item['alignment'])
     
-    @slot(str)
-    @slot(str, object)
+    @Slot(str)
+    @Slot(str, object)
     def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
         if text == '':
             return 0
@@ -56,8 +56,8 @@ class WidgetSupport(QObject):
             metrics = QFontMetrics(item_ref.property('font'))
         return int(metrics.horizontalAdvance(text) * 1.2)
     
-    @slot(str, result=dict)
-    @slot(dict, result=dict)
+    @Slot(str, result=dict)
+    @Slot(dict, result=dict)
     def fill_sidebar_item(self, data: t.Union[str, dict]) -> dict:
         if isinstance(data, str):
             return {'text': data, 'icon': '', 'color': ''}
@@ -65,16 +65,16 @@ class WidgetSupport(QObject):
             # assert data['text']
             return {'text': '', 'icon': '', 'color': '', **data}
     
-    @slot(list, result=int)
-    @slot(list, int, result=int)
+    @Slot(list, result=int)
+    @Slot(list, int, result=int)
     def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
         return max(map(self.estimate_line_width, texts)) + padding * 2
     
-    @slot(result=str)
+    @Slot(result=str)
     def generate_random_id(self) -> str:
         return uuid1().hex
     
-    @slot(object)
+    @Slot(object)
     def init_column(self, item: QObject) -> None:
         layout.size_self(item)
         assert item['alignment'] in (
@@ -85,7 +85,7 @@ class WidgetSupport(QObject):
         if item['autoSize']:
             layout.size_children(item, 'vertical')
     
-    @slot(object)
+    @Slot(object)
     def init_ghost_border(self, item: QObject) -> None:
         assert len(item.children()) == 2
         child = item.children()[1]
@@ -111,7 +111,7 @@ class WidgetSupport(QObject):
         if paddings[3]:
             child['x'] = paddings[3]
     
-    @slot(object)
+    @Slot(object)
     def init_radio_group(self, item: QObject) -> None:
         if item['horizontal']:
             if item['width'] == pyenum.AUTO:
@@ -150,7 +150,7 @@ class WidgetSupport(QObject):
             print('LKRadioControl.horizontal should not be changed after its '
                   'instantiation!', ':v6')
     
-    @slot(object)
+    @Slot(object)
     def init_row(self, item: QObject) -> None:
         layout.size_self(item)
         assert item['alignment'] in (
@@ -161,8 +161,8 @@ class WidgetSupport(QObject):
         if item['autoSize']:
             layout.size_children(item, 'horizontal')
     
-    @slot(object)
-    @slot(object, str)
+    @Slot(object)
+    @Slot(object, str)
     def inspect_size(self, item: QObject, remark: str = '') -> None:
         print(
             '{} ({})'.format(remark, item.class_name) if remark else
@@ -172,7 +172,7 @@ class WidgetSupport(QObject):
             (item['childrenRect'].width(), item['childrenRect'].height()),
         )
     
-    @slot(object)
+    @Slot(object)
     def resize_row(self, item: QObject) -> None:
         layout.size_children(item, 'horizontal')
 

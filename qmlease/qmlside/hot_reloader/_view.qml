@@ -19,6 +19,9 @@ Window {
     Loader {
         id: _loader
         anchors.centerIn: parent
+        onLoaded: {
+            _moveWindowCenter(this.item)
+        }
     }
 
     Rectangle {
@@ -45,27 +48,27 @@ Window {
         onClicked: root.reloadTriggered()
     }
 
-    function _moveWindowCenter() {
+    function _moveWindowCenter(win) {
         const scr_width = Screen.width
         const scr_height = Screen.height
-        root.x = scr_width / 2 - root.width / 2
-        root.y = scr_height / 2 - root.height / 2
-        return [root.x, root.y]
+        win.x = scr_width / 2 - win.width / 2
+        win.y = scr_height / 2 - win.height / 2
+        return [win.x, win.y]
     }
 
-    function _moveWindowRightBottom() {
+    function _moveWindowRightBottom(win) {
         const scr_width = Screen.width
         const scr_height = Screen.height
-        root.x = scr_width - 20 - root.width
-        root.y = scr_height - 80 - root.height
-        return [root.x, root.y]
+        win.x = scr_width - 20 - win.width
+        win.y = scr_height - 80 - win.height
+        return [win.x, win.y]
     }
 
     Component.onCompleted: {
 //        this.width = _btn.width
 //        this.height = _btn.height
-//        const [x, y] = _moveWindowCenter()
-        _moveWindowRightBottom()
+//        const [x, y] = _moveWindowCenter(this)
+        _moveWindowRightBottom(this)
         // const [x, y] = _moveWindowRightBottom()
         // console.log(`HotLoader started! (position at (${x}, ${y}))`)
         py.qmlease.reloader.init_reloader_window(this)

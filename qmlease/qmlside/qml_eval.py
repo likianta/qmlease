@@ -2,9 +2,8 @@ import re
 import typing as t
 from inspect import currentframe
 
+from lk_utils import textwrap as tw
 from lk_utils import xpath
-from lk_utils.textwrap import dedent
-from lk_utils.textwrap import reindent
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QJSEngine
 from qtpy.QtQml import QQmlComponent
@@ -87,7 +86,7 @@ class QmlEval(QObject):
             code = self._param_placeholder.sub(
                 lambda m: m.group()[1:], code
             )
-            func = self.engine.evaluate(dedent(
+            func = self.engine.evaluate(tw.wrap(
                 '''
                 (({parameters}) => {{
                     {code}
@@ -95,7 +94,7 @@ class QmlEval(QObject):
                 '''
             ).format(
                 parameters=', '.join(kwargs.keys()),
-                code=reindent(code, 4),
+                code=tw.wrap(code, 4),
             ), last_file, last_line - 1)
             
             args = []

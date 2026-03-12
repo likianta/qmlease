@@ -13,7 +13,7 @@ from qtpy.QtGui import QImage
 from qtpy.QtQuick import QQuickImageProvider
 from uuid import uuid1
 from ..qtcore import QObject
-from ..qtcore import signal
+from ..qtcore import Signal
 
 
 class T:
@@ -21,7 +21,7 @@ class T:
 
 
 class LocalImageProvider(QObject):
-    image_updated = signal(str)
+    image_updated = Signal(str)
     
     def __init__(self, root: str = fs.xpath('_cache')) -> None:
         super().__init__()
@@ -74,7 +74,7 @@ class ImageProvider(QQuickImageProvider):
         self._image_pool = {}  # {id: bytes, ...}
         self._simple_counter = 0
         
-        from ...application import app
+        from ..application import app
         app.engine.addImageProvider(self._domain, self)
     
     @property

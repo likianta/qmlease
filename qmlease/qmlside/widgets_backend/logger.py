@@ -9,17 +9,17 @@ from typing import AnyStr
 
 from lk_utils import new_thread
 
-from .__ext__ import QObject
-from .__ext__ import signal
-from .__ext__ import slot
+from ._imp import QObject
+from ._imp import Signal
+from ._imp import Slot
 from ..model import Model
 
 _generate_timestamp = partial(time.strftime, '%H:%M:%S')
 
 
 class Logger(QObject):
-    short_streamed = signal(str)
-    streamed = signal(str)
+    short_streamed = Signal(str)
+    streamed = Signal(str)
     
     count: int = 0
     show_number: bool = True
@@ -42,7 +42,7 @@ class Logger(QObject):
     def enabled(self) -> bool:
         return self._short_stream_enabled or self._long_stream_enabled
     
-    @slot(result=object)
+    @Slot(result=object)
     def get_model(self) -> Model:
         return self._model
     
@@ -89,7 +89,7 @@ class Logger(QObject):
         print(f':{markup}ps', *msg)
         self._push_stream(*msg, color=color, _async=_async)
     
-    @slot(str)
+    @Slot(str)
     def qlog(self, msg: str) -> None:
         # this is called by qml side.
         if not self.enabled: return
@@ -97,7 +97,7 @@ class Logger(QObject):
         #   color='raw': the qml message may contain html tags itself, so we
         #       leave it as-is.
     
-    @slot()
+    @Slot()
     def clear(self) -> None:
         self.count = 0
         self._model.clear()

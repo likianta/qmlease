@@ -1,18 +1,17 @@
-from __future__ import annotations
-
-from .__ext__ import QObject
-from .__ext__ import slot
+import typing as t
+from ._imp import QObject
+from ._imp import Slot
 
 
 class ListView(QObject):
-    @slot(list, dict, result=list)
-    @slot(list, dict, str, result=list)
+    @Slot(list, dict, result=list)
+    @Slot(list, dict, str, result=list)
     def fill_model(
-            self,
-            model: list[dict | str],
-            template: dict,
-            main_key: str = None
-    ) -> list[dict]:
+        self,
+        model: t.List[t.Union[dict, str]],
+        template: dict,
+        main_key: str = None
+    ) -> t.List[dict]:
         """ fill missing fields for each element of model. """
         # print(':l', model)
         out = []

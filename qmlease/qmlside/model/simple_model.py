@@ -3,7 +3,7 @@ from __future__ import annotations
 import typing as t
 
 from .model import Model
-from ...qtcore import slot
+from ...qtcore import Slot
 
 
 class T:
@@ -28,46 +28,46 @@ class SimpleModel(Model):
     def __iter__(self):
         return (x['value'] for x in self._items)
     
-    @slot('any')
+    @Slot('any')
     def append(self, item: T.Datum) -> None:
         super().append({'value': item})
     
-    @slot(list)
+    @Slot(list)
     def append_many(self, items: T.Data) -> None:
         super().append_many([{'value': x} for x in items])
     
     extend = append_many
     
-    @slot(int, 'any')
+    @Slot(int, 'any')
     def insert(self, index: int, item: T.Datum) -> None:
         super().insert(index, {'value': item})
     
-    @slot(int, list)
+    @Slot(int, list)
     def insert_many(self, index: int, items: T.Data) -> None:
         super().insert_many(index, [{'value': x} for x in items])
     
-    @slot(result=...)
+    @Slot(result=...)
     def pop(self) -> T.Datum:
         return super().pop()['value']
     
-    @slot(int, result=list)
+    @Slot(int, result=list)
     def pop_many(self, count: int) -> T.Data:
         return [x['value'] for x in super().pop_many(count)]
     
-    @slot(int, result=...)
+    @Slot(int, result=...)
     def delete(self, index: int) -> T.Datum:
         return super().delete(index)['value']
     
-    @slot(int, int, result=list)
+    @Slot(int, int, result=list)
     def delete_many(self, index: int, count: int) -> T.Data:
         return [x['value'] for x in super().delete_many(index, count)]
     
-    @slot(int, result=...)
+    @Slot(int, result=...)
     def get(self, index: int) -> T.Datum:
         return super().get(index)['value']
     
-    @slot(int, result=list)
-    @slot(int, int, result=list)
+    @Slot(int, result=list)
+    @Slot(int, int, result=list)
     def get_many(
             self,
             start: int = None,
@@ -75,10 +75,10 @@ class SimpleModel(Model):
     ) -> T.Data:
         return [x['value'] for x in super().get_many(start, end)]
     
-    @slot(int, 'any')
+    @Slot(int, 'any')
     def update(self, index: int, item: T.Datum) -> None:
         super().update(index, {'value': item})
     
-    @slot(int, list)
+    @Slot(int, list)
     def update_many(self, index: int, items: T.Data) -> None:
         super().update_many(index, [{'value': x} for x in items])

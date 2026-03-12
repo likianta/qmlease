@@ -1,12 +1,13 @@
 import typing as t
 from functools import partial
 
-from qtpy.QtCore import QObject as OriginQObject
-from qtpy.QtCore import Signal
+from qtpy.QtCore import QObject as QtObject
+from qtpy.QtCore import Signal as QtSignal
 from qtpy.QtQml import QJSValue
 
 from .property import AutoProp
 from .signal_slot import slot
+from .. import _env
 
 
 class PartialDelegate:
@@ -21,7 +22,7 @@ class PartialDelegate:
         setattr(self.self_qobj, key, value)
 
 
-class DynamicPropMeta(type(OriginQObject)):
+class DynamicPropMeta(type(QtObject)):
     # https://stackoverflow.com/a/63411358/9695911
     
     def __new__(cls, name, bases, dict_):
@@ -35,7 +36,7 @@ class DynamicPropMeta(type(OriginQObject)):
                 dict_[k] = v.default
                 if v.notify:
                     # print('auto create signal', f'{k}_changed', ':v')
-                    dict_[f'{k}_changed'] = Signal(v.type)
+                    dict_[f'{k}_changed'] = QtSignal(v.type)
                 
                 # create slot functions for qml getter & setter
                 assert f'get_{k}' not in dict_
@@ -60,7 +61,7 @@ class DynamicPropMeta(type(OriginQObject)):
         return super().__new__(cls, name, bases, dict_)
 
 
-class QObject(OriginQObject, metaclass=DynamicPropMeta):
+class QObject(QtObject, metaclass=DynamicPropMeta):
     """
     features:
         alternative to `property` and `setProperty`:
@@ -94,9 +95,10 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
             }
     """
     
-    def __init__(self, parent: OriginQObject = None) -> None:
+    def __init__(self, parent: QtObject = None) -> None:
         super().__init__(parent)
         self._auto_prop_delegate.self_qobj = self
+        self._broken = False
     
     def __getitem__(self, item: str) -> t.Any:
         x = self.property(item)
@@ -106,7 +108,20 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
             return x
     
     def __setitem__(self, key: str, value: t.Any) -> None:
-        self.setProperty(key, value)
+        if self._broken:
+            return
+        try:
+            self.setProperty(key, value)
+        except RuntimeError as e:
+            if (
+                _env.QT_DEBUG and
+                'Internal C++ object' in str(e) and
+                'already deleted' in str(e)
+            ):
+                print(':pv7', 'invalidate broken qobject')
+                self._broken = True
+            else:
+                raise e
     
     def __getattr__(self, item: str) -> t.Any:
         # behave as is. just eliminate IDE warning
@@ -129,11 +144,11 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
         return self
     
     def parent(self) -> 'QObject':
-        return t.cast(QObject, QObjectDelegate(OriginQObject.parent(self)))
+        return t.cast(QObject, QObjectDelegate(QtObject.parent(self)))
     
     def children(self) -> t.List['QObject']:
         out = []
-        for child in OriginQObject.children(self):
+        for child in QtObject.children(self):
             if child.property('enabled') is None:
                 # a weird item, it is invisible and unreasonable to exist.
                 continue
@@ -161,7 +176,7 @@ class QObject(OriginQObject, metaclass=DynamicPropMeta):
 
 class QObjectDelegate:
     
-    def __init__(self, qobj: OriginQObject) -> None:
+    def __init__(self, qobj: QtObject) -> None:
         self.qobj = qobj
     
     def __getattr__(self, item: str) -> t.Any:
@@ -203,7 +218,7 @@ class QObjectDelegate:
                 # noinspection PyUnresolvedReferences
                 out.append(QObjectDelegate(self.qobj.itemAt(i)))
         else:
-            for i in OriginQObject.children(self.qobj):
+            for i in QtObject.children(self.qobj):
                 if i.property('enabled') is None:
                     # a weird item, it is invisible and unreasonable to exist.
                     continue
@@ -225,8 +240,8 @@ def _setattr(self, key: str, value: t.Any) -> None:
 
 
 def _qgetattr(self, key: str) -> t.Any:
-    return OriginQObject.__getattribute__(self, key)
+    return QtObject.__getattribute__(self, key)
 
 
 def _qsetattr(self, key: str, value: t.Any) -> None:
-    OriginQObject.__setattr__(self, key, value)
+    QtObject.__setattr__(self, key, value)

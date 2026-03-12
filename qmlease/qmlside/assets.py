@@ -3,7 +3,7 @@ from os import getcwd
 from lk_utils import fs
 
 from ..qtcore import QObject
-from ..qtcore import slot
+from ..qtcore import Slot
 
 
 class Assets(QObject):
@@ -22,24 +22,24 @@ class Assets(QObject):
             name = fs.basename(src_dir)
         self._custom_sources[name] = 'file:///' + fs.abspath(src_dir)
     
-    @slot(result=str)
-    @slot(str, result=str)
+    @Slot(result=str)
+    @Slot(str, result=str)
     def src(self, relpath: str = '') -> str:
         if relpath == '':
             return self._src
         else:
             return fs.normpath(f'{self._src}/{relpath}')
     
-    @slot(result=str)
-    @slot(str, result=str)
+    @Slot(result=str)
+    @Slot(str, result=str)
     def cwd(self, relpath: str = '') -> str:
         if relpath == '':
             return self._cwd
         else:
             return fs.normpath(f'{self._cwd}/{relpath}')
     
-    @slot(str, result=str)
-    @slot(str, str, result=str)
+    @Slot(str, result=str)
+    @Slot(str, str, result=str)
     def get(self, src_name: str, relpath: str = '') -> str:
         return fs.normpath(f'{self._custom_sources[src_name]}/{relpath}')
 

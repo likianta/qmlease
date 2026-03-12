@@ -18,3 +18,7 @@ dist/
 !/qmlease/qmlside/widget_support/_cache/.gitkeep
 !/sidework/pyside_package_tailor/dist/pyside6_lite/__init__.py
 !/sidework/pyside_package_tailor/venv/qt_for_python/.gitkeep
+
+# temp hide
+/blueprint/
+/qmlease/declarative/

@@ -8,7 +8,7 @@ from qtpy.QtQuick import QQuickItem
 from ...qtcore import QObject
 from ...qtcore import bind_prop
 from ...qtcore import bind_signal
-from ...qtcore import slot
+from ...qtcore import Slot
 
 if __name__ == '__main__':
     from ...application import Application
@@ -39,7 +39,7 @@ class HotReloader(QObject):
         if print_with_varnames:
             lk_logger.update(show_varnames=True)
     
-    @slot(object)
+    @Slot(object)
     def init_reloader_window(self, window: QObject) -> None:
         window['title'] = self.title
         window['source'] = 'file:///' + self._target_file
@@ -49,7 +49,7 @@ class HotReloader(QObject):
             print(':di')
             # sys.modules.clear()
             # window['source'] = ''
-            self._app.engine.clearComponentCache()
+            # self._app.engine.clearComponentCache()
             self._reload_count += 1
             window['source'] = 'file:///{}?_reload_count={}'.format(
                 self._target_file, self._reload_count
@@ -81,6 +81,8 @@ class HotReloader(QObject):
                     bind_prop(item, 'height', window, True)
     
     def run(self) -> None:
+        from ... import _env
+        _env.QT_DEBUG = True
         self._app.register(self, 'reloader', 'qmlease')
         #   we can use this in qml with "py.qmlease.reloader.<method>(...)".
         # noinspection PyProtectedMember

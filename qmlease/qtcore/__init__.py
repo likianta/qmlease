@@ -5,5 +5,7 @@ from .binding import bind_signal
 from .property import AutoProp
 from .qobject import QObject
 from .qobject import QObjectDelegate
-from .signal_slot import signal
-from .signal_slot import slot
+from .signal import Signal
+from .signal_slot import signal  # DELETE
+from .signal_slot import slot  # DELETE
+from .slot import Slot

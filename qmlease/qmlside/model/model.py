@@ -3,7 +3,7 @@ import typing as t
 from qtpy.QtCore import QAbstractListModel
 from qtpy.QtCore import QModelIndex
 
-from ...qtcore import slot
+from ...qtcore import Slot
 
 
 class T:  # 'TypeHint'
@@ -68,7 +68,7 @@ class Model(QAbstractListModel):
     # api
     # tip: all params which named `item` or `items` accept partial dict.
     
-    @slot(dict)
+    @Slot(dict)
     def append(self, item: T.Item) -> None:
         self.beginInsertRows(
             QModelIndex(), self.rowCount(), self.rowCount()
@@ -76,7 +76,7 @@ class Model(QAbstractListModel):
         self._items.append(self._auto_complete(item))
         self.endInsertRows()
     
-    @slot(list)
+    @Slot(list)
     def append_many(self, items: T.Items) -> None:
         self.beginInsertRows(
             QModelIndex(), self.rowCount(), self.rowCount() + len(items) - 1
@@ -84,7 +84,7 @@ class Model(QAbstractListModel):
         self._items.extend(map(self._auto_complete, items))
         self.endInsertRows()
     
-    @slot(int, dict)
+    @Slot(int, dict)
     def insert(self, index: int, item: T.Item) -> None:
         self.beginInsertRows(
             QModelIndex(), index, index
@@ -92,7 +92,7 @@ class Model(QAbstractListModel):
         self._items.insert(index, self._auto_complete(item))
         self.endInsertRows()
     
-    @slot(int, list)
+    @Slot(int, list)
     def insert_many(self, index: int, items: T.Items) -> None:
         self.beginInsertRows(
             QModelIndex(), index, index + len(items) - 1
@@ -100,7 +100,7 @@ class Model(QAbstractListModel):
         self._items[index:index] = list(map(self._auto_complete, items))
         self.endInsertRows()
     
-    @slot(result=dict)
+    @Slot(result=dict)
     def pop(self) -> T.Item:
         self.beginRemoveRows(
             QModelIndex(), len(self._items) - 1, len(self._items) - 1
@@ -109,7 +109,7 @@ class Model(QAbstractListModel):
         self.endRemoveRows()
         return out
     
-    @slot(int, result=list)
+    @Slot(int, result=list)
     def pop_many(self, count: int) -> T.Items:
         assert count > 0
         self.beginRemoveRows(
@@ -120,7 +120,7 @@ class Model(QAbstractListModel):
         self.endRemoveRows()
         return b
     
-    @slot(int, result=dict)
+    @Slot(int, result=dict)
     def delete(self, index: int) -> T.Item:
         self.beginRemoveRows(
             QModelIndex(), index, index
@@ -129,7 +129,7 @@ class Model(QAbstractListModel):
         self.endRemoveRows()
         return out
     
-    @slot(int, int, result=list)
+    @Slot(int, int, result=list)
     def delete_many(self, index: int, count: int) -> T.Items:
         assert count > 0
         self.beginRemoveRows(
@@ -141,7 +141,7 @@ class Model(QAbstractListModel):
         self.endRemoveRows()
         return b
     
-    @slot(int, int)
+    @Slot(int, int)
     def move(self, old_index: int, new_index: int) -> None:
         self.beginMoveRows(
             QModelIndex(), old_index, old_index, QModelIndex(), new_index
@@ -150,7 +150,7 @@ class Model(QAbstractListModel):
         self._items.insert(new_index, item)
         self.endMoveRows()
     
-    @slot(int, int, int)
+    @Slot(int, int, int)
     def move_many(self, old_index: int, new_index: int, count: int) -> None:
         assert count > 0
         self.beginMoveRows(
@@ -162,21 +162,21 @@ class Model(QAbstractListModel):
         self._items[new_index:new_index] = items
         self.endMoveRows()
     
-    @slot(int, result=bool)
+    @Slot(int, result=bool)
     def move_up(self, index: int) -> bool:
         if index > 0:
             self.move(index, index - 1)
             return True
         return False
     
-    @slot(int, result=bool)
+    @Slot(int, result=bool)
     def move_down(self, index: int) -> bool:
         if index < len(self._items) - 1:
             self.move(index, index + 1)
             return True
         return False
     
-    @slot()
+    @Slot()
     def clear(self) -> None:
         self.beginRemoveRows(
             QModelIndex(), 0, len(self._items) - 1
@@ -184,12 +184,12 @@ class Model(QAbstractListModel):
         self._items.clear()
         self.endRemoveRows()
     
-    @slot(int, result=dict)
+    @Slot(int, result=dict)
     def get(self, index: int) -> T.Item:
         return self._items[index]
     
-    @slot(int, result=list)
-    @slot(int, int, result=list)
+    @Slot(int, result=list)
+    @Slot(int, int, result=list)
     def get_many(
             self,
             start: int = None,
@@ -201,7 +201,7 @@ class Model(QAbstractListModel):
             assert start is not None and end is not None
         return self._items[start:end]
     
-    @slot(int, dict)
+    @Slot(int, dict)
     def update(self, index: int, item: dict) -> None:
         self._items[index].update(item)
         # emit signal of `self.dataChanged` to notify qml side that some item
@@ -215,7 +215,7 @@ class Model(QAbstractListModel):
             qindex, qindex, [self._name_2_role[x] for x in item.keys()]
         )
     
-    @slot(int, list)
+    @Slot(int, list)
     def update_many(self, start: int, items: T.Items) -> None:
         if not items: return
         end = start + len(items)

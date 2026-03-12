@@ -7,8 +7,8 @@ from collections import defaultdict
 
 from qtpy.QtCore import Qt
 
-from .__ext__ import QObject
-from .__ext__ import slot
+from ._imp import QObject
+from ._imp import Slot
 from ..._env import QT_VERSION
 
 
@@ -51,7 +51,7 @@ class ScopeEngine(QObject):
         'kid_2_sid_fid': {},
     }
     
-    @slot(str, str)
+    @Slot(str, str)
     def register_sid(self, scope: str, sid: str) -> None:
         print(f'register: [cyan]scope = {scope} [dim]sid = {sid}[/][/]', ':r')
         self._sid_2_scope[sid] = scope
@@ -59,8 +59,8 @@ class ScopeEngine(QObject):
             self._scopes_ex['direct'].add(scope)
             self._scopes_ex['indirect'].add(self._get_parent_scope(scope))
     
-    @slot(str, str, str, object, int)
-    @slot(str, str, str, object, int, int)
+    @Slot(str, str, str, object, int)
+    @Slot(str, str, str, object, int, int)
     def register_func(
             self, scope: T.Scope, sid: T.SID, fid: T.FID, qobj: QObject,
             key: int, modifier: int = 0
@@ -74,7 +74,7 @@ class ScopeEngine(QObject):
     
     # -------------------------------------------------------------------------
     
-    @slot(str, str)
+    @Slot(str, str)
     def activate_scope(self, scope: T.Scope, sid: T.SID = None) -> None:
         if sid in self._current_state['active_sids']:
             return
@@ -118,12 +118,12 @@ class ScopeEngine(QObject):
                 # print('attach sub scope', scope, sid, ':v2')
                 attach(scope, sid)
     
-    @slot(str)
+    @Slot(str)
     def cscope(self, scope: T.Scope) -> None:
         # print(scope)
         self.activate_scope(scope)
     
-    @slot(str, str)
+    @Slot(str, str)
     def deactivate_scope(self, scope: T.Scope, sid: T.SID = None) -> None:
         if sid not in self._current_state['active_sids']:
             return
@@ -138,7 +138,7 @@ class ScopeEngine(QObject):
             for sid in sid_to_be_removed:
                 self._current_state['active_sids'].remove(sid)
     
-    @slot(str, str)
+    @Slot(str, str)
     def dscope(self, scope: T.Scope) -> None:
         self.deactivate_scope(scope)
     
@@ -175,7 +175,7 @@ class ScopeEngine(QObject):
     
     # -------------------------------------------------------------------------
     
-    @slot(int, int)
+    @Slot(int, int)
     def on_key(self, key: int, modifier: int) -> None:
         # import lk_logger
         # lk_logger.start_ipython({'key': key})
@@ -187,6 +187,7 @@ class ScopeEngine(QObject):
                 qobj = self._fid_2_qobj[fid]
                 qobj.triggered.emit(fid)
     
+    # noinspection PyUnresolvedReferences
     @staticmethod
     def _compose_kid(key: int, modifier: int) -> T.KID:
         if QT_VERSION >= (6, 4, 0):

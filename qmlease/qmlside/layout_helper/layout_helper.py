@@ -9,7 +9,7 @@ from ..._env import IS_WINDOWS
 from ...qtcore import QObject
 from ...qtcore import bind_func
 from ...qtcore import bind_signal
-from ...qtcore import slot
+from ...qtcore import Slot
 from ...style import pyenum
 
 
@@ -29,7 +29,7 @@ class LayoutHelper(QObject):
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
     
-    @slot(object, str)
+    @Slot(object, str)
     def init_view(
         self,
         container: QObject,
@@ -65,13 +65,13 @@ class LayoutHelper(QObject):
     # new generation of auto alignment.
     
     # for LKHBox.qml
-    @slot(object)
+    @Slot(object)
     def halign_children(self, hbox: QObject) -> None:
         self._resize_children(hbox, 'h')
         self._align_children(hbox, 'h')
     
     # for LKVBox.qml
-    @slot(object)
+    @Slot(object)
     def valign_children(self, vbox: QObject) -> None:
         self._resize_children(vbox, 'v')
         self._align_children(vbox, 'v')
@@ -199,7 +199,7 @@ class LayoutHelper(QObject):
     
     # DELETE
     # noinspection PyUnresolvedReferences
-    @slot(object, str)
+    @Slot(object, str)
     def auto_align(self, container: QObject, alignment: str) -> None:
         """
         args:
@@ -272,8 +272,8 @@ class LayoutHelper(QObject):
                     )
                     container.heightChanged.emit()
     
-    @slot('any', result=int)
-    @slot('any', object, result=int)
+    @Slot('any', result=int)
+    @Slot('any', object, result=int)
     def calc_content_width(
         self,
         text: t.Union[str, t.List[str]],
@@ -292,9 +292,9 @@ class LayoutHelper(QObject):
             fm = QFontMetrics(text_item.property('font'))
         return int(fm.horizontalAdvance(text) * 1.2)
     
-    @slot(list, result=tuple)
-    @slot(list, int, result=tuple)
-    @slot(list, int, int, result=tuple)
+    @Slot(list, result=tuple)
+    @Slot(list, int, result=tuple)
+    @Slot(list, int, int, result=tuple)
     def calc_text_block_size(  # DELETE
         self,
         lines: t.List[str],
@@ -307,7 +307,7 @@ class LayoutHelper(QObject):
         height = (len(lines) + 1) * line_height
         return width, height
     
-    @slot(object, str)
+    @Slot(object, str)
     def equal_size_children(self, container: QObject, orientation: str):
         # roughly equal size children
         children = container.children()

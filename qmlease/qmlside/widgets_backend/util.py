@@ -1,13 +1,13 @@
 import typing as t
 from os import name as os_name
 
-from .__ext__ import QObject
-from .__ext__ import slot
+from ._imp import QObject
+from ._imp import Slot
 
 
 class Util(QObject):
     
-    @slot(result=str)
+    @Slot(result=str)
     def get_monospaced_font(self) -> str:
         """ get an available monospaced font family name based on OS. """
         from platform import system
@@ -19,9 +19,9 @@ class Util(QObject):
         else:
             return 'Ubuntu Mono'
     
-    @slot(result=str)
-    @slot(dict, result=str)
-    @slot(str, str, result=str)
+    @Slot(result=str)
+    @Slot(dict, result=str)
+    @Slot(str, str, result=str)
     def file_dialog(
             self,
             action='open',
@@ -135,7 +135,7 @@ class Util(QObject):
                 else:
                     raise ValueError('Cannot save folder!')
     
-    @slot(str, result=str)
+    @Slot(str, result=str)
     def normalize_path(self, path: str) -> str:
         if path.startswith('file:///'):
             if os_name == 'nt':

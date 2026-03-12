@@ -1,10 +1,10 @@
-from .__ext__ import QObject
-from .__ext__ import slot
+from ._imp import QObject
+from ._imp import Slot
 
 
 class Slider(QObject):
     
-    @slot(float, result=str)
-    @slot(float, int, result=str)
-    def show_value(self, value: float, precison=0) -> str:
+    @Slot(float, result=str)
+    @Slot(float, int, result=str)
+    def show_value(self, value: float, precison: int = 0) -> str:
         return f'{value * 100:.{precison}f}%'

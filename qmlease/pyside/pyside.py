@@ -1,9 +1,10 @@
+import re
 import typing as t
-from textwrap import dedent
-from textwrap import indent
+
+from lk_utils import textwrap as tw
 
 from .register import PyRegister
-from ..qtcore import slot
+from ..qtcore import Slot
 from ..qtcore.qobject import OriginQObject
 from ..qtcore.qobject import QObject
 from ..qtcore.qobject import QObjectDelegate
@@ -11,9 +12,9 @@ from ..qtcore.qobject import QObjectDelegate
 
 class PySide(QObject, PyRegister):
     
-    @slot(str, result=object)
-    @slot(str, list, result=object)
-    @slot(str, list, dict, result=object)
+    @Slot(str, result=object)
+    @Slot(str, list, result=object)
+    @Slot(str, list, dict, result=object)
     def call(
         self,
         func_name: str,
@@ -34,7 +35,7 @@ class PySide(QObject, PyRegister):
             else:  # experimental feature.
                 return func(args)
     
-    @slot(object, str, dict, result=object)
+    @Slot(object, str, dict, result=object)
     def kwcall(self, qobj: QObject, method_name: str, kwargs: dict) -> t.Any:
         """
         usage:
@@ -43,8 +44,8 @@ class PySide(QObject, PyRegister):
         """
         return getattr(qobj, method_name)(**kwargs)
     
-    @slot(str, result=object)
-    @slot(str, dict, result=object)
+    @Slot(str, result=object)
+    @Slot(str, dict, result=object)
     def eval(self, code: str, kwargs: dict = None) -> t.Any:
         def exec_code_object(code: str, context: dict) -> t.Any:
             for k, v in context.items():
@@ -63,22 +64,21 @@ class PySide(QObject, PyRegister):
                 raise e
             return context['__hook__']['__result__']
         
-        full_code = dedent(
+        full_code = tw.wrap(
             '''
             def __selfunc__():
                 # the source code can use `__selfunc__` for recursive call.
                 {source_code}
             __hook__['__result__'] = __selfunc__()
             '''
-        ).format(source_code=indent(dedent(code).strip(), '    ').lstrip())
+        ).format(source_code=tw.wrap(code, 4))
         return exec_code_object(full_code, kwargs or {})
     
-    @slot(str, name='def')
+    @Slot(str, name='def')
     def def_(self, code_block: str) -> None:
-        import re
-        code_block = dedent(code_block)
+        code_block = tw.wrap(code_block)
         funcname = re.search(r'^def (\w+)', code_block).group(1)
-        code_wrapper = dedent(
+        code_wrapper = tw.wrap(
             '''
             {source_code}
             __func_hook__ = {funcname}
