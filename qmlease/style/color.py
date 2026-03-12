@@ -76,6 +76,8 @@ class Color(Base):
                     if (k1 := f'{a}{b}') not in resolved:
                         yield k1, v
                         resolved.add(k1)
+            # if 'gray' in k:
+            #     yield k.replace('gray', 'grey'), v
     
     def _shortify(self, data: T.Data) -> T.Data:
         for k, v in data:

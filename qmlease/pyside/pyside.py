@@ -5,9 +5,9 @@ from lk_utils import textwrap as tw
 
 from .register import PyRegister
 from ..qtcore import Slot
-from ..qtcore.qobject import OriginQObject
 from ..qtcore.qobject import QObject
 from ..qtcore.qobject import QObjectDelegate
+from ..qtcore.qobject import QtObject
 
 
 class PySide(QObject, PyRegister):
@@ -49,7 +49,7 @@ class PySide(QObject, PyRegister):
     def eval(self, code: str, kwargs: dict = None) -> t.Any:
         def exec_code_object(code: str, context: dict) -> t.Any:
             for k, v in context.items():
-                if isinstance(v, OriginQObject):
+                if isinstance(v, QtObject):
                     context[k] = QObjectDelegate(v)
             context['__file__'] = __file__
             context['__hook__'] = {'__result__': None}

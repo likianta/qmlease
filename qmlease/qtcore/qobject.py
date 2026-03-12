@@ -64,7 +64,7 @@ class DynamicPropMeta(type(QtObject)):
 class QObject(QtObject, metaclass=DynamicPropMeta):
     """
     features:
-        alternative to `property` and `setProperty`:
+        syntax sugar to simplify getting and setting properties:
             before:
                 qobj.property('width')
                 qobj.setProperty('width', 100)

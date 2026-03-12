@@ -1,5 +1,6 @@
 /.idea/
 /.vscode/
+/blueprint/_codegen_result.txt
 /deleted/
 /qmlease/qmlside/widget_support/_cache/*
 /qmlease/widgets/MD3/
@@ -19,6 +20,7 @@ dist/
 !/sidework/pyside_package_tailor/dist/pyside6_lite/__init__.py
 !/sidework/pyside_package_tailor/venv/qt_for_python/.gitkeep
 
-# temp hide
-/blueprint/
+# temp
+/blueprint/*
 /qmlease/declarative/
+!/blueprint/make_color_properties.py

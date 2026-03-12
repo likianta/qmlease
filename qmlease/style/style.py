@@ -1,7 +1,7 @@
 from lk_utils import xpath
 from qtpy.QtQml import QQmlPropertyMap
 
-from .color import Color
+from .color2 import Color
 from .font import Font
 from .motion import Motion
 from .size import Size
@@ -16,7 +16,7 @@ class Style(QQmlPropertyMap):
     def __init__(self):
         super().__init__(None)
         dir_ = xpath('./stylesheet')
-        self.color.update_from_file(f'{dir_}/color.yaml')
+        # self.color.update_from_file(f'{dir_}/color.yaml')
         self.font.update_from_file(f'{dir_}/font.yaml')
         self.motion.update_from_file(f'{dir_}/motion.yaml')
         self.size.update_from_file(f'{dir_}/size.yaml')
