@@ -1,64 +1,97 @@
 import typing as t
 from functools import partial
 
+from qtpy.QtCore import Property as QtProperty
 from qtpy.QtCore import QObject as QtObject
 from qtpy.QtCore import Signal as QtSignal
 from qtpy.QtQml import QJSValue
 
-from .property import AutoProp
-from .signal_slot import slot
+from .property import Property
+from .slot import Slot
 from .. import _env
 
 
 class PartialDelegate:
-    self_qobj: 'QObject'
+    _core: 'QObject'
+
+    def post_init(self, qobj: 'QObject') -> None:
+        self._core = qobj
     
-    def get(self, key: str) -> t.Any:
-        # print(self.self_qobj, key, ':v')
-        return getattr(self.self_qobj, key)
+    def default_qget(self, key: str) -> t.Any:
+        # print(self._core, key, ':v')
+        return getattr(self._core, f'_qprop_{key}')
     
-    def set(self, key: str, value: t.Any) -> None:
-        # print(self.self_qobj, key, value, ':v')
-        setattr(self.self_qobj, key, value)
+    def default_qset(self, key: str, value: t.Any) -> None:
+        # print(self._core, key, value, ':v')
+        setattr(self._core, f'_qprop_{key}', value)
 
 
 class DynamicPropMeta(type(QtObject)):
     # https://stackoverflow.com/a/63411358/9695911
     
-    def __new__(cls, name, bases, dict_):
+    def __new__(cls, name, bases, attrs):
         custom_props = []
         delegate = PartialDelegate()
         
-        for k, v in tuple(dict_.items()):
-            if isinstance(v, AutoProp):
+        for k, v in tuple(attrs.items()):
+            if isinstance(v, Property):
                 custom_props.append(k)
                 
-                dict_[k] = v.default
-                if v.notify:
-                    # print('auto create signal', f'{k}_changed', ':v')
-                    dict_[f'{k}_changed'] = QtSignal(v.type)
+                # attrs[k] = v.default
+                # attrs[f'_qget_{k}'] = partial(delegate.get, key=k)
+                # # Slot(name=f'_qget_{k}', result=v.type)(func)
+                # if v.notify is True:
+                #     # print('auto create signal', f'{k}_changed', ':v')
+                #     attrs[f'{k}_changed'] = QtSignal(v.type)
+                #     if f'_qset_{k}' in attrs:
+                #         pass  # this means user has overwritten the setter func.
+                #     else:
+                #         attrs[f'_qset_{k}'] = partial(delegate.set, k)
+                #     #   the second argument can not be written as `key=k`, see 
+                #     #   reason: https://stackoverflow.com/questions/26182068/typeerror-got-multiple-values-for-argument-after-applying-functools-partial
+                #     # Slot(name=f'_qset_{k}', result=None)(func)
                 
-                # create slot functions for qml getter & setter
-                assert f'get_{k}' not in dict_
-                func = partial(delegate.get, key=k)
-                dict_[f'get_{k}'] = func
-                slot(name=f'get_{k}', result=v.type)(func)
-                
-                if not v.const:
-                    assert f'set_{k}' not in dict_
-                    func = partial(delegate.set, k)
-                    #   do not use `key=k` here, see reason:
-                    #       https://stackoverflow.com/questions/26182068
-                    #       /typeerror-got-multiple-values-for-argument-after
-                    #       -applying-functools-partial
-                    dict_[f'set_{k}'] = func
-                    slot(v.type, name=f'set_{k}')(func)
+                attrs[f'_qprop_{k}'] = v.default
+                if v.notify is True:
+                    attrs[f'{k}_changed'] = QtSignal(v.type)
+                    attrs[k] = QtProperty(
+                        v.type, 
+                        fget=attrs.get(
+                            f'_qget_{k}', 
+                            partial(delegate.default_qget, key=k)
+                        ),
+                        fset=attrs.get(
+                            f'_qset_{k}', 
+                            partial(delegate.default_qset, k)
+                            #   the second argument can not be written as 
+                            #   `key=k`, see reason: 
+                            #   https://stackoverflow.com/questions/26182068/typeerror-got-multiple-values-for-argument-after-applying-functools-partial
+                        ),
+                        notify=attrs[f'{k}_changed']
+                    )
+                elif v.notify is False:
+                    attrs[k] = QtProperty(
+                        v.type, 
+                        fget=attrs.get(
+                            f'_qget_{k}', 
+                            partial(delegate.default_qget, key=k)
+                        ),
+                    )
+                else:
+                    attrs[k] = QtProperty(
+                        v.type, 
+                        fget=attrs.get(
+                            f'_qget_{k}', 
+                            partial(delegate.default_qget, key=k)
+                        ),
+                        notify=v.notify
+                    )
         
-        dict_['_auto_prop_delegate'] = delegate
-        dict_['_custom_props'] = tuple(custom_props)
+        attrs['_auto_prop_delegate'] = delegate
+        attrs['_custom_props'] = tuple(custom_props)
         
         # noinspection PyTypeChecker
-        return super().__new__(cls, name, bases, dict_)
+        return super().__new__(cls, name, bases, attrs)
 
 
 class QObject(QtObject, metaclass=DynamicPropMeta):
@@ -79,7 +112,7 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
             
         an enhanced `property`:
             class MyObj(QObject):
-                width = AutoProp(100, int)
+                width = Property(100)
             my_obj = MyObj()
             my_obj.width  # got 100
             my_obj.width = 200  # changed to 200, and auto emit
@@ -97,7 +130,7 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
     
     def __init__(self, parent: QtObject = None) -> None:
         super().__init__(parent)
-        self._auto_prop_delegate.self_qobj = self
+        self._auto_prop_delegate.post_init(self)
         self._broken = False
     
     def __getitem__(self, item: str) -> t.Any:
@@ -123,14 +156,20 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
             else:
                 raise e
     
-    def __getattr__(self, item: str) -> t.Any:
-        # behave as is. just eliminate IDE warning
-        return super().__getattribute__(item)
+    def __getattr__(self, key: str) -> t.Any:
+        if isinstance(key, str):
+            # if key in ('_custom_props', f'_qprop_{key}'):
+            if key == '_custom_props' or key.startswith('_qprop_'):
+                return super().__getattribute__(key)
+            elif key in getattr(self, '_custom_props', ()):
+                return getattr(self, f'_qprop_{key}')
+        return super().__getattribute__(key)
     
     def __setattr__(self, key: str, value: t.Any) -> None:
         if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
-            if getattr(self, key) != value:
-                super().__setattr__(key, value)
+            internal_key = f'_qprop_{key}'
+            if getattr(self, internal_key) != value:
+                super().__setattr__(internal_key, value)
                 getattr(self, f'{key}_changed').emit(value)
                 return
         super().__setattr__(key, value)

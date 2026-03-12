@@ -2,10 +2,8 @@ from .binding import bind
 from .binding import bind_func
 from .binding import bind_prop
 from .binding import bind_signal
-from .property import AutoProp
+from .property import Property
 from .qobject import QObject
 from .qobject import QObjectDelegate
 from .signal import Signal
-from .signal_slot import signal  # DELETE
-from .signal_slot import slot  # DELETE
 from .slot import Slot

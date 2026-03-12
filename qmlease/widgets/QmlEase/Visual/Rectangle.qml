@@ -3,8 +3,8 @@ import QtQuick
 
 Rectangle {
     border.width: 0
-    border.color: pycolor.border_default
+    border.color: pycolor.outline
     clip: true
-    color: pycolor.white
+    color: pycolor.surface_container_low
     radius: pysize.radius_m
 }

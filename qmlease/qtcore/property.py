@@ -1,27 +1,21 @@
 import typing as t
+from .signal import Signal
 
-from qtpy.QtCore import Property as PropertyBase
-from qtpy.QtCore import QObject
-from qtpy.QtCore import SignalInstance
+_get_type_of = type
 
-from .signal_slot import signal
-
-_get_type = type
-
-
-class AutoProp:
+class Property:
     """
     this is a dataclass-like class, just stores some info for laterly used by -
-    `.qobject.DynamicSignalMeta.__new__`.
+    `.qobject.DynamicPropMeta.__new__`.
     
     usage:
         class MyObject(QObject):
-            # this derives four elements:
+            # this derives four attributes:
             #   index: int
-            #   get_index() -> int
-            #   set_index(value: int) -> None
+            #   _qget_index() -> int
+            #   _qset_index(value: int) -> None
             #   index_changed: Signal[int]
-            index = AutoProp(0)
+            index = Property(0)
             
             def test(self):
                 # get value
@@ -39,48 +33,48 @@ class AutoProp:
                 def _(value: int) -> None:
                     print(value)
     """
-    const: bool
     default: t.Any
-    notify: bool
+    notify: t.Union[bool, Signal]
+    readonly: int  # DELETE?
+    #   0: can be modified
+    #   1: can be modified in python side, forbidden in qml side.
+    #   2: forbidden modification in both python side and qml side.
     type: t.Type
     
     def __init__(
         self,
         value: t.Any,
         type: t.Type = None,
-        notify: t.Optional[bool] = None,
-        const: bool = False,
+        notify: t.Union[bool, Signal] = True,
     ) -> None:
         """
         params:
             notify:
-                if you need others to know if value changed, set this True, -
-                AutoProp will create proper notifier for it.
-                if you have your own notifier, set this False and use your -
-                notifier in the right place, see practice in ...
-                if the value won't never changed, i.e. it is a immutable -
-                object, set this False or set `const=True`.
-                when this param is None, AutoProp will make it True or False -
-                depends on `value`, `type` and `const` matters.
-        """
-        self.default = value
-        self.type = type or _get_type(value)
-        if notify is None:
-            if const:
-                notify = False
-            elif self.type in (bool, float, int, str):
-                notify = True
-            else:
-                notify = False
-        else:
-            assert isinstance(notify, bool)
-        self.notify = notify
-        self.const = const
+                if true, when value changed, it will emit `value_changed` 
+                signal. this signal is auto created in stage of
+                `.qobject.DynamicSignalMeta.__new__`.
 
+                if false, it means this property is "readonly". if caller tries
+                to set it, it will raise an exception.
+
+                if given a custom signal, in the qml side, this property is 
+                "readonly" (like `notify=False` does), but python side can 
+                modify it freely.
+                it means the property value may be varied between qml and python 
+                side, unless the custom signal is emitted once.
+                this is seldomly used case. you can see only usage at 
+                `../style/color.py`.
+        """
+        assert isinstance(notify, (bool, Signal))
+        self.default = value
+        self.type = type or _get_type_of(value)
+        self.notify = notify
+        self.readonly = 0 if notify is True else 2 if notify is False else 1
 
 # -----------------------------------------------------------------------------
-# FIXME or DELETE
+# DELETE
 
+'''
 class ValueHolder(QObject):  # TEST
     
     def __init__(self, value: t.Any, final_type: type):
@@ -189,3 +183,4 @@ class Property(PropertyBase):
         out = _get_type(value)
         assert out in (bool, float, int, str)
         return out
+'''

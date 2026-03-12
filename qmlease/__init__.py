@@ -27,7 +27,7 @@ from .qmlside import widgets_backend
 from .qmlside.widgets_backend import log
 from .qmlside.widgets_backend import logger
 from .qmlside.widgets_backend import util
-from .qtcore import AutoProp
+from .qtcore import Property
 from .qtcore import QObject
 from .qtcore import Signal
 from .qtcore import Slot
