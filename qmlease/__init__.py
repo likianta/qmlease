@@ -29,13 +29,15 @@ from .qmlside.widgets_backend import logger
 from .qmlside.widgets_backend import util
 from .qtcore import AutoProp
 from .qtcore import QObject
+from .qtcore import Signal
+from .qtcore import Slot
 from .qtcore import bind
 from .qtcore import bind_prop
 from .qtcore import bind_signal
-from .qtcore import signal
-from .qtcore import slot
+# from .qtcore import signal
+# from .qtcore import slot
 from .style import pyenum
 from .style import pystyle
 from .widget_support import widget_support
 
-__version__ = '3.1.0'
+__version__ = '4.0.0'
