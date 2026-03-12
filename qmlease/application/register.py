@@ -35,57 +35,51 @@ class Register:
         self,
         qobj: t.Union[QObject, type[QObject]],
         name: str = '',
-        namespace: str = '',
+        namespace: t.Union[t.Literal['global', 'py'], str] = 'py',
     ) -> None:
         """
         register an instance or a subclass of QObject to qml side.
         
-        detailed doc: docs/the-app-register-method.md
-
-        args:
+        read in details: `docs/the-app-register-method.md`
+        
+        params:
             qobj: either a QObject subclass or a subclass instance.
             name:
-                what is it called in qml.
-                if `qobj` is class type, suggest to use PascalCase.
-                if `qobj` is instance, suggest to use snake_case or camelCase.
-                if not given, will auto generate one based on its type and its
-                class name.
-                suggest: if you want to pass a custom name, it's better to use
-                a fixed prefix, like 'Py'/'py', 'My'/'my', etc. for example
-                'PyHotLoader', 'pylayout'.
-                TODO: check conflicts with reserved names.
+                what is it called in qml. if not given, will auto generate one
+                based on its class name. for example, `MyClass -> my_class`.
             namespace:
-                style: if you are registering a class, use PascalCase;
-                otherwise use snake_case.
+                preset namespaces:
+                    '' or 'global':
+                        register to global namespace.
+                    'py':
+                        register to `py` namespace.
+                else (any other string):
+                    register to the given namespace. be sure the custom 
+                    namespace contains only `[a-zA-Z0-9_]`.
 
         example:
             python side:
                 from qmlease import app
-                app.register(aaa, namespace='global')
-                app.register(bbb, namespace='')
-                app.register(ccc, namespace='my_space')
-                app.register(DDD, namespace='global')
-                app.register(EEE, namespace='')
-                app.register(FFF, namespace='MyFirstApp')
-            effects:
-                `aaa` can be directly used as `aaa`.
-                `bbb` can be used as `py.bbb`.
-                `ccc` can be used as `py.my_space.ccc`.
-                `DDD` will raise an error, because class type is not allowed to
-                    be registered to global namespace.
-                `EEE` will raise an error, because class type is not allowed to
-                    be registered to anonymous namespace.
-                `FFF` should be imported and be declared as `FFF {...}` to use.
+                app.register(aaa, namespace='py')
+                app.register(bbb, namespace='global')
+                app.register(ccc, namespace='')
+                #   not suggested, use 'global' instead.
+                app.register(ddd, namespace='myspace')
+            results:
+                `aaa` can be directly used as `py.aaa`.
+                `bbb` can be used as `bbb`.
+                `ccc` can be used as `ccc`.
+                `ddd` can be used as `myspace.ddd`.
             qml side:
-                import QtQuick 2.15
-                import MyFirstApp 1.0
+                import QtQuick
                 Item {
-                    FFF { id: fff }
+                    EEE { id: eee }
                     Component.onCompleted: {
-                        console.log(aaa)
-                        console.log(py.bbb)
-                        console.log(py.my_space.ccc)
-                        console.log(fff)
+                        console.log(py.aaa)
+                        console.log(bbb)
+                        console.log(ccc)
+                        console.log(myspace.ddd)
+                        console.log(eee)
                     }
                 }
         """
@@ -94,9 +88,9 @@ class Register:
         if isinstance(qobj, QObject):
             name = name or _pascal_2_snake_case(qobj.__class__.__name__)
             
-            if namespace == '':
+            if namespace == 'py':
                 self._namespace.insert(name, qobj)
-            elif namespace == 'global':
+            elif namespace in ('', 'global'):
                 self._root.setContextProperty(name, qobj)
             else:
                 if not self._namespace.contains(namespace):
@@ -128,48 +122,48 @@ class Register:
             #         )
             #     )
         
-        elif issubclass(qobj, QObject):
-            name = name or qobj.__name__
-            qcls = qobj
+        # elif issubclass(qobj, QObject):
+        #     name = name or qobj.__name__
+        #     qcls = qobj
             
-            if namespace == '':
-                raise Exception(
-                    'cannot register a class to anonymous namespace!'
-                )
-            elif namespace == 'global':
-                raise Exception(
-                    'cannot register a class to global namespace!'
-                )
-            else:
-                if QmlNamedElement:
-                    exec('QmlNamedElement(qname)(cls)', {
-                        'QML_IMPORT_NAME'         : namespace,
-                        'QML_IMPORT_MAJOR_VERSION': 1,
-                        'QML_IMPORT_MINOR_VERSION': 0,
-                        'QmlNamedElement'         : QmlNamedElement,
-                        'qname'                   : name,
-                        'cls'                     : qcls,
-                    })
-                elif QmlElement:  # TODO: not tested
-                    qcls.__name__ = name
-                    exec('QmlElement(cls)', {
-                        'QML_IMPORT_NAME'         : namespace,
-                        'QML_IMPORT_MAJOR_VERSION': 1,
-                        'QML_IMPORT_MINOR_VERSION': 0,
-                        'QmlElement'              : QmlElement,
-                        'cls'                     : qcls,
-                    })
-                else:
-                    # noinspection PyTypeChecker
-                    qmlRegisterType(qcls, namespace, 1, 0, name)
-            # if verbose:
-            #     print(
-            #         ':rp',
-            #         'registered pytype class to qml: [cyan]{} > {}[/]'
-            #         .format(namespace, name)
-            #     )
+        #     if namespace == '':
+        #         raise Exception(
+        #             'cannot register a class to anonymous namespace!'
+        #         )
+        #     elif namespace == 'global':
+        #         raise Exception(
+        #             'cannot register a class to global namespace!'
+        #         )
+        #     else:
+        #         if QmlNamedElement:
+        #             exec('QmlNamedElement(qname)(cls)', {
+        #                 'QML_IMPORT_NAME'         : namespace,
+        #                 'QML_IMPORT_MAJOR_VERSION': 1,
+        #                 'QML_IMPORT_MINOR_VERSION': 0,
+        #                 'QmlNamedElement'         : QmlNamedElement,
+        #                 'qname'                   : name,
+        #                 'cls'                     : qcls,
+        #             })
+        #         elif QmlElement:  # TODO: not tested
+        #             qcls.__name__ = name
+        #             exec('QmlElement(cls)', {
+        #                 'QML_IMPORT_NAME'         : namespace,
+        #                 'QML_IMPORT_MAJOR_VERSION': 1,
+        #                 'QML_IMPORT_MINOR_VERSION': 0,
+        #                 'QmlElement'              : QmlElement,
+        #                 'cls'                     : qcls,
+        #             })
+        #         else:
+        #             # noinspection PyTypeChecker
+        #             qmlRegisterType(qcls, namespace, 1, 0, name)
+        #     # if verbose:
+        #     #     print(
+        #     #         ':rp',
+        #     #         'registered pytype class to qml: [cyan]{} > {}[/]'
+        #     #         .format(namespace, name)
+        #     #     )
         else:
-            raise TypeError('target must be a QObject subclass or instance.')
+            raise Exception()
         
         self.__hidden_ref[id(qobj)] = qobj
     
