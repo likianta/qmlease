@@ -40,10 +40,9 @@ Window {
 
         TextInput {
             Layout.fillWidth: true
-            label: 'Success outline'
-            outlineColor: pycolor.success
-            placeholder: 'GGG'
-            text: ''
+            enabled: false
+            label: 'Disabled'
+            text: 'HHH'
         }
 
         Button {

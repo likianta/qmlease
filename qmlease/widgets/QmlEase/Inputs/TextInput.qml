@@ -33,6 +33,7 @@ ColumnLayout {
                 left: parent.left
                 leftMargin: 2
             }
+            color: root.enabled ? pycolor.on_surface : pycolor.outline
             // font.pixelSize: pyfont.size_s
             text: root.label
         }
@@ -65,6 +66,7 @@ ColumnLayout {
 
         MouseArea {
             anchors.fill: parent
+            cursorShape: root.enabled ? Qt.IBeamCursor : Qt.ForbiddenCursor
             onClicked: _input.focus = true
         }
 
@@ -77,7 +79,7 @@ ColumnLayout {
                 margins: 12
             }
             clip: true
-            color: pycolor.on_surface
+            color: root.enabled ? pycolor.on_surface : pycolor.outline
             enabled: root.enabled
             font.family: pyfont.font_default
             font.pixelSize: pyfont.size_m

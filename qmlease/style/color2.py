@@ -15,8 +15,8 @@ from materialyoucolor.scheme import SchemeTonalSpot
 from qtpy.QtCore import Property as QtProperty
 from qtpy.QtGui import QColor
 from ..qtcore import QObject
-from ..qtcore import StaticProperty
 from ..qtcore import Signal
+from ..qtcore import StaticProperty
 
 _dynamic_color_system = MaterialDynamicColors(spec='2025')
 
@@ -145,12 +145,6 @@ class Color(QObject):
                 scheme = SchemeFidelity(
                     source, is_dark=False, contrast_level=0.0
                 )
-                # self._light_scheme.update({
-                #     name: p0.get_hex(scheme)[:-2],
-                #     'on_' + name: p1.get_hex(scheme)[:-2],
-                #     name + '_container': p2.get_hex(scheme)[:-2],
-                #     'on_' + name + '_container': p3.get_hex(scheme)[:-2],
-                # })
                 self._light_scheme.update({
                     name        : p2.get_hex(scheme)[:-2],
                     'on_' + name: p3.get_hex(scheme)[:-2],
@@ -159,12 +153,6 @@ class Color(QObject):
                     scheme = SchemeFidelity(
                         source, is_dark=True, contrast_level=0.0
                     )
-                    # self._dark_scheme.update({
-                    #     name: p0.get_hex(scheme)[:-2],
-                    #     'on_' + name: p1.get_hex(scheme)[:-2],
-                    #     name + '_container': p2.get_hex(scheme)[:-2],
-                    #     'on_' + name + '_container': p3.get_hex(scheme)[:-2],
-                    # })
                     self._dark_scheme.update({
                         name        : p2.get_hex(scheme)[:-2],
                         'on_' + name: p3.get_hex(scheme)[:-2],
