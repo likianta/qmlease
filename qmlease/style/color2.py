@@ -19,7 +19,8 @@ class Color(QObject):
 
     def __init__(self):
         super().__init__()
-        self._seed_color = QColor('#214E80')  # a blue color
+        # self._seed_color = QColor('#214E80')  # a blue color
+        self._seed_color = QColor('#6750A4')
         argb = _qcolor_to_argb(self._seed_color)
         self._light_scheme = self._generate_scheme(argb, is_dark=False)
         self._dark_scheme = self._generate_scheme(argb, is_dark=True)

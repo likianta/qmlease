@@ -204,11 +204,11 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
     def set_auto_prop(self, key: str, new: t.Any) -> None:
         setattr(self, key, new)
     
-    @slot(str, result=object)
+    @Slot(str, result=object)
     def qget(self, name: str) -> t.Any:
         return getattr(self, name)
     
-    @slot(str, object)
+    @Slot(str, object)
     def qset(self, name: str, value: t.Any) -> None:
         setattr(self, name, value)
 

@@ -9,4 +9,5 @@ Icon         1.0  Visual/Icon.qml
 IconButton   1.0  Buttons/IconButton.qml
 Rectangle    1.0  Visual/Rectangle.qml
 Text         1.0  Visual/Text.qml
+TextInput    1.0  Inputs/TextInput.qml
 Window       1.0  Layouts/Window.qml

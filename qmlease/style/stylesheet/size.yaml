@@ -10,10 +10,10 @@ margin_m: 4
 margin_l: 8
 margin_xl: 12
 
-padding_xs: 1
-padding_s: 2
-padding_m: 4
-padding_l: 8
+padding_xs: 2
+padding_s: 4
+padding_m: 8
+padding_l: 12
 padding_h_m: 4
 padding_h_l: 8
 padding_v_s: 2
@@ -25,10 +25,10 @@ radius_m: 4
 radius_l: 8
 radius_xl: 12
 
-spacing_xs: 1
-spacing_s: 2
-spacing_m: 4
-spacing_l: 8
+spacing_xs: 2
+spacing_s: 4
+spacing_m: 8
+spacing_l: 16
 spacing_xl: 24
 spacing_v_m: 4
 
@@ -37,7 +37,7 @@ spacing_v_m: 4
 # -----------------------------------------------------------------------------
 
 bar_width: 240
-bar_height: '$height_m'
+bar_height_m: 36
 
 button_width_m: 60
 button_width_l: 100
