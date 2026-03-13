@@ -2,6 +2,7 @@
 
 module QmlEase
 
+Button       1.0  Buttons/Button.qml
 CheckBox     1.0  Buttons/CheckBox.qml
 GhostBorder  1.0  Visual/GhostBorder.qml
 HBox         1.0  Layouts/HBox.qml

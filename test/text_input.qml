@@ -41,12 +41,13 @@ Window {
         TextInput {
             Layout.fillWidth: true
             enabled: false
+            help: 'This input widget is disabled.'
             label: 'Disabled'
             text: 'HHH'
         }
 
         Button {
-            text: 'Swith light/dark theme'
+            text: 'Switch light/dark theme'
             onClicked: {
                 pycolor.dark_theme = !pycolor.dark_theme
             }
