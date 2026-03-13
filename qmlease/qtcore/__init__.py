@@ -3,6 +3,7 @@ from .binding import bind_func
 from .binding import bind_prop
 from .binding import bind_signal
 from .property import Property
+from .property import StaticProperty
 from .qobject import QObject
 from .qobject import QObjectDelegate
 from .signal import Signal

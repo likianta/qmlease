@@ -17,13 +17,16 @@ class PartialDelegate:
     def post_init(self, qobj: 'QObject') -> None:
         self._core = qobj
     
-    def default_qget(self, key: str) -> t.Any:
+    def default_qget(self, key, _) -> t.Any:
         # print(self._core, key, ':v')
         return getattr(self._core, f'_qprop_{key}')
     
     def default_qset(self, key: str, value: t.Any) -> None:
         # print(self._core, key, value, ':v')
+        if getattr(self._core, f'_qprop_{key}') == value:
+            return
         setattr(self._core, f'_qprop_{key}', value)
+        getattr(self._core, f'{key}_changed').emit(value)
 
 
 class DynamicPropMeta(type(QtObject)):
@@ -38,10 +41,11 @@ class DynamicPropMeta(type(QtObject)):
         
         for k, v in tuple(attrs.items()):
             if isinstance(v, Property):
+                assert k[0] != '_', ('property name must not start with `_`', k)
                 custom_props.append(k)
                 
                 # attrs[k] = v.default
-                # attrs[f'_qget_{k}'] = partial(delegate.get, key=k)
+                # attrs[f'_qget_{k}'] = partial(delegate.get, k)
                 # # Slot(name=f'_qget_{k}', result=v.type)(func)
                 # if v.notify is True:
                 #     # print('auto create signal', f'{k}_changed', ':v')
@@ -61,7 +65,7 @@ class DynamicPropMeta(type(QtObject)):
                         v.type, 
                         fget=attrs.get(
                             f'_qget_{k}', 
-                            partial(delegate.default_qget, key=k)
+                            partial(delegate.default_qget, k)
                         ),
                         fset=attrs.get(
                             f'_qset_{k}', 
@@ -73,27 +77,45 @@ class DynamicPropMeta(type(QtObject)):
                         notify=attrs[f'{k}_changed']
                     )
                 elif v.notify is False:
+                    attrs[f'{k}_changed'] = _InvalidSignal(k, error=True)
                     attrs[k] = QtProperty(
                         v.type, 
                         fget=attrs.get(
                             f'_qget_{k}', 
-                            partial(delegate.default_qget, key=k)
+                            partial(delegate.default_qget, k)
                         ),
+                        constant=True,
                     )
                 else:
+                    attrs[f'{k}_changed'] = _InvalidSignal(k, error=False)
                     attrs[k] = QtProperty(
                         v.type, 
                         fget=attrs.get(
                             f'_qget_{k}', 
-                            partial(delegate.default_qget, key=k)
+                            partial(delegate.default_qget, k)
                         ),
                         notify=v.notify
                     )
         
         attrs['_auto_prop_delegate'] = delegate
-        attrs['_custom_props'] = tuple(custom_props)
+        attrs['_custom_props'] = frozenset(custom_props)
         
         return super().__new__(cls, name, bases, attrs)
+
+
+class _InvalidSignal:
+    def __init__(self, name: str, error: bool) -> None:
+        self._name = name
+        self._error = error
+        
+    def connect(self, *_, **__) -> None:
+        raise Exception('invalid signal', self._name)
+        
+    def emit(self, *_, **__) -> None:
+        if self._error:
+            raise Exception(
+                'property "{}" has no "_changed" signal'.format(self._name)
+            )
 
 
 class QObject(QtObject, metaclass=DynamicPropMeta):
@@ -160,15 +182,21 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
     
     def __getattr__(self, key: str) -> t.Any:
         if isinstance(key, str):
-            # if key in ('_custom_props', f'_qprop_{key}'):
-            if key == '_custom_props' or key.startswith('_qprop_'):
+            if (
+                key == '_custom_props' or
+                key.startswith(('_qprop_', '_qget_', '_qset_'))
+            ):
                 return super().__getattribute__(key)
             elif key in getattr(self, '_custom_props', ()):
                 return getattr(self, f'_qprop_{key}')
         return super().__getattribute__(key)
     
     def __setattr__(self, key: str, value: t.Any) -> None:
-        if isinstance(key, str) and key in getattr(self, '_custom_props', ()):
+        if (
+            isinstance(key, str) and
+            key[0] != '_' and
+            key in getattr(self, '_custom_props', ())
+        ):
             internal_key = f'_qprop_{key}'
             if getattr(self, internal_key) != value:
                 super().__setattr__(internal_key, value)

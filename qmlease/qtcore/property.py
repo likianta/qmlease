@@ -1,4 +1,5 @@
 import typing as t
+from functools import partial
 from .signal import Signal
 
 _get_type_of = type
@@ -70,6 +71,8 @@ class Property:
         self.type = type or _get_type_of(value)
         self.notify = notify
         self.readonly = 0 if notify is True else 2 if notify is False else 1
+
+StaticProperty = partial(Property, notify=False)
 
 # -----------------------------------------------------------------------------
 # DELETE

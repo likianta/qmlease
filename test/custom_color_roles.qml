@@ -37,9 +37,9 @@ Window {
         }
 
         Block {
-            color: pycolor.success
-            text: 'Success'
-            textColor: pycolor.on_success
+            color: pycolor.surface_container
+            text: 'Green'
+            textColor: pycolor.green
         }
 
         Button {

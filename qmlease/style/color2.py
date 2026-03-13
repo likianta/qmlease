@@ -15,7 +15,7 @@ from materialyoucolor.scheme import SchemeTonalSpot
 from qtpy.QtCore import Property as QtProperty
 from qtpy.QtGui import QColor
 from ..qtcore import QObject
-# from ..qtcore import Property
+from ..qtcore import StaticProperty
 from ..qtcore import Signal
 
 _dynamic_color_system = MaterialDynamicColors(spec='2025')
@@ -25,12 +25,24 @@ class T:
     PresetRoles = t.Tuple[str, ...]
 
 class Color(QObject):
+    black = StaticProperty('black')
+    blue = StaticProperty('blue')
     # dark_theme = Property(False)
+    green = StaticProperty('green')
+    grey = StaticProperty('grey')
+    magenta = StaticProperty('magenta')
+    orange = StaticProperty('orange')
+    pink = StaticProperty('pink')
+    red = StaticProperty('red')
+    transparent = StaticProperty('transparent')
+    white = StaticProperty('white')
+    yellow = StaticProperty('yellow')
+    
     theme_changed = Signal(light_or_dark=bool)
     
     _current_scheme: t.Dict[str, str]
     _custom_colors_for_dark_theme: T.CustomRoles = (
-        ('success', '#2ED563'),
+        # ('success', '#2ED563'),
     )
     _custom_colors_for_light_theme: T.CustomRoles = (
         # you can override the custom colors in subclass.
