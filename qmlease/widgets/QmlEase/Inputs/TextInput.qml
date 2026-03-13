@@ -10,15 +10,15 @@ ColumnLayout {
 
     property string color: pycolor.surface_container
     property bool   enabled: true
-    property string help: ''
-    property string label: ''
+    property string help
+    property string label
     property string outlineColor: pycolor.outline_variant
-    property string placeholder: ''
+    property string placeholder
     property bool   readonly: false
-    property string text: ''
+    property string text
     property bool   _hasContent: text.length > 0
 
-    signal editingFinished()
+    signal editingFinished(string text)
     
     Item {
         visible: root.label || root.help
@@ -87,7 +87,7 @@ ColumnLayout {
             selectionColor: pycolor.primary
             text: root.text
 
-            onEditingFinished: root.editingFinished()
+            onEditingFinished: root.editingFinished(root.text)
             onTextChanged: root.text = text
 
             Text {

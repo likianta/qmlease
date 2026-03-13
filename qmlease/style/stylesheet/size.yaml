@@ -37,13 +37,12 @@ spacing_v_m: 4
 # -----------------------------------------------------------------------------
 
 bar_width: 240
-bar_height_m: 36
+bar_height_m: '$button_height_m'
 
 button_width_m: 60
 button_width_l: 100
-button_height: 20
-button_height_l: 32
-button_radius: '$radius_m'
+button_height_m: 36
+button_radius_m: '$radius_m'
 
 circle_size: 32
 
@@ -56,7 +55,7 @@ dot_border_default: 1
 dot_border_hovered: 2
 
 edit_width: 64
-edit_height: '$button_height'
+edit_height: '$button_height_m'
 
 field_width: 120
 field_height: '$height_m'
@@ -65,7 +64,9 @@ icon_size_m: 16
 icon_size_l: 20
 
 indicator_size: 16
-indicator_radius: 6
+# indicator_radius: 6
+
+label_height_m: 14
 
 item_width: 120
 item_height: '$height_m'

@@ -48,7 +48,10 @@ class Size(Base):
     
     def _normalize(self, data: T.Data) -> T.Data:
         for k, v in data:
-            if '_' in k:
+            if k.endswith('_m'):
+                yield k, v
+                yield k[:-2], v
+            elif '_' in k:
                 a, b = k.rsplit('_', 1)
                 if b in self._valid_sizes:
                     yield k, v
