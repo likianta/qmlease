@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Controls
 import QtQuick.Layouts
 import QmlEase
 
@@ -9,21 +10,22 @@ Window {
     ColumnLayout {
         anchors.centerIn: parent
         width: 240
-        spacing: pysize.spacing
+        spacing: 16
 
         TextInput {
             id: _input
             Layout.fillWidth: true
-            // color: pycolor.surface_container_low
-            label: 'AAA'
+            label: 'Theme blue outline'
+            // outlineColor: '#0969DA'
+            outlineColor: pycolor.theme_blue
             placeholder: 'BBB'
             text: 'CCC'
         }
 
         TextInput {
             Layout.fillWidth: true
-            // color: pycolor.surface_container
-            label: 'DDD'
+            label: 'Primary outline'
+            outlineColor: pycolor.primary
             placeholder: 'EEE'
             text: ''
         }
@@ -31,9 +33,24 @@ Window {
         TextInput {
             Layout.fillWidth: true
             // color: pycolor.surface_variant
-            label: 'FFF'
+            label: 'Default outline'
             placeholder: 'GGG'
             text: ''
+        }
+
+        TextInput {
+            Layout.fillWidth: true
+            label: 'Success outline'
+            outlineColor: pycolor.success
+            placeholder: 'GGG'
+            text: ''
+        }
+
+        Button {
+            text: 'Swith light/dark theme'
+            onClicked: {
+                pycolor.dark_theme = !pycolor.dark_theme
+            }
         }
     }
 }

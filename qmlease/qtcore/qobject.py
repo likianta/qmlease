@@ -33,6 +33,9 @@ class DynamicPropMeta(type(QtObject)):
         custom_props = []
         delegate = PartialDelegate()
         
+        if '__qinit__' in attrs:
+            attrs['__qinit__'](attrs)
+        
         for k, v in tuple(attrs.items()):
             if isinstance(v, Property):
                 custom_props.append(k)
@@ -90,7 +93,6 @@ class DynamicPropMeta(type(QtObject)):
         attrs['_auto_prop_delegate'] = delegate
         attrs['_custom_props'] = tuple(custom_props)
         
-        # noinspection PyTypeChecker
         return super().__new__(cls, name, bases, attrs)
 
 

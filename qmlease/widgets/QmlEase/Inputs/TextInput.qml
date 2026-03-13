@@ -12,7 +12,7 @@ ColumnLayout {
     property bool   enabled: true
     property string help: ''
     property string label: ''
-    property string outlineColor: pycolor.outline
+    property string outlineColor: pycolor.outline_variant
     property string placeholder: ''
     property bool   readonly: false
     property string text: ''
@@ -31,7 +31,7 @@ ColumnLayout {
             visible: root.label != ''
             anchors {
                 left: parent.left
-                leftMargin: 4
+                leftMargin: 2
             }
             // font.pixelSize: pyfont.size_s
             text: root.label
@@ -74,7 +74,7 @@ ColumnLayout {
                 verticalCenter: parent.verticalCenter
                 left: parent.left
                 right: parent.right
-                margins: pysize.padding_l
+                margins: 12
             }
             clip: true
             color: pycolor.on_surface
