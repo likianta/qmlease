@@ -16,7 +16,7 @@ ColumnLayout {
     property string outlineColor: pycolor.outline_variant
     property string placeholder
     property bool   readonly: false
-    property bool   showEditingHint: true
+    property bool   showEditingHint: false
     property string text
     property bool   _hasContent: text.length > 0
 

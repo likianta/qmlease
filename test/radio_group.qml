@@ -14,18 +14,19 @@ Window {
                 label: 'Text input'
             }
 
-            RadioHGroup {
+            RadioGroup {
+                horizontal: true
                 label: 'Radio group'
                 model: [
                     'Pamela Fernandez',
                     'Carl Kelly',
                     'Tamara Hall'
                 ]
-                Component.onCompleted: {
-                    qmlease.widget.inspect_size(this)
-                    qmlease.widget.inspect_size(this.children[0])
-                    qmlease.widget.inspect_size(this.children[1])
-                }
+                // Component.onCompleted: {
+                //     qmlease.widget.inspect_size(this)
+                //     qmlease.widget.inspect_size(this.children[0])
+                //     qmlease.widget.inspect_size(this.children[1])
+                // }
             }
         }
 
@@ -37,7 +38,8 @@ Window {
                 label: 'Text input'
             }
 
-            RadioVGroup {
+            RadioGroup {
+                horizontal: false
                 label: 'Radio group'
                 model: [
                     'Pamela Fernandez',
