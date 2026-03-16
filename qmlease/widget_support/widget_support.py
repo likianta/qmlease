@@ -1,6 +1,7 @@
 import typing as t
 from uuid import uuid1
 
+from lk_utils import dedent
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
@@ -164,13 +165,22 @@ class WidgetSupport(QObject):
     @Slot(object)
     @Slot(object, str)
     def inspect_size(self, item: QObject, remark: str = '') -> None:
-        print(
-            '{} ({})'.format(remark, item.class_name) if remark else
-            item.class_name,
-            (item['width'], item['height']),
-            (item['implicitWidth'], item['implicitHeight']),
-            (item['childrenRect'].width(), item['childrenRect'].height()),
-        )
+        print(dedent(
+            '''
+            inspect {}:
+                size: {} x {}
+                implicit size: {} x {}
+                children rect size: {} x {}
+            '''.format(
+                '{} ({})'.format(remark, item.class_name) if remark else
+                item.class_name,
+                *map(int, (
+                    item['width'], item['height'],
+                    item['implicitWidth'], item['implicitHeight'],
+                    item['childrenRect'].width(), item['childrenRect'].height(),
+                ))
+            ), 4, False
+        ))
     
     @Slot(object)
     def resize_row(self, item: QObject) -> None:

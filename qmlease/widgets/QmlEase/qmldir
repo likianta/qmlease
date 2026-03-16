@@ -9,7 +9,8 @@ GhostBorder  1.0  Visual/GhostBorder.qml
 HBox         1.0  Layouts/HBox.qml
 Icon         1.0  Visual/Icon.qml
 IconButton   1.0  Inputs/IconButton.qml
-RadioGroup   1.0  Inputs/RadioGroup.qml
+RadioHGroup  1.0  Inputs/RadioHGroup.qml
+RadioVGroup  1.0  Inputs/RadioVGroup.qml
 Rectangle    1.0  Visual/Rectangle.qml
 Text         1.0  Visual/Text.qml
 TextInput    1.0  Inputs/TextInput.qml

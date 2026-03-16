@@ -36,8 +36,12 @@ spacing_v_m: 4
 
 # -----------------------------------------------------------------------------
 
+above_entry_height: 24
+
 bar_width: 240
 bar_height_m: '$button_height_m'
+
+below_entry_height: 24
 
 button_width_m: 60
 button_width_l: 100
@@ -57,16 +61,23 @@ dot_border_hovered: 2
 edit_width: 64
 edit_height: '$button_height_m'
 
+entry_height_m: '$button_height_m'
+
 field_width: 120
 field_height: '$height_m'
 
 icon_size_m: 16
 icon_size_l: 20
 
+incomponent_spacing_s: 2
+incomponent_spacing: 4
+
 indicator_size: 16
 # indicator_radius: 6
 
 label_height_m: 14
+
+long_entry_width_m: 240
 
 item_width: 120
 item_height: '$height_m'

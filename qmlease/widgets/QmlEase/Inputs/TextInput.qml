@@ -5,8 +5,9 @@ import QmlEase
 
 ColumnLayout {
     id: root
-    implicitWidth: pysize.bar_width
-    spacing: pysize.spacing_s
+    // implicitWidth: pysize.long_entry_width
+    width: pysize.long_entry_width
+    // spacing: pysize.spacing_s
 
     property string color: pycolor.surface_container
     property bool   enabled: true
@@ -24,7 +25,8 @@ ColumnLayout {
         visible: root.label || root.help
         Layout.fillWidth: true
         // height: _label.height
-        height: _label.height
+        height: pysize.above_entry_height
+        clip: true
 
         Text {
             id: _label
@@ -32,6 +34,7 @@ ColumnLayout {
             anchors {
                 left: parent.left
                 leftMargin: 2
+                verticalCenter: parent.verticalCenter
             }
             color: root.enabled ? pycolor.on_surface : pycolor.outline
             // font.pixelSize: pyfont.size_s
@@ -52,7 +55,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         // height: _input.implicitHeight + 12
-        height: pysize.bar_height_m
+        height: pysize.edit_height
         border.width: _input.activeFocus ? 2 : 0
         border.color: root.outlineColor
         color: root.color
