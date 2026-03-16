@@ -1,0 +1,4 @@
+module QmlEase.Layouts
+
+TabsLayout  1.0  ./TabsLayout.qml
+Window      1.0  ./Window.qml

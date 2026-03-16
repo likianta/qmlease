@@ -6,5 +6,5 @@ Rectangle {
     border.color: pycolor.outline
     clip: true
     color: pycolor.surface_container_low
-    radius: pysize.radius_m
+    radius: pysize.radius_l
 }

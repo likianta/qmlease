@@ -61,6 +61,7 @@ dot_border_hovered: 2
 edit_width: 64
 edit_height: '$button_height_m'
 
+entry_height_s: 28
 entry_height_m: '$button_height_m'
 
 field_width: 120
