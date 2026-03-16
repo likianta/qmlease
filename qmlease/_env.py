@@ -63,4 +63,5 @@ def _get_qt_version() -> t.Tuple[int, int, int]:
 
 IS_WINDOWS: bool = os.name == 'nt'
 QT_API: str = _find_qt_api()
+QT_DEBUG: bool = False
 QT_VERSION: t.Tuple[int, int, int] = _get_qt_version()

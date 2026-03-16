@@ -10,13 +10,13 @@ from qtpy.QtWidgets import QApplication
 from .register import Register
 from .._env import IS_WINDOWS
 from .._env import QT_API
-from ..qtcore import signal
+from ..qtcore import Signal
 
 
 class Application(QApplication):
     engine: QQmlApplicationEngine
     root: QQmlContext
-    on_exit: signal
+    on_exit: Signal
     _on_exit_funcs: t.List[t.Callable]
     _register: Register
     

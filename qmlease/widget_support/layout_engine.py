@@ -123,7 +123,8 @@ class LayoutEngine:
                 else:
                     self._qobj.wrapSize(
                         item.qobj,
-                        'horizontal' if prop_name == 'width' else 'vertical'
+                        'horizontal' if prop_name == 'width' else 'vertical',
+                        0
                     )
             # elif item[prop_name] == pyenum.STRETCH:
             #     bind_prop(item, prop_name, item.parent(), True)

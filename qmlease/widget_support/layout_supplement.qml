@@ -65,7 +65,7 @@ QtObject {
         }
     }
 
-    function wrapSize(item, dimension, shift) {
+    function wrapSize(item, dimension, shift=0) {
         if (dimension == 'horizontal') {
             item.width = Qt.binding(() => item.childrenRect.width + shift)
         } else {

@@ -48,7 +48,7 @@ class SignalFactory:
         return QtSignal(*args, *kwargs.values())
 
 
-Signal = SignalFactory()
+Signal = tp.cast(tp.Type[QtSignal], SignalFactory())  # noqa
 
 
 # def bind_signal(sig: Signal):

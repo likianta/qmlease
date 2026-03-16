@@ -4,32 +4,32 @@ import typing as t
 from qtpy.QtCore import QObject
 from qtpy.QtQml import QQmlContext
 from qtpy.QtQml import QQmlPropertyMap
-from qtpy.QtQml import qmlRegisterType
+# from qtpy.QtQml import qmlRegisterType
 
-from .._env import QT_VERSION
-
-if QT_VERSION >= (6, 3, 0):
-    # https://www.qt.io/blog/qt-for-python-details-on-the-new-6.3-release
-    from qtpy.QtQml import QmlNamedElement
-elif QT_VERSION >= (6, 0, 0):
-    from qtpy.QtQml import QmlElement
-else:
-    QmlNamedElement = None
-    QmlElement = None
+# from .._env import QT_VERSION
+#
+# if QT_VERSION >= (6, 3, 0):
+#     # https://www.qt.io/blog/qt-for-python-details-on-the-new-6.3-release
+#     from qtpy.QtQml import QmlNamedElement
+# elif QT_VERSION >= (6, 0, 0):
+#     from qtpy.QtQml import QmlElement
+# else:
+#     QmlNamedElement = None
+#     QmlElement = None
 
 
 class Register:
-    _namespace: 'Namespace'
+    _namespaces: t.Dict[str, 'Namespace']
     _root: QQmlContext
     # the holder is made for preventing the objects which were registered to
     #   qml side from being recycled by python garbage collector incorrectly.
     __hidden_ref: t.Dict[int, QObject]
     
     def __init__(self, root_context: QQmlContext):
-        self._namespace = Namespace()
+        self._namespaces = {'py': Namespace()}
         self._root = root_context
         self.__hidden_ref = {}
-        self._root.setContextProperty('py', self._namespace)
+        self._root.setContextProperty('py', self._namespaces['py'])
     
     def register(
         self,
@@ -89,13 +89,17 @@ class Register:
             name = name or _pascal_2_snake_case(qobj.__class__.__name__)
             
             if namespace == 'py':
-                self._namespace.insert(name, qobj)
+                self._namespaces['py'].insert(name, qobj)
             elif namespace in ('', 'global'):
                 self._root.setContextProperty(name, qobj)
             else:
-                if not self._namespace.contains(namespace):
-                    self._namespace.insert(namespace, Namespace())
-                self._namespace[namespace].insert(name, qobj)
+                # print(namespace, name, ':pv')
+                if namespace not in self._namespaces:
+                    self._namespaces[namespace] = Namespace()
+                    self._root.setContextProperty(
+                        namespace, self._namespaces[namespace]
+                    )
+                self._namespaces[namespace].insert(name, qobj)
                 #: B
                 # exec('QmlNamedElement(qname)(QmlSingleton(cls))', {
                 #     'QML_IMPORT_NAME'         : namespace,
@@ -168,12 +172,13 @@ class Register:
         self.__hidden_ref[id(qobj)] = qobj
     
     def freeze(self) -> None:
-        # self.__root.setContextProperty('py', self._namespace)
+        # self.__root.setContextProperty('py', self._namespaces['py'])
         pass
     
     def release(self) -> None:
-        del self._namespace
-        self._namespace = Namespace()
+        for v in tuple(self._namespaces.values()): del v  # noqa
+        self._namespaces.clear()
+        self._namespaces['py'] = Namespace()
         self.__hidden_ref.clear()
 
 
