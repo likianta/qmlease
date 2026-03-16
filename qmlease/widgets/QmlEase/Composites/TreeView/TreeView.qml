@@ -16,7 +16,7 @@ ListView {
         width: root.width
         checkable: root.checkable
         checked: modelData.checked
-        childrenModel: modelData.children_
+        childrenModel: modelData.children
         ghostBorder: root.ghostBorder
         name: modelData.name
         path: modelData.path
