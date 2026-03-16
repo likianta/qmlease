@@ -41,7 +41,7 @@ above_entry_height: 24
 bar_width: 240
 bar_height_m: '$button_height_m'
 
-below_entry_height: 24
+below_entry_height: 16
 
 button_width_m: 60
 button_width_l: 100

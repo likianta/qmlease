@@ -16,6 +16,7 @@ ColumnLayout {
     property string outlineColor: pycolor.outline_variant
     property string placeholder
     property bool   readonly: false
+    property bool   showEditingHint: true
     property string text
     property bool   _hasContent: text.length > 0
 
@@ -53,6 +54,7 @@ ColumnLayout {
     }
 
     Rectangle {
+        id: _inputContainer
         Layout.fillWidth: true
         // height: _input.implicitHeight + 12
         height: pysize.edit_height
@@ -64,6 +66,23 @@ ColumnLayout {
         Behavior on border.width {
             NumberAnimation {
                 duration: 100
+            }
+        }
+
+        SequentialAnimation {
+            id: _borderColorAnimation
+            // running: false
+            ColorAnimation {
+                target: _inputContainer
+                property: 'border.color'
+                to: pycolor.theme_blue
+                duration: 100
+            }
+            ColorAnimation {
+                target: _inputContainer
+                property: 'border.color'
+                to: root.outlineColor
+                duration: 200
             }
         }
 
@@ -101,6 +120,43 @@ ColumnLayout {
                 opacity: 0.5
                 text: root.placeholder
             }
+        }
+
+        Component.onCompleted: {
+            root.editingFinished.connect(() => {
+                if (_input.activeFocus) {
+                    _borderColorAnimation.start()
+                }
+            })
+        }
+    }
+
+    Item {
+        visible: root.showEditingHint
+        Layout.fillWidth: true
+        Layout.preferredHeight: pysize.below_entry_height
+
+        property string _lastEditedText
+
+        Text {
+            visible: (
+                root.enabled &&
+                root._hasContent &&
+                _input.activeFocus &&
+                root.text != parent._lastEditedText
+            )
+            anchors {
+                right: parent.right
+                rightMargin: 2
+                verticalCenter: parent.verticalCenter
+            }
+            font.pixelSize: pyfont.size_s
+            text: 'Press Enter to apply'
+        }
+
+        Component.onCompleted: {
+            this._lastEditedText = root.text
+            root.editingFinished.connect((text) => this._lastEditedText = text)
         }
     }
 }
