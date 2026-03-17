@@ -19,6 +19,7 @@ ColumnLayout {
     property bool   showEditingHint: false
     property string text
     property bool   _hasContent: text.length > 0
+    property bool   _userEdited: false
 
     signal editingFinished(string text)
     
@@ -109,8 +110,16 @@ ColumnLayout {
             selectionColor: pycolor.primary
             text: root.text
 
-            onEditingFinished: root.editingFinished(root.text)
-            onTextChanged: root.text = text
+            onEditingFinished: {
+                if (root._userEdited) {
+                    root.editingFinished(root.text)
+                    root._userEdited = false
+                }
+            }
+            onTextChanged: {
+                root.text = text
+                root._userEdited = true
+            }
 
             Text {
                 visible: root.placeholder && !root._hasContent

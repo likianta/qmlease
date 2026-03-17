@@ -127,7 +127,7 @@ Item {
             // }
 
             delegate: Loader {
-                width: root.width
+                width: _entryList.width
                 source: modelData.type == 'file' ?
                     './FileNode.qml' : './FolderNode.qml'
                 onLoaded: {
