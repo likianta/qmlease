@@ -7,6 +7,7 @@ ListView {
     width: pysize.entry_width
 
     property bool checkable: false
+    property bool expandRoot: false  // affect only top nodes
     property bool ghostBorder: true
 
     signal nodeClicked(string nodeId)
@@ -14,9 +15,10 @@ ListView {
     delegate: FolderNode {
         width: root.width
         checkable: root.checkable
-        childrenModel: modelData.children
+        childrenModel: model.children
+        expanded: root.expandRoot
         ghostBorder: root.ghostBorder
-        name: modelData.name
-        path: modelData.path
+        name: model.name
+        path: model.path
     }
 }

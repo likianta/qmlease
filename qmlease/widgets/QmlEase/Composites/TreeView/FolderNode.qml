@@ -19,7 +19,7 @@ Item {
     //  'children': [...],  // only for folder
     // }, ...]
     property var    childrenModel: []
-    property bool   expanded: true  // TEST
+    property bool   expanded
     property bool   ghostBorder
     property int    indentation
     property string name
@@ -142,17 +142,17 @@ Item {
 
             delegate: Loader {
                 width: _entryList.width
-                source: modelData.type == 'file' ?
+                source: model.type == 'file' ?
                     './FileNode.qml' : './FolderNode.qml'
                 onLoaded: {
-                    this.item.name = modelData.name
-                    this.item.path = modelData.path
+                    this.item.name = model.name
+                    this.item.path = model.path
                     this.item.checkable = root.checkable
                     this.item.checked = root.checked
                     this.item.ghostBorder = root.ghostBorder
                     this.item.indentation = root.indentation + 1
-                    if (modelData.type == 'folder') {
-                        this.item.childrenModel = modelData.children
+                    if (model.type == 'folder') {
+                        this.item.childrenModel = model.children
                     }
                 }
             }

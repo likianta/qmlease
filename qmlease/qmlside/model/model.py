@@ -10,48 +10,44 @@ class T:  # 'TypeHint'
     Defaults = t.Dict[str, t.Any]
     Item = t.Dict[str, t.Any]
     Items = t.List[Item]
-    Role2Name = t.Dict[int, str]
-    Name2Role = t.Dict[str, int]
-    RoleNames = t.Union[
-        t.Dict[str, t.Any],  # suggested
-        t.Iterable[str],
-    ]
+    Schema = t.Tuple[str, ...]
 
 
 class Model(QAbstractListModel):
     """
     references:
-        https://pyblish.gitbooks.io/developer-guide/content/qml_and_python
-            _interoperability.html
-        https://stackoverflow.com/questions/54687953/declaring-a
-            -qabstractlistmodel-as-a-property-in-pyside2
+        https://pyblish.gitbooks.io/developer-guide/content/qml_and_python_interoperability.html
+        https://stackoverflow.com/questions/54687953/declaring-a-qabstractlistmodel-as-a-property-in-pyside2
     """
+    autocomplete: bool
     _defaults: T.Defaults  # see also `self._auto_complete`
     _items: T.Items
-    _name_2_role: T.Name2Role
-    _role_2_name: T.Role2Name
+    _schema: T.Schema
     
     @classmethod
     def from_list(cls, xlist: T.Items) -> 'Model':
         instance = cls(xlist[0].keys())
-        instance.update_many(xlist)
+        instance.append_many(xlist)
         return instance
     
-    def __init__(self, role_names: T.RoleNames):
-        super().__init__(None)
-        self._name_2_role = {x: i for i, x in enumerate(role_names)}
-        self._role_2_name = {i: x for i, x in enumerate(role_names)}
+    def __init__(
+        self,
+        roles: t.Union[t.Dict[str, t.Any], t.Iterable[str]],
+        autocomplete: bool = True
+    ) -> None:
+        super().__init__()
+        self.autocomplete = autocomplete
+        self._schema = tuple(roles)
         self._items = []
-        if isinstance(role_names, dict):
-            self._defaults = role_names
-        else:
-            # trick: set default value to '' instead of None to improve
-            # compatibility.
-            self._defaults = {x: '' for x in role_names}
+        self._defaults = roles if isinstance(roles, dict) else {
+            x: '' for x in roles
+            #   trick: set default value to '' instead of None to improve
+            #   compatibility.
+        }
     
-    @property
-    def role_names(self):
-        return tuple(self._name_2_role.keys())
+    # @property
+    # def role_names(self):
+    #     return self._schema
     
     @property
     def items(self) -> T.Items:
@@ -217,7 +213,7 @@ class Model(QAbstractListModel):
         # ref: https://blog.csdn.net/LaoYuanPython/article/details/102011031
         qindex = self.createIndex(index, 0)
         self.dataChanged.emit(  # noqa
-            qindex, qindex, [self._name_2_role[x] for x in item.keys()]
+            qindex, qindex, [self._schema.index(x) for x in item.keys()]
         )
     
     @Slot(int, list)
@@ -231,28 +227,29 @@ class Model(QAbstractListModel):
         self.dataChanged.emit(qindex_start, qindex_end)  # noqa
     
     def _auto_complete(self, item: dict) -> T.Item:
-        for k, v in self._defaults.items():
-            if k not in item:
-                item[k] = v
+        if self.autocomplete:
+            for k, v in self._defaults.items():
+                if k not in item:
+                    item[k] = v
         return item
     
     # -------------------------------------------------------------------------
     # overrides
     
     # noinspection PyMethodOverriding
-    def data(self, index, role: int):
-        name = self._role_2_name[role]
-        return self._items[index.row()].get(name, '')
+    def data(self, index: QModelIndex, role: int):
+        key = self._schema[role]
+        return self._items[index.row()].get(key, '')
     
     # noinspection PyMethodOverriding,PyTypeChecker,PyUnresolvedReferences
     def setData(self, index, value, role):
-        name = self.role_names[role]
-        self._items[index.row()][name] = value
+        key = self._schema[role]
+        self._items[index.row()][key] = value
         self.dataChanged.emit(index, index)
     
     def rowCount(self, parent=QModelIndex()):  # noqa
         return len(self._items)
     
     def roleNames(self) -> t.Dict[int, bytes]:
-        # return self._role_2_name
-        return {k: v.encode('utf-8') for k, v in self._role_2_name.items()}
+        return {i: k.encode('utf-8') for i, k in enumerate(self._schema)}
+        # return dict(enumerate(self._schema))

@@ -23,6 +23,7 @@ Window {
             Layout.fillWidth: true
             Layout.fillHeight: true
             checkable: true
+            expandRoot: true
             model: root.model
         }
     }
