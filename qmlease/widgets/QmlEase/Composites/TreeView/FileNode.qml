@@ -15,7 +15,8 @@ Item {
     property string path
     property int    _indicatorSize: 16
 
-    signal clicked(string nodeId)
+    signal nodeChecked(string path, bool checked)
+    signal nodeClicked(string path)
 
     function applyCheckStates(value) {
         root.checked = value
@@ -65,7 +66,10 @@ Item {
             hoverEnabled: true
             onClicked: {
                 root.checked = !root.checked
-                root.clicked(root.path)
+                if (root.checkable) {
+                    root.nodeChecked(root.path, root.checked)
+                }
+                root.nodeClicked(root.path)
             }
         }
     }

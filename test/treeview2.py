@@ -5,7 +5,7 @@ class TreeView(qe.QObject):
     @qe.Slot(object)
     def init_ui(self, window):
         @qe.bind_signal(window.pathSubmit)
-        def _(path: str):
+        def create_model(path: str):
             print(path, ':v2')
             assert fs.isdir(path)
 
@@ -24,7 +24,10 @@ class TreeView(qe.QObject):
                         'name': f.name,
                         'path': f.path,
                     })
-                return qe.Model.from_list(children)
+                if children:
+                    return qe.Model.from_list(children)
+                else:
+                    return qe.Model(('type', 'name', 'path', 'children'))
 
             model = [
                 {
@@ -36,6 +39,9 @@ class TreeView(qe.QObject):
             ]
             # window['model'] = model
             window['model'] = qe.Model.from_list(model)
+
+        create_model('qmlease')
+        print(window['model'])
 
 qe.app.register(TreeView(), 'main')
 qe.app.run(fs.xpath('treeview2.qml'))

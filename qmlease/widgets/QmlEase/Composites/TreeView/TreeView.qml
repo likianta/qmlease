@@ -1,5 +1,4 @@
 import QtQuick
-import QtQuick.Layouts
 import QmlEase
 
 ListView {
@@ -10,7 +9,8 @@ ListView {
     property bool expandRoot: false  // affect only top nodes
     property bool ghostBorder: true
 
-    signal nodeClicked(string nodeId)
+    signal nodeChecked(string path, bool checked)
+    signal nodeClicked(string path)
 
     delegate: FolderNode {
         width: root.width
@@ -20,5 +20,8 @@ ListView {
         ghostBorder: root.ghostBorder
         name: model.name
         path: model.path
+        Component.onCompleted: {
+            this.nodeChecked.connect(root.nodeChecked)
+        }
     }
 }

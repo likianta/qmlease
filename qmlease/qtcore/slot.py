@@ -71,13 +71,14 @@ def Slot(
             **kwargs: T.ParamSpec.kwargs
         ) -> T.Func:
             from .qobject import QObjectDelegate
+            from ..qmlside import Model
             new_args = []
             new_kwargs = {}
             
             for arg in args:
                 if isinstance(arg, QJSValue):
                     new_args.append(arg.toVariant())
-                elif isinstance(arg, QtObject):
+                elif isinstance(arg, QtObject) and not isinstance(arg, Model):
                     new_args.append(QObjectDelegate(arg))
                 else:
                     new_args.append(arg)
@@ -85,7 +86,7 @@ def Slot(
             for k, v in kwargs.items():
                 if isinstance(v, QJSValue):
                     new_kwargs[k] = v.toVariant()
-                elif isinstance(v, QtObject):
+                elif isinstance(v, QtObject) and not isinstance(v, Model):
                     new_kwargs[k] = QObjectDelegate(v)
                 else:
                     new_kwargs[k] = v

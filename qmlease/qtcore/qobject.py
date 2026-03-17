@@ -263,7 +263,9 @@ class QObjectDelegate:
     
     def __getitem__(self, item: str) -> t.Any:
         x = self.qobj.property(item)
-        if isinstance(x, QJSValue):
+        if x is None:
+            raise Exception(f'property {item} for {self.class_name} not found!')
+        elif isinstance(x, QJSValue):
             return x.toVariant()
         else:
             return x

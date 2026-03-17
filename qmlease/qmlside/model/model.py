@@ -33,7 +33,7 @@ class Model(QAbstractListModel):
     def __init__(
         self,
         roles: t.Union[t.Dict[str, t.Any], t.Iterable[str]],
-        autocomplete: bool = True
+        autocomplete: bool = False
     ) -> None:
         super().__init__()
         self.autocomplete = autocomplete
@@ -71,17 +71,15 @@ class Model(QAbstractListModel):
     
     @Slot(dict)
     def append(self, item: T.Item) -> None:
-        self.beginInsertRows(
-            QModelIndex(), self.rowCount(), self.rowCount()
-        )
+        index = len(self._items)
+        self.beginInsertRows(QModelIndex(), index, index)
         self._items.append(self._auto_complete(item))
         self.endInsertRows()
     
     @Slot(list)
     def append_many(self, items: T.Items) -> None:
-        self.beginInsertRows(
-            QModelIndex(), self.rowCount(), self.rowCount() + len(items) - 1
-        )
+        index = len(self._items)
+        self.beginInsertRows(QModelIndex(), index, index + len(items) - 1)
         self._items.extend(map(self._auto_complete, items))
         self.endInsertRows()
     
@@ -103,19 +101,17 @@ class Model(QAbstractListModel):
     
     @Slot(result=dict)
     def pop(self) -> T.Item:
-        self.beginRemoveRows(
-            QModelIndex(), len(self._items) - 1, len(self._items) - 1
-        )
-        out = self._items.pop(0)
+        index = len(self._items) - 1
+        self.beginRemoveRows(QModelIndex(), index, index)
+        out = self._items.pop()
         self.endRemoveRows()
         return out
     
     @Slot(int, result=list)
     def pop_many(self, count: int) -> T.Items:
         assert count > 0
-        self.beginRemoveRows(
-            QModelIndex(), len(self._items) - count, len(self._items) - 1
-        )
+        index = len(self._items)
+        self.beginRemoveRows(QModelIndex(), index - count, index - 1)
         a, b = self._items[:-count], self._items[-count:]
         self._items = a
         self.endRemoveRows()
@@ -123,9 +119,7 @@ class Model(QAbstractListModel):
     
     @Slot(int, result=dict)
     def delete(self, index: int) -> T.Item:
-        self.beginRemoveRows(
-            QModelIndex(), index, index
-        )
+        self.beginRemoveRows(QModelIndex(), index, index)
         out = self._items.pop(index)
         self.endRemoveRows()
         return out
@@ -133,11 +127,11 @@ class Model(QAbstractListModel):
     @Slot(int, int, result=list)
     def delete_many(self, index: int, count: int) -> T.Items:
         assert count > 0
-        self.beginRemoveRows(
-            QModelIndex(), index, index + count - 1
+        self.beginRemoveRows(QModelIndex(), index, index + count - 1)
+        a, b = (
+            self._items[:index] + self._items[index + count:],
+            self._items[index:index + count]
         )
-        a, b = (self._items[:index] + self._items[index + count:],
-                self._items[index:index + count])
         self._items = a
         self.endRemoveRows()
         return b
@@ -179,9 +173,7 @@ class Model(QAbstractListModel):
     
     @Slot()
     def clear(self) -> None:
-        self.beginRemoveRows(
-            QModelIndex(), 0, len(self._items) - 1
-        )
+        self.beginRemoveRows(QModelIndex(), 0, len(self._items) - 1)
         self._items.clear()
         self.endRemoveRows()
     
@@ -192,9 +184,9 @@ class Model(QAbstractListModel):
     @Slot(int, result=list)
     @Slot(int, int, result=list)
     def get_many(
-            self,
-            start: int = None,
-            end: int = None,  # TODO: shall we use `count` instead?
+        self,
+        start: int = None,
+        end: int = None,  # TODO: shall we use `count` instead?
     ) -> T.Items:
         if start is not None and end is None:
             start, end = 0, start

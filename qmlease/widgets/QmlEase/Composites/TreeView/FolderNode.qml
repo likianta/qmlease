@@ -18,7 +18,7 @@ Item {
     //  'checked': bool,
     //  'children': [...],  // only for folder
     // }, ...]
-    property var    childrenModel: []
+    property var    childrenModel
     property bool   expanded
     property bool   ghostBorder
     property int    indentation
@@ -26,8 +26,8 @@ Item {
     property string path
     property int    _indicatorSize: 16
 
-    // signal checked()
-    signal clicked(string nodeId)
+    signal nodeChecked(string path, bool checked)
+    signal nodeClicked(string path)
 
     function applyCheckStates(value) {
         root.checked = value
@@ -120,7 +120,10 @@ Item {
                         root.expanded = !root.expanded
                     } else {
                         root.applyCheckStates(!root.checked)
-                        root.clicked(root.path)
+                        if (root.checkable) {
+                            root.nodeChecked(root.path, root.checked)
+                        }
+                        root.nodeClicked(root.path)
                     }
                 }
             }
@@ -151,6 +154,7 @@ Item {
                     this.item.checked = root.checked
                     this.item.ghostBorder = root.ghostBorder
                     this.item.indentation = root.indentation + 1
+                    this.item.nodeChecked.connect(root.nodeChecked)
                     if (model.type == 'folder') {
                         this.item.childrenModel = model.children
                     }
