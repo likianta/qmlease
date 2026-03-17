@@ -8,14 +8,12 @@ ListView {
 
     property bool checkable: false
     property bool ghostBorder: true
-    property bool multipleSelectable: false
 
     signal nodeClicked(string nodeId)
 
     delegate: FolderNode {
         width: root.width
         checkable: root.checkable
-        // checked: modelData.checked ?? false
         childrenModel: modelData.children
         ghostBorder: root.ghostBorder
         name: modelData.name

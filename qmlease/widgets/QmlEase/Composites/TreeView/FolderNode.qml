@@ -73,6 +73,7 @@ Item {
 
                 // arrow expander
                 Image {
+                    id: _arrow
                     width: root._indicatorSize
                     height: root._indicatorSize
                     fillMode: Image.PreserveAspectFit
@@ -84,9 +85,12 @@ Item {
                         }
                     }
                     // MouseArea {
+                    //     id: _arrowArea
                     //     anchors.fill: parent
-                    //     onClicked: {
-                    //         root.expanded = !root.expanded
+                    //     hoverEnabled: true
+                    //     preventStealing: true
+                    //     onEntered: {
+                    //         console.log('arrow area entered')
                     //     }
                     // }
                 }
@@ -100,9 +104,8 @@ Item {
                 }
 
                 Text {
+                    id: _headerText
                     Layout.fillWidth: true
-//                    Layout.preferredHeight: pysize.entry_height
-//                    verticalAlignment: Text.AlignVCenter
                     text: root.name
                 }
             }
@@ -111,9 +114,14 @@ Item {
                 id: _area
                 anchors.fill: parent
                 hoverEnabled: true
-                onClicked: {
-                    root.applyCheckStates(!root.checked)
-                    root.clicked(root.path)
+                // propagateComposedEvents: true
+                onClicked: (e) => {
+                    if (e.x < _arrow.width) {
+                        root.expanded = !root.expanded
+                    } else {
+                        root.applyCheckStates(!root.checked)
+                        root.clicked(root.path)
+                    }
                 }
             }
         }
@@ -141,16 +149,11 @@ Item {
                     this.item.path = modelData.path
                     this.item.checkable = root.checkable
                     this.item.checked = root.checked
-                    // this.item.checked = Qt.binding(() => root.checked)
                     this.item.ghostBorder = root.ghostBorder
                     this.item.indentation = root.indentation + 1
                     if (modelData.type == 'folder') {
                         this.item.childrenModel = modelData.children
                     }
-                    // this.height = Qt.binding(() => this.item.height)
-                    // root.checkedChanged.connect(
-                    //     () => this.item.checked = root.checked
-                    // )
                 }
             }
         }

@@ -16,7 +16,6 @@ class TreeView(qe.QObject):
                         'type': 'folder',
                         'name': d.name,
                         'path': d.path,
-                        'checked': False,
                         'children': recurse(d.path),
                     })
                 for f in fs.find_files(folder):
@@ -24,7 +23,6 @@ class TreeView(qe.QObject):
                         'type': 'file',
                         'name': f.name,
                         'path': f.path,
-                        'checked': False,
                     })
                 return children
 
@@ -33,7 +31,6 @@ class TreeView(qe.QObject):
                     'type': 'folder',
                     'name': fs.basename(path),
                     'path': fs.normpath(path),
-                    'checked': False,
                     'children': recurse(path),
                 }
             ]
