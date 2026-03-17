@@ -19,7 +19,7 @@ Item {
     //  'children': [...],  // only for folder
     // }, ...]
     property var    childrenModel: []
-    property bool   expanded
+    property bool   expanded: true  // TEST
     property bool   ghostBorder
     property int    indentation
     property string name
@@ -28,6 +28,13 @@ Item {
 
     // signal checked()
     signal clicked(string nodeId)
+
+    function applyCheckStates(value) {
+        root.checked = value
+        for (let i = 0; i < _entryList.count; i++) {
+            _entryList.itemAtIndex(i).item.applyCheckStates(value)
+        }
+    }
 
     GuideLine {
         visible: root.indentation > 0
@@ -105,8 +112,7 @@ Item {
                 anchors.fill: parent
                 hoverEnabled: true
                 onClicked: {
-                    root.checked = !root.checked
-                    root.expanded = !root.expanded  // test
+                    root.applyCheckStates(!root.checked)
                     root.clicked(root.path)
                 }
             }
@@ -135,12 +141,16 @@ Item {
                     this.item.path = modelData.path
                     this.item.checkable = root.checkable
                     this.item.checked = root.checked
+                    // this.item.checked = Qt.binding(() => root.checked)
                     this.item.ghostBorder = root.ghostBorder
                     this.item.indentation = root.indentation + 1
                     if (modelData.type == 'folder') {
                         this.item.childrenModel = modelData.children
                     }
                     // this.height = Qt.binding(() => this.item.height)
+                    // root.checkedChanged.connect(
+                    //     () => this.item.checked = root.checked
+                    // )
                 }
             }
         }

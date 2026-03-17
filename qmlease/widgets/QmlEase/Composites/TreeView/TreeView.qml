@@ -15,7 +15,7 @@ ListView {
     delegate: FolderNode {
         width: root.width
         checkable: root.checkable
-        checked: modelData.checked ?? false
+        // checked: modelData.checked ?? false
         childrenModel: modelData.children
         ghostBorder: root.ghostBorder
         name: modelData.name

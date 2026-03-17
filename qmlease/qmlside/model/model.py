@@ -14,8 +14,7 @@ class T:  # 'TypeHint'
     Name2Role = t.Dict[str, int]
     RoleNames = t.Union[
         t.Dict[str, t.Any],  # suggested
-        t.Tuple[str, ...],
-        t.List[str]
+        t.Iterable[str],
     ]
 
 
@@ -31,6 +30,12 @@ class Model(QAbstractListModel):
     _items: T.Items
     _name_2_role: T.Name2Role
     _role_2_name: T.Role2Name
+    
+    @classmethod
+    def from_list(cls, xlist: T.Items) -> 'Model':
+        instance = cls(xlist[0].keys())
+        instance.update_many(xlist)
+        return instance
     
     def __init__(self, role_names: T.RoleNames):
         super().__init__(None)

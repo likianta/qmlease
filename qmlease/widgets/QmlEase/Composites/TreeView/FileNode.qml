@@ -17,6 +17,10 @@ Item {
 
     signal clicked(string nodeId)
 
+    function applyCheckStates(value) {
+        root.checked = value
+    }
+
     GuideLine {
         visible: root.indentation > 0
         x: 11
