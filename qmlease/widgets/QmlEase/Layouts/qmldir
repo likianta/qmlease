@@ -1,4 +1,5 @@
 module QmlEase.Layouts
 
+Column      1.0  ./Column.qml
 TabsLayout  1.0  ./TabsLayout.qml
 Window      1.0  ./Window.qml

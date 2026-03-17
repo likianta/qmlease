@@ -4,9 +4,9 @@ module QmlEase
 
 Button       1.0  Inputs/Button.qml
 CheckBox     1.0  Inputs/CheckBox.qml
+Column       1.0  Layouts/Column.qml
 Empty        1.0  Visual/Empty.qml
 GhostBorder  1.0  Visual/GhostBorder.qml
-HBox         1.0  Layouts/HBox.qml
 Icon         1.0  Visual/Icon.qml
 IconButton   1.0  Inputs/IconButton.qml
 RadioGroup   1.0  Inputs/RadioGroup.qml
