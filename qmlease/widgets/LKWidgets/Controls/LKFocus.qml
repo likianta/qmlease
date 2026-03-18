@@ -6,13 +6,13 @@ Item {
     property bool   active: false
     property string scope: 'global'
     property var    __registeredFuncs: Object()
-    property string __sid: py.qmlease.widget.generate_random_id()
+    property string __sid: py.qmlease.generate_random_id()
 
     signal triggered(string fid)
 
     function register(key, modifier, func) {
         const sid = root.__sid
-        const fid = py.qmlease.widget.generate_random_id()
+        const fid = py.qmlease.generate_random_id()
         lkscope.register_func(
             root.scope, sid, fid, root, key, modifier
         )

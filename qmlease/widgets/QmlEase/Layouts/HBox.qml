@@ -8,6 +8,6 @@ Row {
     property string alignment: 'vcenter'
     property bool   autoSize: false
     Component.onCompleted: {
-        py.qmlease.widget.init_row(this)
+        py.qmlease.init_row(this)
     }
 }

@@ -2,6 +2,9 @@
 
 module QmlEase
 
+# https://chatgpt.com/share/69ba7220-ede0-800a-92da-6a449df6125f
+typeinfo global_pyobjects.qmltypes
+
 Button       1.0  Inputs/Button.qml
 CheckBox     1.0  Inputs/CheckBox.qml
 Column       1.0  Layouts/Column.qml

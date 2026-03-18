@@ -25,16 +25,25 @@ class ListModel(QAbstractListModel):
     
     @classmethod
     def from_list(cls, xlist: T.Items) -> 'ListModel':
-        instance = cls(xlist[0].keys())
+        instance = cls(xlist[0].keys(), auto_submit=False)
         instance.extend(xlist)
         instance.submit()
+        instance.auto_submit = True
         return instance
+
+    @classmethod
+    def empty_copy(cls, instance: 'ListModel', **kwargs) -> 'ListModel':
+        return cls(
+            instance._schema, 
+            auto_complete=kwargs.get('auto_complete', False), 
+            auto_submit=kwargs.get('auto_submit', True),
+        )
     
     def __init__(
         self,
         roles: t.Union[t.Dict[str, t.Any], t.Iterable[str]],
         auto_complete: bool = False,
-        auto_submit: bool = False,
+        auto_submit: bool = True,
     ) -> None:
         super().__init__()
         self.auto_complete = auto_complete
@@ -239,6 +248,14 @@ class ListModel(QAbstractListModel):
         self._shadow_list.clear()
         self._shadow_list.extend((None,) * len(self._items))
         self._origin_list_length = len(self._shadow_list)
+        return self
+
+    def always(self):
+        """
+        usage:
+            my_list_model.submit().always()
+        """
+        self.auto_submit = True
 
     def _auto_complete(self, item: dict) -> T.Item:
         if self.auto_complete:
@@ -259,7 +276,7 @@ class ListModel(QAbstractListModel):
     def setData(self, index, value, role):
         key = self._schema[role]
         self._items[index.row()][key] = value
-        self.dataChanged.emit(index, index)
+        self.dataChanged.emit(index, index, [role])
     
     def rowCount(self, parent=QModelIndex()):  # noqa
         return len(self._items)

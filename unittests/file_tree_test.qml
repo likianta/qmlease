@@ -10,7 +10,7 @@ Window {
             text: 'Some folder'
         }
         Component.onCompleted: {
-            py.qmlease.widget.inspect_size(this)
+            py.qmlease.inspect_size(this)
         }
     }
 }

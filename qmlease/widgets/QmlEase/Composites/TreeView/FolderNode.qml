@@ -19,12 +19,15 @@ Item {
     //  'children': [...],  // only for folder
     // }, ...]
     property var    childrenModel
+    property alias  count: _entryList.count
     property bool   expanded
     property bool   ghostBorder
     property int    indentation
     property string name
     property string path
     property int    _indicatorSize: 16
+    // property QtObject _pyctrl: py.qmlease.init_control(root, 'TreeView')
+    // readonly property int count: _entryList.count
 
     signal nodeChecked(string path, bool checked)
     signal nodeClicked(string path)
@@ -34,6 +37,10 @@ Item {
         for (let i = 0; i < _entryList.count; i++) {
             _entryList.itemAtIndex(i).item.applyCheckStates(value)
         }
+    }
+
+    function getSubNode(index) {
+        return _entryList.itemAtIndex(index).item
     }
 
     GuideLine {

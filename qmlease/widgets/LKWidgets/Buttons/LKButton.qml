@@ -4,7 +4,7 @@ import ".."
 Rectangle {
     id: root
     width: _text.contentWidth * 1.5
-    // width: py.qmlease.widget.estimate_line_width(text) + pysize.padding * 2
+    // width: py.qmlease.estimate_line_width(text) + pysize.padding * 2
     height: pysize.button_height
     radius: pysize.button_radius
     border.width: pysize.border_width_m

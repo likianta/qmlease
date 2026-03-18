@@ -23,9 +23,9 @@ Window {
                     'Tamara Hall'
                 ]
                 // Component.onCompleted: {
-                //     qmlease.widget.inspect_size(this)
-                //     qmlease.widget.inspect_size(this.children[0])
-                //     qmlease.widget.inspect_size(this.children[1])
+                //     py.qmlease.inspect_size(this)
+                //     py.qmlease.inspect_size(this.children[0])
+                //     py.qmlease.inspect_size(this.children[1])
                 // }
             }
         }

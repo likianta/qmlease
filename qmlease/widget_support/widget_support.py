@@ -1,29 +1,81 @@
+import os
 import typing as t
 from uuid import uuid1
+from collections import defaultdict
 
 from lk_utils import dedent
+from lk_utils import fs
 from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
 from .layout_engine import layout
+from .shadow_tree import ShadowTree
 from .._env import IS_WINDOWS
+from ..qmlside import ListModel
 from ..qtcore import QObject
-from ..qtcore import bind_signal
 from ..qtcore import Slot
+from ..qtcore import bind_signal
 from ..style import pyenum
 from ..style import pystyle
 
+class Plugins:
+    # FIXME (limitation): plugin's `__init__()` params must be empty
+    factory: t.Dict[str, t.Type[QObject]] = {
+        'shadow_tree': ShadowTree,
+    }
+    _instances: t.Dict[str, QObject]
+
+    def __init__(self) -> None:
+        self._instances = {}
+
+    def __getitem__(self, key: str):
+        if key not in self._instances:
+            self._instances[key] = self.factory[key]()
+        return self._instances[key]
+    
+    # def __getattr__(self, key: str):
+    #     if key == 'factory':
+    #         return super().__getattribute__(key)
+    #     if not hasattr(self, key):
+    #         if key in self.factory:
+    #             setattr(self, key, self.factory[key]())
+    #         else:
+    #             raise AttributeError(
+    #                 f'"{key}" is not registered in plugins factory'
+    #             )
+    #     return super().__getattribute__(key)
+
 
 class WidgetSupport(QObject):
+    plugins: Plugins
     _font_metrics: QFontMetrics
     
     def __init__(self) -> None:
         super().__init__()
+        self.plugins = Plugins()
+        # TODO: below may be moved to plugin part
         font = QFont()
         font.setPixelSize(12)
         if IS_WINDOWS:
             font.setFamily('Microsoft YaHei UI')
         self._font_metrics = QFontMetrics(font)
+    
+    # def __getattr__(self, name: str):
+    #     if name.startswith('_'):
+    #         return super().__getattr__(name)
+    #     if name in ('plugins',):
+    #         return super().__getattribute__(name)
+    #     if name in self.plugins:
+    #         if not hasattr(self, name):
+    #             setattr(self, name, self.plugins[name]())
+    #         return super().__getattribute__(name)
+    #     return super().__getattr__(name)
+
+    # def install_plugin(self, name, instance=None, force=False):
+    #     if force or not hasattr(self, name):
+    #         setattr(self, name, instance or self.plugins[name]())
+    
+    # --------------------------------------------------------------------------
     
     @Slot(object)
     def align_field_title_widths(self, column: QObject) -> None:
@@ -43,6 +95,64 @@ class WidgetSupport(QObject):
         layout.size_self(item)
         layout.align_children(item, item['alignment'])
     
+    @Slot(object, object)
+    def bind_shadow_tree_model(self, source_tree, target_tree):
+        self.plugins['shadow_tree'].bind_model(source_tree, target_tree)
+
+    @Slot(list, result=object)
+    def convert_path_list_to_tree_model(self, paths: t.List[str]) -> ListModel:
+        """
+        note: the given `paths` are not sorted, and may contain duplicates.
+        """
+        # print(sorted(paths), len(paths), ':vl')
+        out = ListModel(('type', 'name', 'path', 'children'), auto_submit=False)
+        root = fs.normpath(os.path.commonpath(paths))
+        out.append({
+            'type': 'folder',
+            'name': fs.basename(root),
+            'path': root,
+            'children': ListModel(
+                ('type', 'name', 'path', 'children'), auto_submit=False
+            )
+        })
+
+        xdict = defaultdict(list)
+        for p in sorted(frozenset(paths)):
+            if p == root:
+                continue
+            a = p.removeprefix(root)
+            b, c = a.rsplit('/', 1)
+            # `b` could be '' or '/'-started string.
+            xdict[b].append(c)
+
+        def recurse(xlist, current_prefix):
+            assert current_prefix in xdict, current_prefix
+            for name in xdict[current_prefix]:
+                path = root + current_prefix + '/' + name
+                if fs.isdir(path):
+                    xlist.append({
+                        'type': 'folder',
+                        'name': name,
+                        'path': path,
+                        'children': ListModel(
+                            ('type', 'name', 'path', 'children'), 
+                            auto_submit=False
+                        )
+                    })
+                    recurse(xlist[-1]['children'], current_prefix + '/' + name)
+                    xlist[-1]['children'].submit().always()
+                else:
+                    xlist.append({
+                        'type': 'file',
+                        'name': name,
+                        'path': path,
+                    })
+        
+        recurse(out[0]['children'], '')
+        out[0]['children'].submit().always()
+        out.submit().always()
+        return out
+
     @Slot(str)
     @Slot(str, object)
     def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:

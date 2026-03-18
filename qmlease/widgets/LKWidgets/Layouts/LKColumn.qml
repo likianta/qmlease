@@ -13,6 +13,6 @@ Column {
 //    property string alignment: 'hfill'
     property bool   autoSize: false
     Component.onCompleted: {
-        py.qmlease.widget.init_column(this)
+        py.qmlease.init_column(this)
     }
 }

@@ -1,0 +1,14 @@
+// https://chatgpt.com/share/69ba7220-ede0-800a-92da-6a449df6125f
+import QtQuick.tooling 1.2
+
+Module {
+    Component {
+        name: "PyContext"
+        prototype: "QObject"
+        isSingleton: true
+        Property { name: "py"; type: "var" }
+        Property { name: "pycolor"; type: "var" }
+        Property { name: "pyfont"; type: "var" }
+        Property { name: "pysize"; type: "var" }
+    }
+}

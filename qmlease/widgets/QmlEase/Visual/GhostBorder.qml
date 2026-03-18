@@ -33,6 +33,6 @@ Rectangle {
     }
 
     Component.onCompleted: {
-        py.qmlease.widget.init_ghost_border(this)
+        py.qmlease.init_ghost_border(this)
     }
 }

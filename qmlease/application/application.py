@@ -104,11 +104,11 @@ class Application(QApplication):
     def _register_backend(self) -> None:
         from ..pyside import pyside
         from ..qmlside import pyassets, pybroad, pylayout  # DELETE
-        from ..qmlside import widgets_backend as wb  # DELETE
         from ..style import pyenum, pystyle
         from ..widget_support import widget_support
         
-        self.register(widget_support, 'widget', 'qmlease')
+        # self.register(widget_support, 'widget', 'qmlease')
+        self.register(widget_support, 'qmlease')
         
         self.register(pyassets, 'pyassets', 'global')
         self.register(pybroad, 'pybroad', 'global')
@@ -121,19 +121,14 @@ class Application(QApplication):
         self.register(pystyle.motion, 'pymotion', 'global')
         self.register(pystyle.size, 'pysize', 'global')
         
-        self.register(wb.ListView(), 'lklistview', 'global')
-        self.register(wb.Progress(), 'lkprogress', 'global')
-        self.register(wb.ScopeEngine(), 'lkscope', 'global')
-        self.register(wb.Slider(), 'lkslider', 'global')
-        self.register(wb.logger, 'lklogger', 'global')
-        self.register(wb.util, 'lkutil', 'global')
-        
+        # TODO: refactor
         pyassets.add_source(fs.xpath('../widgets/LKWidgets'), 'lkwidgets')
         pyassets.add_source(fs.xpath('../widgets/QmlEase/Assets'), 'qmlease')
     
     # -------------------------------------------------------------------------
     
     def run(self, qmlfile: str, debug: bool = False, **kwargs) -> None:
+        assert fs.exist(qmlfile)
         self._register.freeze()
         if debug:
             # note: cannot move the import statement to the top, otherwise the -

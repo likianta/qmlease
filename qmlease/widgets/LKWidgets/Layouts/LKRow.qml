@@ -13,10 +13,10 @@ Row {
     property bool   autoSize: false
 
 //    function resize() {
-//        py.qmlease.widget.resize_row(this)
+//        py.qmlease.resize_row(this)
 //    }
 
     Component.onCompleted: {
-        py.qmlease.widget.init_row(this)
+        py.qmlease.init_row(this)
     }
 }

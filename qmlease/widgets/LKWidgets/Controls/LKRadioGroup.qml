@@ -54,6 +54,6 @@ Flow {
     }
 
     Component.onCompleted: {
-        py.qmlease.widget.init_radio_group(this)
+        py.qmlease.init_radio_group(this)
     }
 }
