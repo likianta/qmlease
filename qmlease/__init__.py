@@ -17,8 +17,9 @@ from .application import Application
 from .application import app
 from .pyside import pyside
 from .pyside import register
-from .qmlside import Model
-from .qmlside import SimpleModel
+from .qmlside import ListModel
+from .qmlside import Model  # DELETE?
+from .qmlside import SimpleModel  # DELETE?
 from .qmlside import eval_js
 from .qmlside import pyassets
 from .qmlside import console

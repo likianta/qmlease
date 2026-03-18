@@ -4,6 +4,7 @@ from .assets import pyassets
 from .broadcast import pybroad
 from .hot_reloader import HotReloader
 from .layout_helper import pylayout
+from .model import ListModel
 from .model import Model
 from .model import SimpleModel
 from .qml_eval import eval_js

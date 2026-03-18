@@ -9,7 +9,7 @@ class TreeView(qe.QObject):
             print(path, ':v2')
             assert fs.isdir(path)
 
-            def recurse(folder) -> qe.Model:
+            def recurse(folder) -> qe.ListModel:
                 children = []
                 for d in fs.find_dirs(folder):
                     children.append({
@@ -25,23 +25,21 @@ class TreeView(qe.QObject):
                         'path': f.path,
                     })
                 if children:
-                    return qe.Model.from_list(children)
+                    return qe.ListModel.from_list(children)
                 else:
-                    return qe.Model(('type', 'name', 'path', 'children'))
+                    return qe.ListModel(('type', 'name', 'path', 'children'))
 
-            model = [
+            model = qe.ListModel.from_list([
                 {
                     'type': 'folder',
                     'name': fs.basename(path),
                     'path': fs.normpath(path),
                     'children': recurse(path),
                 }
-            ]
-            # window['model'] = model
-            window['model'] = qe.Model.from_list(model)
+            ])
+            window['model'] = model
 
         create_model('qmlease')
-        print(window['model'])
 
 qe.app.register(TreeView(), 'main')
 qe.app.run(fs.xpath('treeview2.qml'))
