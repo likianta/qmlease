@@ -24,7 +24,7 @@ class ListModel(QAbstractListModel):
     _shadow_list: t.List[t.Optional[bool]]
     
     @classmethod
-    def from_list(cls, xlist: T.Items) -> 'Model':
+    def from_list(cls, xlist: T.Items) -> 'ListModel':
         instance = cls(xlist[0].keys())
         instance.extend(xlist)
         instance.submit()

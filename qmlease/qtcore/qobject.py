@@ -1,5 +1,6 @@
 import typing as t
 from functools import partial
+from uuid import uuid1
 
 from qtpy.QtCore import Property as QtProperty
 from qtpy.QtCore import QObject as QtObject
@@ -247,6 +248,9 @@ class QObjectDelegate:
     
     def __init__(self, qobj: QtObject) -> None:
         self.qobj = qobj
+
+    def __contains__(self, item: str) -> bool:
+        return self.qobj.property(item) is not None
     
     def __getattr__(self, item: str) -> t.Any:
         if item in ('qobj', 'parent', 'children', 'class_name'):
@@ -262,17 +266,38 @@ class QObjectDelegate:
         _setattr(self, key, value)
     
     def __getitem__(self, item: str) -> t.Any:
+        if item == 'model':
+            # https://chatgpt.com/share/69ba3d6d-8b3c-800a-baf0-467740a07afb
+            if '_modelId' in self:
+                uid = self.qobj.property('_modelId')
+                return _model_vendors[uid]
+
         x = self.qobj.property(item)
         if x is None:
-            raise Exception(f'property {item} for {self.class_name} not found!')
+            # raise Exception(
+            #     f'property "{item}" for `{self.class_name}` not found!'
+            # )
+            print(
+                'property "{}" for `{}` not found!'
+                .format(item, self.class_name), ':v6p'
+            )
+            return None
         elif isinstance(x, QJSValue):
             return x.toVariant()
         else:
             return x
     
     def __setitem__(self, key: str, value: t.Any) -> None:
+        if key == 'model':
+            # assert isinstance(value, ListModel)
+            # from ..qmlside import ListModel
+            # if isinstance(value, ListModel):
+            if '_modelId' not in self:
+                uid = uuid1().hex
+                self.qobj.setProperty('_modelId', uid)
+                _model_vendors[uid] = value
         self.qobj.setProperty(key, value)
-        
+    
     @property
     def class_name(self) -> str:
         # e.g. 'LKColumn_QMLTYPE_18' -> 'LKColumn'
@@ -295,6 +320,10 @@ class QObjectDelegate:
                     continue
                 out.append(QObjectDelegate(i))
         return out
+
+
+# https://chatgpt.com/share/69ba3d6d-8b3c-800a-baf0-467740a07afb
+_model_vendors = {}
 
 
 # -----------------------------------------------------------------------------
