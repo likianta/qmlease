@@ -7,13 +7,16 @@ typeinfo global_pyobjects.qmltypes
 
 Button       1.0  Inputs/Button.qml
 CheckBox     1.0  Inputs/CheckBox.qml
-Column       1.0  Layouts/Column.qml
+# Column       1.0  Layouts/Column.qml
+Container    1.0  Layouts/Container2.qml
 Empty        1.0  Visual/Empty.qml
 GhostBorder  1.0  Visual/GhostBorder.qml
+Horizontal   1.0  Layouts/Horizontal.qml
 Icon         1.0  Visual/Icon.qml
 IconButton   1.0  Inputs/IconButton.qml
 RadioGroup   1.0  Inputs/RadioGroup.qml
 Rectangle    1.0  Visual/Rectangle.qml
 Text         1.0  Visual/Text.qml
 TextInput    1.0  Inputs/TextInput.qml
+Vertical     1.0  Layouts/Vertical.qml
 Window       1.0  Layouts/Window.qml

@@ -33,6 +33,9 @@ ListView {
         }
         for (let i = 0; i < folderNode.count; i++) {
             subNode = folderNode.getSubNode(i)
+            // if (subNode === null) {
+            //     continue
+            // }
             if (subNode.checked) {
                 out.push(subNode.path)
                 partialChecked = true

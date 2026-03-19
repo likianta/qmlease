@@ -4,8 +4,8 @@ import QmlEase
 
 Item {
     id: root
-    width: _text.width + 48
-    height: pysize.button_height
+    implicitWidth: _text.width + 48
+    implicitHeight: pysize.button_height
 
     property string text
 

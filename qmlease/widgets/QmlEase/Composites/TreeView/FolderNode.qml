@@ -35,12 +35,15 @@ Item {
     function applyCheckStates(value) {
         root.checked = value
         for (let i = 0; i < _entryList.count; i++) {
-            _entryList.itemAtIndex(i).item.applyCheckStates(value)
+            getSubNode(i).applyCheckStates(value)
         }
     }
 
     function getSubNode(index) {
-        return _entryList.itemAtIndex(index).item
+        // const loader = _entryList.itemAtIndex(index)
+        // return loader ? loader.item : null
+        _entryList.currentIndex = index
+        return _entryList.currentItem.item
     }
 
     GuideLine {
