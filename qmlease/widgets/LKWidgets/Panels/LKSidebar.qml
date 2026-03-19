@@ -21,7 +21,7 @@ LKRectangle {
     property alias  currentItem: _listview.currentItem
     property int    itemHeight: pysize.button_height_l
     property alias  listview: _listview
-    property var    model
+    property alias  model: _listview.model
     //  union[list[str], list[dict]]
     //      for list[dict]:
     //          required keys:
@@ -32,15 +32,6 @@ LKRectangle {
     property bool  reuseItems: true
 
     signal clicked(int index, string text)
-
-    onModelChanged: {
-        if (root.model) {
-            // FIXME: no color field in model.
-            _listview.model = lklistview.fill_model(
-                root.model, {'text': '', 'icon': '', 'color': ''}, 'text'
-            )
-        }
-    }
 
     ListView {
         id: _listview
@@ -62,34 +53,35 @@ LKRectangle {
             bgColorHovered: root.colorItemBgHovered
             bgColorPressed: root.colorItemBgSelected
             border.width: 0
-            text: modelData['text']
+            text: __data['text']
             textItem.color: _item.selected ?
                 root.colorItemTextSelected : root.colorItemText
             textItem.horizontalAlignment: Text.AlignLeft
-            textItem.leftPadding: pysize.spacing_m
+            textItem.leftPadding: __data['icon'] ?
+                pysize.icon_size_l + pysize.margin_l * 2 : pysize.spacing_m
 
             property int  index: model.index
-            property bool selected
+            property bool selected: model.index == _listview.currentIndex
+            // property var  __data: {'text': '', 'icon': '', 'color': ''}
+            property var  __data: py.qmlease.fill_sidebar_item(modelData)
 
             onClicked: {
                 root.clicked(this.index, this.text)
                 _listview.currentIndex = this.index
             }
 
-            Loader {
+            LKIcon {
                 id: _icon
-                visible: modelData['icon']
+                visible: __data['icon']
                 anchors {
                     left: parent.left
                     verticalCenter: parent.verticalCenter
                     margins: pysize.margin_m
                 }
-                sourceComponent: LKIcon {
-                    color: _item.selected ?
-                        root.colorItemIconSelected : root.colorItemIcon
-                    size: pysize.icon_size_l
-                    source: modelData['icon']
-                }
+                color: _item.selected ?
+                    root.colorItemIconSelected : root.colorItemIcon
+                size: pysize.icon_size_l
+                source: __data['icon']
             }
 
             Component.onCompleted: {
@@ -102,14 +94,6 @@ LKRectangle {
                         return this.bgColorDefault
                     }
                 })
-                this.selected = Qt.binding(() => {
-                    return this.index == _listview.currentIndex
-                })
-
-                if (modelData['icon']) {
-                    this.textItem.leftPadding =
-                        pysize.icon_size_l + pysize.margin_l * 2
-                }
             }
         }
     }

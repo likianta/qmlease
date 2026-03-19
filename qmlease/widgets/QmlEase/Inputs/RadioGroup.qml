@@ -28,7 +28,7 @@ ColumnLayout {
         RowLayout {
             // Layout.fillWidth: true
             Layout.preferredHeight: pysize.entry_height
-            spacing: pysize.spacing
+            spacing: pysize.spacing_m
 
             Repeater {
                 model: root.model
@@ -46,7 +46,7 @@ ColumnLayout {
     Component {
         id: _columnLayout
         ColumnLayout {
-            spacing: pysize.spacing_m
+            spacing: pysize.spacing_s
             Repeater {
                 model: root.model
                 delegate: RadioBox {
@@ -58,9 +58,9 @@ ColumnLayout {
                     onClicked: root.index = model.index
                 }
             }
-            Component.onCompleted: {
-                py.qmlease.inspect_size(this)
-            }
+            // Component.onCompleted: {
+            //     py.qmlease.inspect_size(this)
+            // }
         }
     }
 }

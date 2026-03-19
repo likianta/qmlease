@@ -121,13 +121,14 @@ ColumnLayout {
                 root._userEdited = true
             }
 
-            Text {
+            Text {  // placeholder
                 visible: root.placeholder && !root._hasContent
                 anchors.fill: parent
                 verticalAlignment: Q.TextInput.AlignVCenter
                 font: parent.font
                 opacity: 0.5
                 text: root.placeholder
+                wrapMode: Text.NoWrap
             }
         }
 

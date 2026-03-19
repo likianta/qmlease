@@ -104,7 +104,7 @@ class WidgetSupport(QObject):
         """
         note: the given `paths` are not sorted, and may contain duplicates.
         """
-        # print(sorted(paths), len(paths), ':vl')
+        print(sorted(paths)[:10], len(paths), ':vl')
         out = ListModel(('type', 'name', 'path', 'children'), auto_submit=False)
         root = fs.normpath(os.path.commonpath(paths))
         out.append({
@@ -181,6 +181,10 @@ class WidgetSupport(QObject):
     def get_best_width(self, texts: t.Iterable[str], padding: int = 0) -> int:
         return max(map(self.estimate_line_width, texts)) + padding * 2
     
+    @Slot(list, result=int)
+    def get_longest_text_width(self, texts: t.List[str]) -> int:
+        return texts and max(map(self.estimate_line_width, texts)) or 0
+
     @Slot(result=str)
     def generate_random_id(self) -> str:
         return uuid1().hex

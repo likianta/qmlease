@@ -7,6 +7,7 @@ Item {
     height: size * 1.5
     clip: false
 
+    property bool   active_: false
     property string bgColor: pycolor.button_bg_hovered
     property string color: pycolor.icon_line_default
     property alias  cursorShape: _area.cursorShape
@@ -15,8 +16,26 @@ Item {
     property alias  icon: _btn.icon
     property int    size: pysize.icon_size
     property string source
+    property string source0
+    property string source1
+    // property bool   __stateful: source0 && source1
 
-    signal clicked(var mouse)
+    // signal clicked(var mouse)
+    signal clicked(bool active)
+
+//    function activate() {
+//        root.active_ = true
+//        if (root.__stateful) {
+//            root.source = root.source1
+//        }
+//    }
+//
+//    function reset() {
+//        root.active_ = false
+//        if (root.__stateful) {
+//            root.source = root.source0
+//        }
+//    }
 
     Rectangle {
         visible: root.halo
@@ -52,6 +71,17 @@ Item {
         id: _area
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: (mouse) => root.clicked(mouse)
+        onClicked: {
+            root.active_ = !root.active_
+            root.clicked(root.active_)
+        }
+    }
+
+    Component.onCompleted: {
+        if (this.source0 && this.source1) {
+            this.source = Qt.binding(() => {
+                return this.active_ ? this.source1 : this.source0
+            })
+        }
     }
 }
