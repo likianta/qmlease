@@ -1,4 +1,5 @@
 import typing as t
+from lk_utils import textwrap as tw
 from qtpy.QtCore import QAbstractListModel
 from qtpy.QtCore import QModelIndex
 from ...qtcore import Slot
@@ -7,6 +8,7 @@ class T:
     Defaults = t.Dict[str, t.Any]
     Item = t.Dict[str, t.Any]
     Items = t.List[Item]
+    Roles = t.Union[t.Dict[str, t.Any], t.Iterable[str]]
     Schema = t.Tuple[str, ...]
 
 class ListModel(QAbstractListModel):
@@ -24,11 +26,10 @@ class ListModel(QAbstractListModel):
     _shadow_list: t.List[t.Optional[bool]]
     
     @classmethod
-    def from_list(cls, xlist: T.Items) -> 'ListModel':
-        instance = cls(xlist[0].keys(), auto_submit=False)
+    def from_list(cls, xlist: T.Items, roles: T.Roles = None) -> 'ListModel':
+        instance = cls(roles or xlist[0].keys(), auto_submit=False)
         instance.extend(xlist)
-        instance.submit()
-        instance.auto_submit = True
+        instance.submit().always()
         return instance
 
     @classmethod
@@ -41,7 +42,7 @@ class ListModel(QAbstractListModel):
     
     def __init__(
         self,
-        roles: t.Union[t.Dict[str, t.Any], t.Iterable[str]],
+        roles: T.Roles,
         auto_complete: bool = False,
         auto_submit: bool = True,
     ) -> None:
@@ -67,9 +68,6 @@ class ListModel(QAbstractListModel):
     def items(self) -> T.Items:
         return self._items
     
-    def __len__(self):
-        return len(self._items)
-    
     def __bool__(self):
         return bool(self._items)
     
@@ -78,6 +76,46 @@ class ListModel(QAbstractListModel):
     
     def __iter__(self) -> t.Iterator[T.Item]:
         return iter(self._items)
+    
+    def __len__(self):
+        return len(self._items)
+    
+    def __str__(self) -> str:
+        if self._items:
+            return tw.wrap(
+                '''
+                <ListModel with {} items:
+                    [
+                        {}
+                    ]
+                >
+                ''',
+                lstrip=False,
+            ).format(
+                len(self._items),
+                tw.join((
+                    tw.wrap(
+                        '''
+                        {{
+                            {}
+                        }}
+                        '''
+                    ).format(
+                        tw.join((
+                            '"{}": {}'.format(
+                                k, 
+                                '"{}"'.format(v) if isinstance(v, str) else 
+                                str(v).lstrip() if isinstance(v, ListModel) 
+                                else v
+                            )
+                            for k, v in item.items()
+                        ), 4, ',\n')
+                    )
+                    for item in self._items
+                ), 8, ',\n')
+            )
+        else:
+            return '<ListModel with 0 items>'
     
     # --------------------------------------------------------------------------
 
@@ -207,18 +245,19 @@ class ListModel(QAbstractListModel):
         assert len(self._shadow_list) == len(self._items)
 
         def aggregate_changes():
-            temp = []
-            for i in range(
-                min((self._origin_list_length, len(self._shadow_list)))
-            ):
-                if self._shadow_list[i] is True:
-                    temp.append(i)
-                else:
-                    if temp:
-                        yield ('update', temp[0], temp[-1])
-                        temp.clear()
-            if temp:
-                yield ('update', temp[0], temp[-1])
+            if self._origin_list_length and self._shadow_list:
+                temp = []
+                for i in range(
+                    min((self._origin_list_length, len(self._shadow_list)))
+                ):
+                    if self._shadow_list[i] is True:
+                        temp.append(i)
+                    else:
+                        if temp:
+                            yield ('update', temp[0], temp[-1])
+                            temp.clear()
+                if temp:
+                    yield ('update', temp[0], temp[-1])
 
             if len(self._shadow_list) > self._origin_list_length:
                 yield (

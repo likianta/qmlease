@@ -266,14 +266,11 @@ class QObjectDelegate:
         _setattr(self, key, value)
     
     def __getitem__(self, item: str) -> t.Any:
-        if item == 'model':
-            # https://chatgpt.com/share/69ba3d6d-8b3c-800a-baf0-467740a07afb
-            if '_modelId' in self:
-                uid = self.qobj.property('_modelId')
-                return _model_vendors[uid]
-
         x = self.qobj.property(item)
         if x is None:
+            # https://chatgpt.com/share/69ba3d6d-8b3c-800a-baf0-467740a07afb
+            if f'_{item}ToModel' in self:
+                return _model_vendors[self.qobj.property(f'_{item}ToModel')]
             # raise Exception(
             #     f'property "{item}" for `{self.class_name}` not found!'
             # )
@@ -288,14 +285,15 @@ class QObjectDelegate:
             return x
     
     def __setitem__(self, key: str, value: t.Any) -> None:
-        if key == 'model':
-            # assert isinstance(value, ListModel)
-            # from ..qmlside import ListModel
-            # if isinstance(value, ListModel):
-            if '_modelId' not in self:
-                uid = uuid1().hex
-                self.qobj.setProperty('_modelId', uid)
-                _model_vendors[uid] = value
+        from ..qmlside import ListModel
+        if isinstance(value, ListModel):
+            uid = uuid1().hex
+            _model_vendors[uid] = value
+            self.qobj.setProperty('_{}ToModel'.format(key), uid)
+            # notify the UI to refresh the model.
+            value.dataChanged.emit(
+                value.createIndex(0, 0), value.createIndex(len(value) - 1, 0)
+            )
         self.qobj.setProperty(key, value)
     
     @property

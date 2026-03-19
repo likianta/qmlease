@@ -152,9 +152,10 @@ Item {
 
             delegate: Loader {
                 width: _entryList.width
-                source: model.type == 'file' ?
+                source: model.type == 'file' ? 
                     './FileNode.qml' : './FolderNode.qml'
                 onLoaded: {
+                    // console.log(model.index, model.name)
                     this.item.name = model.name
                     this.item.path = model.path
                     this.item.checkable = root.checkable

@@ -1,7 +1,12 @@
 import qmlease as qe
+from argsense import cli
 from lk_utils import fs
 
 class TreeView(qe.QObject):
+    def __init__(self, root):
+        super().__init__()
+        self.root = root
+
     @qe.Slot(object)
     def init_ui(self, window):
         @qe.bind_signal(window.pathSubmit)
@@ -39,7 +44,11 @@ class TreeView(qe.QObject):
             ])
             window['model'] = model
 
-        create_model('qmlease')
+        create_model(self.root)
 
-qe.app.register(TreeView(), 'main')
-qe.app.run(fs.xpath('treeview2.qml'))
+@cli
+def main(root: str = 'qmlease'):
+    qe.app.register(TreeView(root), 'main')
+    qe.app.run(fs.xpath('treeview2.qml'))
+
+cli.run(main)

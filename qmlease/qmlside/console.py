@@ -120,13 +120,16 @@ class Console(QObject):
                         return
                     
                     if not IS_WINDOWS and (
-                        'qrc:/qt-project.org/imports/QtQuick/Controls'
-                        '/macOS/' in file_path
+                        'qrc:/qt-project.org/imports/QtQuick/Controls/macOS/' 
+                        in file_path
                     ):
                         # https://forum.qt.io/topic/131823/lots-of
                         # -typeerrors-in-console-when-migrating-to-qt6/2
                         return
             else:
+                if not SHOW_UNPLEASENT_WARNINGS:
+                    if msg == 'Retrying to obtain clipboard.':
+                        return
                 file_path = '<unknown>'
         
         line_number = 0 if ctx.line == -1 else ctx.line + start_line_no
