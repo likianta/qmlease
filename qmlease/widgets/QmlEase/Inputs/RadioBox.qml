@@ -2,16 +2,25 @@ import QtQuick
 import QtQuick.Layouts
 import QmlEase
 
-Item {
+Rectangle {
     id: root
-    width: _option.width
-    height: _option.height
+    width: _option.width + _leftPadding + _rightPadding
+    height: pysize.entry_height_s
+    border.width: ghostBorder && _area.containsMouse ? 1 : 0
+    color: pycolor.transparent
 
-    property bool checked
+    property bool   checked
+    property bool   ghostBorder
+    property string text
+    property int    _leftPadding: ghostBorder ? 4 : 0
+    property int    _rightPadding: ghostBorder ? 12 : 0
+
     signal clicked()
 
     RowLayout {
         id: _option
+        x: parent._leftPadding
+        height: parent.height
         spacing: pysize.spacing_s
 
         // indicator
@@ -44,12 +53,18 @@ Item {
 
         Text {
             Layout.alignment: Qt.AlignVCenter
-            text: modelData
+            text: root.text
         }
     }
 
     MouseArea {
+        id: _area
         anchors.fill: parent
+        hoverEnabled: root.ghostBorder
         onClicked: root.clicked()
     }
+    
+    // Component.onCompleted: {
+    //     py.qmlease.inspect_size(this, `RadioBox:${root.text}`)
+    // }
 }

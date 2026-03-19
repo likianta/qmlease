@@ -15,6 +15,7 @@ Window {
             }
 
             RadioGroup {
+                ghostBorder: true
                 horizontal: true
                 label: 'Radio group'
                 model: [
@@ -35,17 +36,26 @@ Window {
 
             TextInput {
                 Layout.alignment: Qt.AlignTop
+                Layout.fillWidth: true
                 label: 'Text input'
             }
 
             RadioGroup {
+                id: vradio
+                // Layout.preferredWidth: py.qmlease.get_longest_text_width(model)
+                ghostBorder: true
                 horizontal: false
                 label: 'Radio group'
                 model: [
-                    'Pamela Fernandez',
-                    'Carl Kelly',
-                    'Tamara Hall'
+                    'Jeffery Hill',
+                    'Eric Chambers',
+                    'Kevin Gregory'
                 ]
+            }
+            
+            Component.onCompleted: {
+                py.qmlease.inspect_size(vradio, 'vertical radio group')
+                console.log(py.qmlease.get_longest_text_width(vradio.model))
             }
         }
     }
