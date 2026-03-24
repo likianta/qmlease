@@ -10,6 +10,7 @@ CheckBox     1.0  Inputs/CheckBox.qml
 # Column       1.0  Layouts/Column.qml
 Container    1.0  Layouts/Container2.qml
 Empty        1.0  Visual/Empty.qml
+Divider      1.0  Visual/Divider.qml
 GhostBorder  1.0  Visual/GhostBorder.qml
 Horizontal   1.0  Layouts/Horizontal.qml
 Icon         1.0  Visual/Icon.qml

@@ -7,7 +7,8 @@ Rectangle {
     color: pycolor.transparent
     
     default property alias content: _content.data
-    property int padding
+    property int  padding
+    // property bool showBorder: false
 
     Item {
         id: _content

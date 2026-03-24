@@ -5,15 +5,16 @@ import QmlEase
 
 Item {
     id: root
-    // implicitWidth: _layout.implicitWidth
-    // implicitHeight: _layout.implicitHeight
+    implicitWidth: _layout.implicitWidth
+    implicitHeight: _layout.implicitHeight
+    clip: true
 
     default property alias content: _layout.data
     property bool   border: false
     property string borderColor: pycolor.outline_variant
     property string color: pycolor.transparent
-    // property bool   horizontal: false
     property int    padding
+    property bool   placeItemsStart: false
     property int    spacing: pysize.spacing
 
     Rectangle {
@@ -24,10 +25,20 @@ Item {
     }
 
     RowLayout {
-        id: _layout
-        anchors.fill: parent
-        anchors.margins: 
-            root.padding ? root.padding : (root.border ? pysize.padding_s : 0)
-        spacing: root.spacing
+        anchors {
+            fill: parent
+            margins: root.padding ? 
+                root.padding : (root.border ? pysize.padding : 0)
+        }
+        RowLayout {
+            id: _layout
+            Layout.fillHeight: true
+            spacing: root.spacing
+        }
+        Empty {
+            visible: root.placeItemsStart
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+        }
     }
 }

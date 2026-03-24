@@ -5,8 +5,8 @@ import QmlEase
 
 ColumnLayout {
     id: root
-    // implicitWidth: pysize.long_entry_width
-    width: pysize.long_entry_width
+    implicitWidth: pysize.long_entry_width
+    // width: pysize.long_entry_width
     // spacing: pysize.spacing_s
 
     property string color: pycolor.surface_container

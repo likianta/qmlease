@@ -9,7 +9,6 @@ from qtpy.QtGui import QFont
 from qtpy.QtGui import QFontMetrics
 
 from .layout_engine import layout
-from .shadow_tree import ShadowTree
 from .._env import IS_WINDOWS
 from ..qmlside import ListModel
 from ..qtcore import QObject
@@ -21,7 +20,7 @@ from ..style import pystyle
 class Plugins:
     # FIXME (limitation): plugin's `__init__()` params must be empty
     factory: t.Dict[str, t.Type[QObject]] = {
-        'shadow_tree': ShadowTree,
+        # 'shadow_tree': ShadowTree,
     }
     _instances: t.Dict[str, QObject]
 

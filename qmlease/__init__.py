@@ -20,7 +20,7 @@ if 4:
 
 if 5:
     from . import qtcore
-    from . import widgets
+    # from . import widgets
     from .pyside import pyside
     from .pyside import register
     from .qmlside import ListModel
