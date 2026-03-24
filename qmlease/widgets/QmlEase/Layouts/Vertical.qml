@@ -11,17 +11,16 @@ Item {
     clip: true
 
     default property alias content: _layout.data
-    property bool   border: false
-    property string borderColor: pycolor.outline_variant
+    property alias  border: _border.border
     property string color: pycolor.transparent
     property int    padding
     property bool   placeItemsStart: false
     property int    spacing: pysize.spacing
 
     Rectangle {
+        id: _border
         anchors.fill: parent
-        border.width: root.border ? 1 : 0
-        border.color: root.borderColor
+        border.color: pycolor.outline_variant
         color: root.color
     }
 

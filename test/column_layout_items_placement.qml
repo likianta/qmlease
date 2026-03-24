@@ -14,8 +14,8 @@ Window {
         Vertical {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            border: true
-            placeItemsTop: true
+            border.width: 1
+            placeItemsStart: true
             Rectangle {
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: 100
@@ -36,8 +36,7 @@ Window {
         Vertical {
             Layout.fillWidth: true
             Layout.fillHeight: true
-            border: true
-            // placeItemsTop: true
+            border.width: 1
             Rectangle {
                 Layout.preferredWidth: 100
                 Layout.fillHeight: true
