@@ -18,6 +18,7 @@ ColumnLayout {
     property bool   readonly: false
     property bool   showEditingHint: false
     property string text
+    property string textColor: pycolor.on_surface
     property bool   _hasContent: text.length > 0
     property bool   _userEdited: false
 
@@ -102,7 +103,7 @@ ColumnLayout {
                 margins: 12
             }
             clip: true
-            color: root.enabled ? pycolor.on_surface : pycolor.outline
+            color: root.enabled ? root.textColor : pycolor.outline
             enabled: root.enabled
             font.family: pyfont.font_default
             font.pixelSize: pyfont.size_m
@@ -124,10 +125,11 @@ ColumnLayout {
             Text {  // placeholder
                 visible: root.placeholder && !root._hasContent
                 anchors.fill: parent
-                verticalAlignment: Q.TextInput.AlignVCenter
+                color: _input.color
                 font: parent.font
                 opacity: 0.5
                 text: root.placeholder
+                verticalAlignment: Q.TextInput.AlignVCenter
                 wrapMode: Text.NoWrap
             }
         }

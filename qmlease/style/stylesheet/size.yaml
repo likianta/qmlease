@@ -14,6 +14,7 @@ padding_xs: 2
 padding_s: 4
 padding_m: 8
 padding_l: 12
+padding_xl: 20
 padding_h_m: 4
 padding_h_l: 8
 padding_v_s: 2

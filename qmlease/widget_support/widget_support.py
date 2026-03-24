@@ -1,3 +1,4 @@
+import colorsys
 import os
 import typing as t
 from uuid import uuid1
@@ -152,13 +153,44 @@ class WidgetSupport(QObject):
         out.submit().always()
         return out
 
+    # @Slot(str, str, str, result=str)
+    # def derive_color(self, target: str, ref_target: str, ref_base: str) -> str:
+    #     # https://chatgpt.com/share/69c20008-a9c8-800a-ba49-b36cca026a0b
+    #     def hex_to_rgb(value: str) -> t.Tuple[int, int, int]:
+    #         return (
+    #             int(value[1:3], 16), int(value[3:5], 16), int(value[5:7], 16)
+    #         )
+
+    #     def rgb_to_hls(r: int, g: int, b: int) -> t.Tuple[float, float, float]:
+    #         return colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
+
+    #     def hls_to_hex(h: float, l: float, s: float) -> str:
+    #         r, g, b = colorsys.hls_to_rgb(h, l, s)
+    #         return f'#{int(r * 255):02x}{int(g * 255):02x}{int(b * 255):02x}'
+        
+    #     def adjust_lightness(hex_color, factor):
+    #         """
+    #         params:
+    #             factor: >1 will be lighter, <1 will be darker.
+    #         """
+    #         r, g, b = hex_to_rgb(hex_color)
+    #         h, l, s = rgb_to_hls(r, g, b)
+    #         return hls_to_hex(h, l * factor, s)
+
+    #     ref_target_hls = rgb_to_hls(*hex_to_rgb(ref_target))
+    #     ref_base_hls = rgb_to_hls(*hex_to_rgb(ref_base))
+    #     factor = ref_target_hls[1] / ref_base_hls[1]
+    #     return adjust_lightness(target, factor)
+
     @Slot(str)
     @Slot(str, object)
-    def estimate_line_width(self, text: str, item_ref: QObject = None) -> int:
+    def estimate_line_width(
+        self, text: str, item_ref: t.Optional[QObject] = None
+    ) -> int:
         if text == '':
             return 0
         if '\n' in text:
-            text = max(text.splitlines(), key=len)
+            text = max(text.splitlines(), key=len)  # ty:ignore
         
         if item_ref is None:
             metrics = self._font_metrics
@@ -182,7 +214,9 @@ class WidgetSupport(QObject):
     
     @Slot(list, result=int)
     def get_longest_text_width(self, texts: t.List[str]) -> int:
-        return texts and max(map(self.estimate_line_width, texts)) or 0
+        return t.cast(
+            int, texts and max(map(self.estimate_line_width, texts)) or 0
+        )
 
     @Slot(result=str)
     def generate_random_id(self) -> str:
