@@ -15,7 +15,6 @@ from materialyoucolor.scheme import SchemeFidelity
 # from materialyoucolor.scheme import SchemeTonalSpot
 # from qtpy.QtCore import Property
 from qtpy.QtCore import Property as QtProperty
-from qtpy.QtGui import QColor
 from ..qtcore import QObject
 from ..qtcore import Signal
 from ..qtcore import Slot
@@ -44,17 +43,23 @@ class Color(QObject):
     
     theme_changed = Signal(light_or_dark=bool)
     
-    _cached_hex_colors: t.Dict[str, t.Dict[str, str]]
+    _cached_colors: t.Dict[str, t.Dict[str, 'ColorToken']]
     _current_scheme: t.Dict[str, str]
-    _custom_colors_for_dark_theme: T.CustomRoles = (
-        # ('success', '#2ed563'),
-    )
-    _custom_colors_for_light_theme: T.CustomRoles = (
-        # you can override the custom colors in subclass.
-        ('theme_blue', '#0969da'),
-        ('theme_green', '#008000'),
-        ('theme_yellow', '#fff25a'),
-    )
+    _custom_colors = {
+        'light': {
+            # 'surface': '#f9f9ff',  # titan white
+            # 'primary': '#0969da',  # science blue
+            # 'success': '#008000',  # japanese laurel
+            # 'warning': '#fff25a',  # gorse
+            'theme_blue': '#0969da',
+            'theme_green': '#008000',
+            'theme_yellow': '#fff25a',
+        },
+        'dark' : {
+            # 'surface': '#10131a',  # bunker
+            'theme_green': '#2ed563',
+        }
+    }
     _dark_scheme: t.Dict[str, str]
     _is_dark_theme: bool
     _light_scheme: t.Dict[str, str]
@@ -103,16 +108,15 @@ class Color(QObject):
         # dynamically register property names
         role_names = set()
         role_names.update(attrs['_preset_roles'])
-        for name, _ in (
-            attrs['_custom_colors_for_light_theme'] +
-            attrs['_custom_colors_for_dark_theme']
-        ):
+        for name in {
+            *attrs['_custom_colors']['light'].keys(),
+            *attrs['_custom_colors']['dark'].keys()
+        }:
             role_names.add(name)
             role_names.add('on_' + name)
             role_names.add(name + '_container')
-            role_names.add(name + '_outline')
-            role_names.add(name + '_outline_variant')
-        
+            # role_names.add(name + '_outline')
+            # role_names.add(name + '_outline_variant')
         for name in role_names:
             attrs[name] = QtProperty(
                 str,
@@ -131,103 +135,126 @@ class Color(QObject):
         self._light_scheme = self._generate_scheme(argb, is_dark=False)
         self._dark_scheme = self._generate_scheme(argb, is_dark=True)
         self._current_scheme = self._light_scheme
-        self._cached_hex_colors = defaultdict(dict)
+        self._cached_colors = defaultdict(dict)
         self._is_dark_theme = False
 
         # add custom colors to light/dark schemes
-        if (
-            self._custom_colors_for_light_theme or
-            self._custom_colors_for_dark_theme
-        ):
-            custom_dict_0 = dict(self._custom_colors_for_light_theme)
-            custom_dict_1 = dict(self._custom_colors_for_dark_theme)
-            p0, p1, p2, p3, p4, p5 = (
-                getattr(_dynamic_color_system, 'primary'),
-                getattr(_dynamic_color_system, 'onPrimary'),
-                getattr(_dynamic_color_system, 'primaryContainer'),
-                getattr(_dynamic_color_system, 'onPrimaryContainer'),
-                getattr(_dynamic_color_system, 'outline'),
-                getattr(_dynamic_color_system, 'outlineVariant'),
+        if self._custom_colors['light'] or self._custom_colors['dark']:
+            custom_dict_lt = self._custom_colors['light']
+            custom_dict_dk = self._custom_colors['dark']
+            
+            surface_lt = hex_to_token(self._light_scheme['surface'])
+            surface_dk = hex_to_token(self._dark_scheme['surface'])
+            
+            # mutual fill custom dict
+            for name, hex in custom_dict_lt.items():
+                if name not in custom_dict_dk.items():
+                    color_lt = hex_to_token(hex)
+                    color_dk = ColorToken((
+                        color_lt.h,
+                        color_lt.c,
+                        surface_dk.t + (surface_lt.t - color_lt.t)
+                    ))
+                    assert color_dk.hex != color_lt.hex
+                    custom_dict_dk[name] = color_dk.hex
+            for name, hex in custom_dict_dk.items():
+                if name not in custom_dict_lt.items():
+                    color_dk = hex_to_token(hex)
+                    color_lt = ColorToken((
+                        color_dk.h,
+                        color_dk.c,
+                        surface_lt.t - (color_dk.t - surface_dk.t)
+                    ))
+                    assert color_lt.hex != color_dk.hex
+                    custom_dict_lt[name] = color_lt.hex
+            
+            surface_container_lt = hex_to_token(
+                self._light_scheme['surface_container']
             )
-            
-            for name, hex_ in custom_dict_0.items():
-                source = Hct.from_int(hex_to_argb(hex_))
-                scheme = SchemeFidelity(
-                    source, is_dark=False, contrast_level=0.0
-                )
+            surface_container_dk = hex_to_token(
+                self._dark_scheme['surface_container']
+            )
+            for name, hex in custom_dict_lt.items():
+                color = hex_to_token(hex)
                 self._light_scheme.update({
-                    name: p2.get_hex(scheme)[:-2],
-                    'on_' + name: p3.get_hex(scheme)[:-2],
-                    name + '_container': p0.get_hex(scheme)[:-2],
-                    name + '_outline': p4.get_hex(scheme)[:-2],
-                    name + '_outline_variant': p5.get_hex(scheme)[:-2],
+                    name: hex,
+                    'on_' + name: color.shift(12).hex,
+                    name + '_container': ColorToken((
+                        color.h,
+                        color.c,
+                        surface_container_lt.t
+                    )).hex
                 })
-                if name not in custom_dict_1:
-                    scheme = SchemeFidelity(
-                        source, is_dark=True, contrast_level=0.0
-                    )
-                    self._dark_scheme.update({
-                        name: p2.get_hex(scheme)[:-2],
-                        'on_' + name: p3.get_hex(scheme)[:-2],
-                        name + '_container': p1.get_hex(scheme)[:-2],
-                        name + '_outline': p4.get_hex(scheme)[:-2],
-                        name + '_outline_variant': p5.get_hex(scheme)[:-2],
-                    })
-            
-            for name, hex_ in custom_dict_1.items():
-                source = Hct.from_int(hex_to_argb(hex_))
-                scheme = SchemeFidelity(
-                    source, is_dark=True, contrast_level=0.0
-                )
+            for name, hex in custom_dict_dk.items():
+                color = hex_to_token(hex)
                 self._dark_scheme.update({
-                    name: p2.get_hex(scheme)[:-2],
-                    'on_' + name: p3.get_hex(scheme)[:-2],
-                    name + '_container': p1.get_hex(scheme)[:-2],
-                    name + '_outline': p4.get_hex(scheme)[:-2],
-                    name + '_outline_variant': p5.get_hex(scheme)[:-2],
+                    name: hex,
+                    'on_' + name: color.shift(12).hex,
+                    name + '_container': ColorToken((
+                        color.h,
+                        color.c,
+                        surface_container_dk.t
+                    )).hex
                 })
-                if name not in custom_dict_0:
-                    scheme = SchemeFidelity(
-                        source, is_dark=False, contrast_level=0.0
-                    )
-                    self._light_scheme.update({
-                        name: p0.get_hex(scheme)[:-2],
-                        'on_' + name: p1.get_hex(scheme)[:-2],
-                        name + '_container': p0.get_hex(scheme)[:-2],
-                        name + '_outline': p4.get_hex(scheme)[:-2],
-                        name + '_outline_variant': p5.get_hex(scheme)[:-2],
-                    })
-
-        # for name in self._current_scheme:
-        #     if name.startswith('on_') or '_outline' in name:
-        #         continue
-        #     if name.endswith('_container'):
-        #         self._cached_hex_colors[self._current_scheme[name]] = {
-        #             'on': (
-        #                 self._current_scheme['on_' + name] 
-        #                 if 'on_' + name in self._current_scheme else 
-        #                 self._current_scheme[
-        #                     'on_' + name.removesuffix('_container')
-        #                 ]
-        #             )
-        #         }
-        #     else:
-        #         if (
-        #             'on_' + name in self._current_scheme and 
-        #             name + '_container' in self._current_scheme
-        #         ):
-        #             self._cached_hex_colors[self._current_scheme[name]] = {
-        #                 'on': 
-        #                     self._current_scheme['on_' + name],
-        #                 'container': 
-        #                     self._current_scheme[name + '_container'],
-        #                 'outline': 
-        #                     self._current_scheme.get(name + '_outline', ''),
-        #                 'outline_variant': 
-        #                     self._current_scheme.get(
-        #                         name + '_outline_variant', ''
-        #                     ),
-        #             }
+            
+            # ------------------------------------------------------------------
+            
+            # p0, p1, p2, p3, p4, p5 = (
+            #     getattr(_dynamic_color_system, 'primary'),
+            #     getattr(_dynamic_color_system, 'onPrimary'),
+            #     getattr(_dynamic_color_system, 'primaryContainer'),
+            #     getattr(_dynamic_color_system, 'onPrimaryContainer'),
+            #     getattr(_dynamic_color_system, 'outline'),
+            #     getattr(_dynamic_color_system, 'outlineVariant'),
+            # )
+            #
+            # for name, hex_ in custom_dict_0.items():
+            #     source = Hct.from_int(hex_to_argb(hex_))
+            #     scheme = SchemeFidelity(
+            #         source, is_dark=False, contrast_level=0.0
+            #     )
+            #     self._light_scheme.update({
+            #         name: p2.get_hex(scheme)[:-2],
+            #         'on_' + name: p3.get_hex(scheme)[:-2],
+            #         name + '_container': p0.get_hex(scheme)[:-2],
+            #         name + '_outline': p4.get_hex(scheme)[:-2],
+            #         name + '_outline_variant': p5.get_hex(scheme)[:-2],
+            #     })
+            #     if name not in custom_dict_1:
+            #         scheme = SchemeFidelity(
+            #             source, is_dark=True, contrast_level=0.0
+            #         )
+            #         self._dark_scheme.update({
+            #             name: p2.get_hex(scheme)[:-2],
+            #             'on_' + name: p3.get_hex(scheme)[:-2],
+            #             name + '_container': p1.get_hex(scheme)[:-2],
+            #             name + '_outline': p4.get_hex(scheme)[:-2],
+            #             name + '_outline_variant': p5.get_hex(scheme)[:-2],
+            #         })
+            #
+            # for name, hex_ in custom_dict_1.items():
+            #     source = Hct.from_int(hex_to_argb(hex_))
+            #     scheme = SchemeFidelity(
+            #         source, is_dark=True, contrast_level=0.0
+            #     )
+            #     self._dark_scheme.update({
+            #         name: p2.get_hex(scheme)[:-2],
+            #         'on_' + name: p3.get_hex(scheme)[:-2],
+            #         name + '_container': p1.get_hex(scheme)[:-2],
+            #         name + '_outline': p4.get_hex(scheme)[:-2],
+            #         name + '_outline_variant': p5.get_hex(scheme)[:-2],
+            #     })
+            #     if name not in custom_dict_0:
+            #         scheme = SchemeFidelity(
+            #             source, is_dark=False, contrast_level=0.0
+            #         )
+            #         self._light_scheme.update({
+            #             name: p0.get_hex(scheme)[:-2],
+            #             'on_' + name: p1.get_hex(scheme)[:-2],
+            #             name + '_container': p0.get_hex(scheme)[:-2],
+            #             name + '_outline': p4.get_hex(scheme)[:-2],
+            #             name + '_outline_variant': p5.get_hex(scheme)[:-2],
+            #         })
 
     def _generate_scheme(self, argb: int, is_dark: bool) -> t.Dict[str, str]:
         """
@@ -252,49 +279,79 @@ class Color(QObject):
         return out
     
     def _qget_color(self, name):
+        # if name.startswith('theme_'):
+        #     print(name, self._current_scheme[name], self._is_dark_theme, ':v')
         return self._current_scheme[name]
     
     # --------------------------------------------------------------------------
 
     @Slot(str, result=str)
     @Slot(str, str, result=str)
-    def get(self, value: str, variant: str = '') -> str:
+    @Slot(str, str, str, result=str)
+    def get(
+        self, value: str, variant: str = '', inner_against='', outer_against=''
+    ) -> str:
         if not variant:
             return value
 
-        if variant and variant in self._cached_hex_colors[value]:
-            return self._cached_hex_colors[value][variant]
+        if variant and variant in self._cached_colors[value]:
+            return self._cached_colors[value][variant].hex
 
-        def resolve_variant():
-            nonlocal variant
-            if variant == 'border':
-                hct0 = hex_to_hct(self._current_scheme['surface'])
-                hct1 = hex_to_hct(value)
-                return hct_to_hex(
-                    Hct.from_hct(
-                        hct1.hue, 
-                        hct1.chroma, 
-                        hct1.tone 
-                        if Contrast.ratio_of_tones(hct0.tone, hct1.tone) >= 4.5 
-                        else Contrast.darker_unsafe(hct0.tone, 4.5)
-                    )
+        def resolve_variant() -> ColorToken:
+            # nonlocal variant
+            color = hex_to_token(value)
+            
+            if variant.startswith('border'):
+                color0 = hex_to_token(
+                    outer_against or self._current_scheme['surface']
                 )
+                color1 = color.shift(
+                    4.5 if variant == 'border_strong' else 2.5
+                )
+                # while color1 / color0 < 1.5:
+                #     if color1.tone > color.tone:
+                return color1
+                
+                # color0 = hex_to_token(
+                #     outer_against or self._current_scheme['surface']
+                # )
+                # color1 = hex_to_token(value)
+                # if color0 / color1 >= 4.5:
+                #     if inner_against:
+                #         assert inner_against == color1.hex
+                #         if variant == 'border_strong':
+                #             return color1.dark_against(2)
+                #         else:
+                #             return color1.light_against(1.5)
+                #     else:
+                #         return color1
+                # else:
+                #     # return color0.shift(4.5)
+                #     return color0.shift(
+                #         4.5 if variant == 'border_strong' else 2.5
+                #     )
+                
             elif variant == 'container':
-                hct0 = hex_to_hct(
-                    self._current_scheme['surface_container_highest']
-                )
-                hct1 = hex_to_hct(value)
-                return hct_to_hex(
-                    Hct.from_hct(hct1.hue, hct1.chroma, hct0.tone)
-                )
+                color0 = hex_to_token(self._current_scheme['surface'])
+                color1 = hex_to_token(value)
+                return ColorToken((color1.h, color1.c, color0.shift(0.2).t))
+            
             elif variant == 'darker':
-                return darker(value)
+                color = hex_to_token(value)
+                return color.darker()
+            
             elif variant == 'lighter':
-                return lighter(value)
+                color = hex_to_token(value)
+                return color.lighter()
+            
             elif variant == 'on':
-                return darker(value, 12)
+                color = hex_to_token(value)
+                return color.shift(12)
+            
             elif variant == 'variant':
-                return darker(value)
+                color = hex_to_token(value)
+                return color.shift(0.2)
+            
             else:
                 # if variant == 'on':
                 #     variant = 'on_primary_container'
@@ -304,34 +361,18 @@ class Color(QObject):
                     contrast_level=0.0, 
                     spec_version='2025'
                 )
-                return getattr(
-                    _dynamic_color_system, _snake_to_camel_case(variant)
-                ).get_hex(scheme)[:-2]
+                return ColorToken(
+                    getattr(
+                        _dynamic_color_system, _snake_to_camel_case(variant)
+                    ).get_hex(scheme)[:-2]
+                )
             # raise Exception(value, variant)
 
-        out = self._cached_hex_colors[value][variant] = resolve_variant()
-        # print('{} & {} -> {} ({})'.format(
-        #     value, variant, out, 'dark' if self._is_dark_theme else 'light'
-        # ), ':v')
-        return out
-
-    @Slot(str, result=str)
-    def on(self, color_hex: str) -> str:
-        if color_hex in self._cached_hex_colors:
-            return self._cached_hex_colors[color_hex]['on']
-        # https://chatgpt.com/s/t_69c237dd1ea08191ad77a4481fe07346
-        bg = Hct.from_int(hex_to_argb(color_hex))
-        fg_light = Hct.from_hct(bg.hue, bg.chroma, 100)
-        fg_dark = Hct.from_hct(bg.hue, bg.chroma, 0)
-        fg_light_ratio = Contrast.ratio_of_tones(fg_light.tone, bg.tone)
-        fg_dark_ratio = Contrast.ratio_of_tones(fg_dark.tone, bg.tone)
-        min_ratio = 4.5
-        if fg_light_ratio >= min_ratio or fg_light_ratio >= fg_dark_ratio:
-            out = argb_to_hex(fg_light.to_int())
-        else:
-            out = argb_to_hex(fg_dark.to_int())
-        self._cached_hex_colors[color_hex]['on'] = out
-        return out
+        out = self._cached_colors[value][variant] = resolve_variant()
+        print('{} & {} -> {} ({})'.format(
+            value, variant, out.hex, 'dark' if self._is_dark_theme else 'light'
+        ), ':v')
+        return out.hex
 
     @Slot(str, str, str, result=str)
     def derive(self, ref0, ref1, to0) -> str:
@@ -385,30 +426,118 @@ class Color(QObject):
         self._current_scheme = (
             self._dark_scheme if is_dark else self._light_scheme
         )
-        self._cached_hex_colors.clear()
+        self._cached_colors.clear()
         self.theme_changed.emit(not self._is_dark_theme)
 
     dark_theme = QtProperty(bool, _qget_dark_theme, _qset_dark_theme)  # noqa
 
+class ColorToken:
+    
+    def __init__(
+        self, value: t.Union[str, Hct, t.Tuple[float, float, float]]
+    ) -> None:
+        if isinstance(value, str):
+            self.hex = value
+            self.int = int(value[1:], 16)
+            hct = hex_to_hct(value)
+            self.hue = hct.hue
+            self.chroma = hct.chroma
+            self.tone = hct.tone
+        else:
+            hct = value if isinstance(value, Hct) else Hct.from_hct(*value)
+            self.hex = hct_to_hex(hct)
+            self.int = hct.to_int() & 0xFFFFFF
+            self.hue = hct.hue
+            self.chroma = hct.chroma
+            self.tone = hct.tone
+
+    def __hash__(self) -> int:
+        return self.int
+
+    def __str__(self) -> str:
+        return '<ColorToken {} (h={:.0f}, c={:.0f}, t={:.0f})'.format(
+            self.hex, self.hue, self.chroma, self.tone
+        )
+    
+    def __truediv__(self, other: 'ColorToken') -> float:
+        return Contrast.ratio_of_tones(self.tone, other.tone)
+
+    @property
+    def h(self) -> float:
+        return self.hue
+    
+    @property
+    def c(self) -> float:
+        return self.chroma
+    
+    @property
+    def t(self) -> float:
+        return self.tone
+
+    @property
+    def hct(self):
+        return self.hue, self.chroma, self.tone
+    
+    def dark_against(self, ratio: float = 4.5):
+        return ColorToken(
+            (self.h, self.c, Contrast.darker_unsafe(self.tone, ratio))
+        )
+    
+    def darker(self, ratio: float = 0.2):
+        return ColorToken(
+            (self.h, self.c, Contrast.darker_unsafe(self.tone, 1 + ratio))
+        )
+    
+    def light_against(self, ratio: float = 4.5):
+        return ColorToken(
+            (self.h, self.c, Contrast.lighter_unsafe(self.tone, ratio))
+        )
+    
+    def lighter(self, ratio: float = 0.2):
+        return ColorToken(
+            (self.h, self.c, Contrast.lighter_unsafe(self.tone, 1 + ratio))
+        )
+    
+    def shift(self, ratio: float = 0.2):
+        if ratio <= 1:
+            return (
+                self.lighter(ratio) if self.tone < 50 else self.darker(ratio)
+            )
+        else:
+            return (
+                self.light_against(ratio) if self.tone < 50 else
+                self.dark_against(ratio)
+            )
+    
+    # def shift_against(self, ratio: float = 4.5):
+    #     return (
+    #         self.light_against(ratio) if self.tone < 50 else
+    #         self.dark_against(ratio)
+    #     )
+
+# ------------------------------------------------------------------------------
+
 def argb_to_hex(argb: int) -> str:
     return f'#{argb & 0xFFFFFF:06x}'
 
-def darker(hex, ratio: float = 5):
-    """
-    ratio:
-        ref: https://chatgpt.com/share/69c3adf2-02f0-83a9-8a0d-46b3a7bc2d73
-        minimum: 1.0 -> no change (same color).
-        maximum: 21.0 -> max contrast (pure black vs pure white).
-        the higher the ratio, the darker the color.
-    """
-    hct = hex_to_hct(hex)
+def auto_shift(value, ratio):
+    hct = hex_to_hct(value)
     return hct_to_hex(
         Hct.from_hct(
             hct.hue, 
             hct.chroma, 
-            Contrast.darker_unsafe(hct.tone, ratio)
+            (
+                Contrast.darker_unsafe if hct.tone > 50 else 
+                Contrast.lighter_unsafe
+            )(hct.tone, ratio if ratio > 1 else 1 + ratio)
         )
     )
+
+def darker(value, ratio):
+    if ratio > 1:
+        return _abs_darker(value, ratio)
+    else:
+        return _rel_darker(value, ratio)
 
 def hct_to_hex(hct: Hct) -> str:
     return argb_to_hex(hct.to_int())
@@ -422,14 +551,68 @@ def hex_to_hct(value: str) -> Hct:
     argb = hex_to_argb(value)
     return Hct.from_int(argb)
 
-def lighter(hex):
-    hct1 = Hct.from_int(hex_to_argb(hex))
-    hct0 = Hct.from_hct(hct1.hue, hct1.chroma, 90)
-    hex0 = argb_to_hex(hct0.to_int())
-    return hex0
+def hex_to_token(value: str) -> ColorToken:
+    return ColorToken(value)
+
+def lighter(value, ratio):
+    if ratio > 1:
+        return _abs_lighter(value, ratio)
+    else:
+        return _rel_lighter(value, ratio)
+
+def _abs_darker(value, ratio: float = 5):
+    """
+    ratio:
+        ref: https://chatgpt.com/share/69c3adf2-02f0-83a9-8a0d-46b3a7bc2d73
+        minimum: 1.0 -> no change (same color).
+        maximum: 21.0 -> max contrast (pure black vs pure white).
+        the higher the ratio, the darker the color.
+    """
+    hct = hex_to_hct(value)
+    return hct_to_hex(
+        Hct.from_hct(
+            hct.hue, 
+            hct.chroma, 
+            Contrast.darker_unsafe(hct.tone, ratio)
+        )
+    )
+
+def _abs_lighter(value, ratio: float = 5):
+    hct = hex_to_hct(value)
+    return hct_to_hex(
+        Hct.from_hct(
+            hct.hue, 
+            hct.chroma, 
+            Contrast.lighter_unsafe(hct.tone, ratio)
+        )
+    )
 
 def _camel_to_snake_case(name: str) -> str:
     return ''.join(('_' + i.lower() if i.isupper() else i for i in name))
+
+def _rel_darker(value, ratio: float = 0.2):
+    """
+    darken color relative to its ratio.
+    ratio: 0.0 ~ 1.0. for example, 0.2 -> 20% darker.
+    """
+    hct = hex_to_hct(value)
+    return hct_to_hex(
+        Hct.from_hct(
+            hct.hue, 
+            hct.chroma, 
+            Contrast.darker_unsafe(hct.tone, 1 + ratio)
+        )
+    )
+
+def _rel_lighter(value, ratio: float = 0.2):
+    hct = hex_to_hct(value)
+    return hct_to_hex(
+        Hct.from_hct(
+            hct.hue, 
+            hct.chroma, 
+            Contrast.lighter_unsafe(hct.tone, 1 + ratio)
+        )
+    )
 
 def _snake_to_camel_case(name: str) -> str:
     parts = name.split('_')

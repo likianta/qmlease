@@ -11,7 +11,7 @@ Item {
     // the "color seed". if not set, use default colorset.
     property string color
     property string text
-    property string textColor: pycolor.on_surface
+    property string textColor: pycolor.get(_colorDefault, 'on')
     property string _colorDefault: color ? color : pycolor.surface_container
     property string _colorHovered: color ? pycolor.derive2(
         pycolor.surface_container, pycolor.surface_container_highest, color
@@ -33,7 +33,8 @@ Item {
             (_mouse.containsMouse ? root._colorHovered : root._colorDefault)
         )
         border.width: 1
-        border.color: pycolor.outline_variant
+        // border.color: pycolor.outline_variant
+        border.color: pycolor.get(_colorDefault, 'border', _colorDefault)
         // border.color: (
         //     root.color ? py.qmlease.derive_color(
         //         pycolor.outline_variant, 

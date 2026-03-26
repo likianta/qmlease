@@ -7,10 +7,13 @@ Rectangle {
     implicitWidth: _text.implicitWidth + _hpadding * 2
     implicitHeight: _text.implicitHeight + _vpadding * 2
     border.width: 2
-    border.color: pycolor.get(_accentColor, 'border')
-    color: type == 'error' ? 
-        pycolor.error_container : pycolor.get(_accentColor, 'container')
+    border.color: pycolor.get(color, 'border_strong')
+    // border.color: pycolor.get(_accentColor, 'border_strong')
+    // color: type == 'error' ?
+    //     pycolor.error_container : pycolor.get(_accentColor, 'container')
+    color: pycolor.get(_accentColor, 'container')
 
+    property bool   bold
     property string text
     property string type: 'info'
     property string _accentColor: (
@@ -36,6 +39,7 @@ Rectangle {
         }
         // color: pycolor.on_surface
         color: pycolor.get(root.color, 'on')
+        font.bold: root.bold
         text: root.text
     }
 }
