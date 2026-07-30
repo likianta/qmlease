@@ -3,10 +3,12 @@ inspiration:
     - https://github.com/T-Dynamos/materialyoucolor-python
     - https://github.com/sudoevolve/material-components-pyside
 """
-import colorsys
-import typing as t
+
+import typing as tp
 from collections import defaultdict
 from functools import partial
+
+import colorsys
 from materialyoucolor.contrast import Contrast
 from materialyoucolor.dynamiccolor.material_dynamic_colors import \
     MaterialDynamicColors
@@ -15,6 +17,7 @@ from materialyoucolor.scheme import SchemeFidelity
 # from materialyoucolor.scheme import SchemeTonalSpot
 # from qtpy.QtCore import Property
 from qtpy.QtCore import Property as QtProperty
+
 from ..qtcore import QObject
 from ..qtcore import Signal
 from ..qtcore import Slot
@@ -24,8 +27,8 @@ _dynamic_color_system = MaterialDynamicColors(spec='2025')
 # color_spec = MaterialDynamicColors(spec='2025').color_spec
 
 class T:
-    CustomRoles = t.Tuple[t.Tuple[str, str], ...]
-    PresetRoles = t.Tuple[str, ...]
+    CustomRoles = tp.Tuple[tp.Tuple[str, str], ...]
+    PresetRoles = tp.Tuple[str, ...]
 
 class Color(QObject):
     black = StaticProperty('black')
@@ -43,8 +46,8 @@ class Color(QObject):
     
     theme_changed = Signal(light_or_dark=bool)
     
-    _cached_colors: t.Dict[str, t.Dict[str, 'ColorToken']]
-    _current_scheme: t.Dict[str, str]
+    _cached_colors: tp.Dict[str, tp.Dict[str, 'ColorToken']]
+    _current_scheme: tp.Dict[str, str]
     _custom_colors = {
         'light': {
             # 'surface': '#f9f9ff',  # titan white
@@ -57,12 +60,12 @@ class Color(QObject):
         },
         'dark' : {
             # 'surface': '#10131a',  # bunker
-            'theme_green': '#2ed563',
+            'theme_green': '#2ed563',  # shamrock
         }
     }
-    _dark_scheme: t.Dict[str, str]
+    _dark_scheme: tp.Dict[str, str]
     _is_dark_theme: bool
-    _light_scheme: t.Dict[str, str]
+    _light_scheme: tp.Dict[str, str]
     _preset_roles: T.PresetRoles = (
         'primary',
         'on_primary',
@@ -196,67 +199,8 @@ class Color(QObject):
                         surface_container_dk.t
                     )).hex
                 })
-            
-            # ------------------------------------------------------------------
-            
-            # p0, p1, p2, p3, p4, p5 = (
-            #     getattr(_dynamic_color_system, 'primary'),
-            #     getattr(_dynamic_color_system, 'onPrimary'),
-            #     getattr(_dynamic_color_system, 'primaryContainer'),
-            #     getattr(_dynamic_color_system, 'onPrimaryContainer'),
-            #     getattr(_dynamic_color_system, 'outline'),
-            #     getattr(_dynamic_color_system, 'outlineVariant'),
-            # )
-            #
-            # for name, hex_ in custom_dict_0.items():
-            #     source = Hct.from_int(hex_to_argb(hex_))
-            #     scheme = SchemeFidelity(
-            #         source, is_dark=False, contrast_level=0.0
-            #     )
-            #     self._light_scheme.update({
-            #         name: p2.get_hex(scheme)[:-2],
-            #         'on_' + name: p3.get_hex(scheme)[:-2],
-            #         name + '_container': p0.get_hex(scheme)[:-2],
-            #         name + '_outline': p4.get_hex(scheme)[:-2],
-            #         name + '_outline_variant': p5.get_hex(scheme)[:-2],
-            #     })
-            #     if name not in custom_dict_1:
-            #         scheme = SchemeFidelity(
-            #             source, is_dark=True, contrast_level=0.0
-            #         )
-            #         self._dark_scheme.update({
-            #             name: p2.get_hex(scheme)[:-2],
-            #             'on_' + name: p3.get_hex(scheme)[:-2],
-            #             name + '_container': p1.get_hex(scheme)[:-2],
-            #             name + '_outline': p4.get_hex(scheme)[:-2],
-            #             name + '_outline_variant': p5.get_hex(scheme)[:-2],
-            #         })
-            #
-            # for name, hex_ in custom_dict_1.items():
-            #     source = Hct.from_int(hex_to_argb(hex_))
-            #     scheme = SchemeFidelity(
-            #         source, is_dark=True, contrast_level=0.0
-            #     )
-            #     self._dark_scheme.update({
-            #         name: p2.get_hex(scheme)[:-2],
-            #         'on_' + name: p3.get_hex(scheme)[:-2],
-            #         name + '_container': p1.get_hex(scheme)[:-2],
-            #         name + '_outline': p4.get_hex(scheme)[:-2],
-            #         name + '_outline_variant': p5.get_hex(scheme)[:-2],
-            #     })
-            #     if name not in custom_dict_0:
-            #         scheme = SchemeFidelity(
-            #             source, is_dark=False, contrast_level=0.0
-            #         )
-            #         self._light_scheme.update({
-            #             name: p0.get_hex(scheme)[:-2],
-            #             'on_' + name: p1.get_hex(scheme)[:-2],
-            #             name + '_container': p0.get_hex(scheme)[:-2],
-            #             name + '_outline': p4.get_hex(scheme)[:-2],
-            #             name + '_outline_variant': p5.get_hex(scheme)[:-2],
-            #         })
 
-    def _generate_scheme(self, argb: int, is_dark: bool) -> t.Dict[str, str]:
+    def _generate_scheme(self, argb: int, is_dark: bool) -> tp.Dict[str, str]:
         """
         returns: a dict of color hex strings. 
             e.g. {'primary': '#214E80', 'on_primary': '#FFFFFF', ...}
@@ -289,7 +233,7 @@ class Color(QObject):
     @Slot(str, str, result=str)
     @Slot(str, str, str, result=str)
     def get(
-        self, value: str, variant: str = '', inner_against='', outer_against=''
+        self, value: str, variant: str = '', against: str = ''
     ) -> str:
         if not variant:
             return value
@@ -301,36 +245,38 @@ class Color(QObject):
             # nonlocal variant
             color = hex_to_token(value)
             
-            if variant.startswith('border'):
-                color0 = hex_to_token(
-                    outer_against or self._current_scheme['surface']
-                )
-                color1 = color.shift(
-                    4.5 if variant == 'border_strong' else 2.5
-                )
-                # while color1 / color0 < 1.5:
-                #     if color1.tone > color.tone:
-                return color1
-                
-                # color0 = hex_to_token(
-                #     outer_against or self._current_scheme['surface']
-                # )
-                # color1 = hex_to_token(value)
-                # if color0 / color1 >= 4.5:
-                #     if inner_against:
-                #         assert inner_against == color1.hex
-                #         if variant == 'border_strong':
-                #             return color1.dark_against(2)
-                #         else:
-                #             return color1.light_against(1.5)
-                #     else:
-                #         return color1
-                # else:
-                #     # return color0.shift(4.5)
-                #     return color0.shift(
-                #         4.5 if variant == 'border_strong' else 2.5
-                #     )
-                
+            if variant == 'border':
+                if against:  # FIXME
+                    # -- a
+                    # other = hex_to_token(against)
+                    # ratio = 2.5
+                    # out = color.shift(ratio)
+                    # while out / other < 2:
+                    #     ratio += 0.2
+                    #     if ratio <= 21:
+                    #         out = color.shift(ratio)
+                    #     else:
+                    #         ratio = 1.8
+                    #         out = color.rshift(ratio)
+                    #         while out / other < 2:
+                    #             ratio += 0.2
+                    #             if ratio <= 21:
+                    #                 out = color.rshift(ratio)
+                    #             else:
+                    #                 raise Exception
+                    #         return out
+                    # return out
+                    # -- b
+                    a = color.shift(2.5)
+                    b = hex_to_token(against)
+                    if a / b >= 2:
+                        return a
+                    else:
+                        c = b.shift(4.5)
+                        return ColorToken((c.h, c.c, a.t))
+                else:
+                    return color.shift(2.5)
+            
             elif variant == 'container':
                 color0 = hex_to_token(self._current_scheme['surface'])
                 color1 = hex_to_token(value)
@@ -347,6 +293,17 @@ class Color(QObject):
             elif variant == 'on':
                 color = hex_to_token(value)
                 return color.shift(12)
+            
+            elif variant == 'rshift':
+                color = hex_to_token(value)
+                return color.rshift(0.2)
+            
+            elif variant == 'shift':
+                color = hex_to_token(value)
+                return color.shift(0.2)
+            
+            elif variant == 'strong_border':
+                return color.shift(4.5)
             
             elif variant == 'variant':
                 color = hex_to_token(value)
@@ -369,20 +326,20 @@ class Color(QObject):
             # raise Exception(value, variant)
 
         out = self._cached_colors[value][variant] = resolve_variant()
-        print('{} & {} -> {} ({})'.format(
-            value, variant, out.hex, 'dark' if self._is_dark_theme else 'light'
-        ), ':v')
+        # print('{} & {} -> {} ({})'.format(
+        #     value, variant, out.hex, 'dark' if self._is_dark_theme else 'light'
+        # ), ':v')
         return out.hex
 
     @Slot(str, str, str, result=str)
     def derive(self, ref0, ref1, to0) -> str:
         # https://chatgpt.com/share/69c20008-a9c8-800a-ba49-b36cca026a0b
-        def hex_to_rgb(value: str) -> t.Tuple[int, int, int]:
+        def hex_to_rgb(value: str) -> tp.Tuple[int, int, int]:
             return (
                 int(value[1:3], 16), int(value[3:5], 16), int(value[5:7], 16)
             )
 
-        def rgb_to_hls(r: int, g: int, b: int) -> t.Tuple[float, float, float]:
+        def rgb_to_hls(r: int, g: int, b: int) -> tp.Tuple[float, float, float]:
             return colorsys.rgb_to_hls(r / 255, g / 255, b / 255)
 
         def hls_to_hex(h: float, l: float, s: float) -> str:
@@ -434,7 +391,7 @@ class Color(QObject):
 class ColorToken:
     
     def __init__(
-        self, value: t.Union[str, Hct, t.Tuple[float, float, float]]
+        self, value: tp.Union[str, Hct, tp.Tuple[float, float, float]]
     ) -> None:
         if isinstance(value, str):
             self.hex = value
@@ -506,6 +463,17 @@ class ColorToken:
         else:
             return (
                 self.light_against(ratio) if self.tone < 50 else
+                self.dark_against(ratio)
+            )
+    
+    def rshift(self, ratio: float = 0.2):
+        if ratio <= 1:
+            return (
+                self.lighter(ratio) if self.tone >= 50 else self.darker(ratio)
+            )
+        else:
+            return (
+                self.light_against(ratio) if self.tone >= 50 else
                 self.dark_against(ratio)
             )
     

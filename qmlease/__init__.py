@@ -1,6 +1,6 @@
 if 1:
-    import lk_logger
-    lk_logger.setup(quiet=True)
+    import neoprint as np
+    np.setup()
 
 if 2:
     import signal

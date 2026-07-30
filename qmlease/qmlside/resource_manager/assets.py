@@ -1,11 +1,12 @@
 from os import listdir
 
+from lk_utils import there
+
 from .base import ResourceManager
 
 
 class AssetsResourceManager(ResourceManager):
-    from lk_utils import relpath
-    assets_dir = relpath('../../themes/Theme/Assets')
+    assets_dir = there('../../themes/Theme/Assets')
     icons_dir = f'{assets_dir}/icons'
     index: dict
     

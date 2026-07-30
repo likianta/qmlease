@@ -1,7 +1,6 @@
 import os
 import re
 
-from lk_logger.path_helper import path_helper
 from lk_utils import normpath
 from lk_utils import xpath
 from qtpy.QtCore import QMessageLogContext
@@ -16,8 +15,8 @@ if QT_VERSION >= (6, 4, 0):
     from qtpy.QtCore import qCritical as QtCriticalMsg
     from qtpy.QtCore import qWarning as QtWarningMsg
 else:
-    from qtpy.QtCore import QtCriticalMsg  # noqa
-    from qtpy.QtCore import QtWarningMsg  # noqa
+    from qtpy.QtCore import QtCriticalMsg  # ty: ignore
+    from qtpy.QtCore import QtWarningMsg  # ty: ignore
 
 SHOW_FUNCNAME = False
 SHOW_UNPLEASENT_WARNINGS = os.getenv('QMLEASE_DEBUG', '0') == '1'
@@ -194,7 +193,8 @@ class Console(QObject):
         """
         if path.startswith('<'):
             return path
-        return path_helper.get_relpath(path)
+        # return path_helper.get_relpath(path)
+        return path  # FIXME
 
 
 qml_console = Console()

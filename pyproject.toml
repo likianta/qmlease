@@ -1,24 +1,23 @@
 [project]
 name = "qmlease"
-version = "4.0.0a6"
+version = "4.0.0a10"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.14"
+requires-python = ">=3.12"
 dependencies = [
-    "argsense>=1.2.0a3",
+    "argsense>=1.1.2",
     "jurigged>=0.6.1",
-    # "lk-logger>=6.0.8a1",
-    "lk-utils>=3.6.0b10",
-    "neoprint>=0.1.0a7",
+    "lk-utils>=3.7.5b6",
     "materialyoucolor>=3.0.2",
+    "neoprint>=0.1.9",
     "qtpy>=2.4.3",
 ]
 
 [build-system]
-requires = ["hatchling"]
 build-backend = "hatchling.build"
+requires = ["hatchling"]
 
 [dependency-groups]
 dev = [
@@ -44,17 +43,20 @@ line-length = 80
 
 [tool.ruff.format]
 quote-style = "single"
+skip-magic-trailing-comma = true
 
 [tool.ruff.lint.isort]
 force-single-line = true
-no-sections = true
+relative-imports-order = "closest-to-furthest"
 
-[tool.ruff.per-file-ignores]
-"__init__.py" = ["F401", "F403"]
+[tool.ruff.lint.per-file-ignores]
+"__init__.py" = ["F401"]
 
-[tool.ty.rules]
-invalid-type-form = "ignore"
-unresolved-attribute = "ignore"
+# [tool.ty.rules]
+# invalid-type-form = "ignore"
+
+[tool.uv]
+prerelease = "allow"
 
 [[tool.uv.index]]
 name = "tsinghua"
@@ -67,7 +69,6 @@ url = "http://localhost:2191/"
 explicit = true
 
 [tool.uv.sources]
-argsense = { index = "likianta" }
-lk-logger = { index = "likianta" }
+# argsense = { index = "likianta" }
 lk-utils = { index = "likianta" }
 neoprint = { index = "likianta" }
