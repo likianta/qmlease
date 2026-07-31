@@ -1,7 +1,7 @@
-import typing as t
+import typing as tp
 from os.path import splitdrive
 
-import lk_logger
+import neoprint as np
 from lk_utils import fs
 from qtpy.QtQuick import QQuickItem
 
@@ -10,7 +10,7 @@ from ...qtcore import bind_prop
 from ...qtcore import bind_signal
 from ...qtcore import Slot
 
-if __name__ == '__main__':
+if tp.TYPE_CHECKING:
     from ...application import Application
 
 
@@ -21,15 +21,15 @@ class HotReloader(QObject):
         app: 'Application',
         target_file: str,
         title: str = 'QmlEase Reloader',
-        window_size: t.Tuple[int, int] = None,
-        print_with_varnames: bool = None
+        window_size: tp.Optional[tp.Tuple[int, int]] = None,
+        print_with_varnames: bool = False
     ) -> None:
         """
         params:
             reload_scheme: 'default' or 'clear_cache'
                 see its only usage in `def reload`.
         """
-        super().__init__(None)
+        super().__init__()
         self.title = title
         self._app = app
         self._force_window_size = window_size
@@ -37,7 +37,7 @@ class HotReloader(QObject):
         self._separate_window = 'Window {' in fs.load(target_file, 'plain')
         self._target_file = fs.abspath(target_file)
         if print_with_varnames:
-            lk_logger.update(show_varnames=True)
+            np.config(show_varnames=True)
     
     @Slot(object)
     def init_reloader_window(self, window: QObject) -> None:

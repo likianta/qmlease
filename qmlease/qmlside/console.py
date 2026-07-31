@@ -1,8 +1,9 @@
 import os
 import re
+import sys
 
-from lk_utils import normpath
-from lk_utils import xpath
+from lk_utils import fs
+from neoprint.path_scope import path_glob
 from qtpy.QtCore import QMessageLogContext
 from qtpy.QtCore import QtMsgType
 from qtpy.QtCore import qInstallMessageHandler
@@ -20,11 +21,12 @@ else:
 
 SHOW_FUNCNAME = False
 SHOW_UNPLEASENT_WARNINGS = os.getenv('QMLEASE_DEBUG', '0') == '1'
-_BUILTIN_WIDGETS_DIR = xpath('../widgets')
+_BUILTIN_WIDGETS_DIR = fs.there('../widgets')
+_CURRENT_WORKING_DIR = fs.normpath(os.getcwd())
+_VENV_PACKAGES_DIR = fs.normpath(sys.exec_prefix + '/Lib/site-packages')
 
 
 class Console(QObject):
-    
     def __init__(self):
         super().__init__()
         self._file_id_map = {}
@@ -33,9 +35,9 @@ class Console(QObject):
         self._file_id_pattern = re.compile(r'\[file_id:(\d+)]')
         self._simple_id_counter = 0
         qInstallMessageHandler(self._handle_message)
-    
+
     def generate_file_id(self, path: str, start_line_no: int) -> str:
-        path = normpath(path)
+        path = fs.normpath(path)
         if (path, start_line_no) in self._file_id_map_rev:
             return self._file_id_map_rev[(path, start_line_no)]
         self._simple_id_counter += 1
@@ -44,17 +46,14 @@ class Console(QObject):
             # '[magenta]\\[qmlease][/]/' + self._reformat_path(path)[2:],
             #   e.g. 'd:/aaa/bbb.py' -> './bbb.py' -> '[qmlease]/bbb.py'
             self._reformat_path(path),
-            start_line_no
+            start_line_no,
         )
         self._file_id_map_rev[(path, start_line_no)] = file_id
         return file_id
-    
+
     # noinspection PyUnresolvedReferences
     def _handle_message(
-        self,
-        mode: QtMsgType,
-        ctx: QMessageLogContext,
-        msg: str,
+        self, mode: QtMsgType, ctx: QMessageLogContext, msg: str
     ) -> None:
         """
         params:
@@ -81,10 +80,10 @@ class Console(QObject):
         # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # TEST
         # if ctx.file == 'eval code':
         #     raise Exception(msg)
-        
+
         # file path
         if msg.startswith('[file_id:'):
-            file_id = self._file_id_pattern.search(msg).group(1)
+            file_id = self._file_id_pattern.search(msg).group(1)  # type: ignore
             file_path, start_line_no = self._file_id_map[file_id]
             msg = '(qml) ' + msg.split(']', 1)[1]
         else:
@@ -94,8 +93,8 @@ class Console(QObject):
                 if msg.startswith(ctx.file):
                     msg = msg.replace(ctx.file, '', 1)
                     assert (m := re.match(r':\d+(?::\d+)?: ', msg)), msg
-                    msg = msg[len(m.group()):]
-                
+                    msg = msg[len(m.group()) :]
+
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
                 if not SHOW_UNPLEASENT_WARNINGS:
@@ -117,9 +116,9 @@ class Console(QObject):
                         #   see: https://doc.qt.io/qt-6/qtquickcontrols2
                         #   -customize.html#customization-reference
                         return
-                    
+
                     if not IS_WINDOWS and (
-                        'qrc:/qt-project.org/imports/QtQuick/Controls/macOS/' 
+                        'qrc:/qt-project.org/imports/QtQuick/Controls/macOS/'
                         in file_path
                     ):
                         # https://forum.qt.io/topic/131823/lots-of
@@ -130,12 +129,12 @@ class Console(QObject):
                     if msg == 'Retrying to obtain clipboard.':
                         return
                 file_path = '<unknown>'
-        
+
         line_number = 0 if ctx.line == -1 else ctx.line + start_line_no
         source = f'{file_path}:{line_number}'
         func_name = ctx.function
         logger_markup = ':s1'
-        
+
         # optimize msg
         if mode in (QtWarningMsg, QtCriticalMsg):
             if ctx.file and msg.startswith(ctx.file):
@@ -144,17 +143,19 @@ class Console(QObject):
                 #   msg = '<ctx.file>:<line_no>:<column_no>: <message>'
                 # so we firstly strip `ctx.file`, then split by ': ' to extract
                 # the main message.
-                msg = msg[len(ctx.file):].split(': ', 1)[1]
+                msg = msg[len(ctx.file) :].split(': ', 1)[1]
             msg += '!'
             logger_markup = ':v4s1'
-        
+
         # msg = msg.replace('[', '\\[')
         if SHOW_FUNCNAME and func_name:
-            print('{}  >  {}  >  {}'.format(
-                source, ctx.function, msg), logger_markup)
+            print(
+                '{}  >  {}  >  {}'.format(source, ctx.function, msg),
+                logger_markup,
+            )
         else:
             print('{}  >  {}'.format(source, msg), logger_markup)
-    
+
     @staticmethod
     def _normalize_path(path: str) -> str:
         """
@@ -178,8 +179,8 @@ class Console(QObject):
             path = path.replace('%5C', '/')
         else:
             return f'<{path}>'  # e.g. '<eval code>'
-        return normpath(path, True)
-    
+        return fs.normpath(path, True)
+
     @staticmethod
     def _reformat_path(path: str) -> str:
         """
@@ -193,8 +194,17 @@ class Console(QObject):
         """
         if path.startswith('<'):
             return path
-        # return path_helper.get_relpath(path)
-        return path  # FIXME
+        if path_glob.is_external_path(path):
+            if path.startswith(_CURRENT_WORKING_DIR):
+                return './' + path.removeprefix(_CURRENT_WORKING_DIR + '/')
+            elif path.startswith(_VENV_PACKAGES_DIR):
+                a, b = path.removeprefix(_VENV_PACKAGES_DIR + '/').split('/', 1)
+                return '[{}]/{}'.format(a, b)
+            else:
+                return path
+        else:
+            assert path.startswith(_CURRENT_WORKING_DIR)
+            return './' + path.removeprefix(_CURRENT_WORKING_DIR + '/')
 
 
 qml_console = Console()
