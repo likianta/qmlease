@@ -27,7 +27,7 @@ Item {
             _mouse.pressed ? root._colorPressed :
             (_mouse.containsMouse ? root._colorHovered : root._colorDefault)
         )
-        border.color: root.outline
+        border.color: pycolor.outline
         radius: pysize.radius_l
     }
 

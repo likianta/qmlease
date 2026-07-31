@@ -15,19 +15,19 @@ Window {
         Button {
             text: 'Four Five Six Seven'
         }
-        // Button {
-        //     Layout.fillWidth: true
-        //     border.width: 4
-        //     // border.color: pycolor.get(pycolor.theme_blue, 'outline_variant')
-        //     // color: pycolor.theme_blue
-        //     color: pycolor.get(pycolor.theme_blue, 'rshift')
-        //     text: 'Eight Nine Ten'
-        // }
-        // Button {
-        //     text: 'Switch light/dark theme'
-        //     onClicked: {
-        //         pycolor.dark_theme = !pycolor.dark_theme
-        //     }
-        // }
+        Button {
+            Layout.fillWidth: true
+            border.width: 4
+            border.color: pycolor.lower(color, 2)
+            color: pycolor.solid_brand
+            text: 'Eight Nine Ten'
+            textColor: pycolor.on_solid_brand
+        }
+        Button {
+            text: 'Switch light/dark theme'
+            onClicked: {
+                pycolor.dark_theme = !pycolor.dark_theme
+            }
+        }
     }
 }

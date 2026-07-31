@@ -30,6 +30,7 @@ class Color(QObject):
     theme_changed = Signal(is_light=bool)
 
     _color_palette: T.ColorPalette
+    _hex_to_token: tp.Dict[T.ColorHex, ColorToken]
     _is_dark_theme: bool
 
     @staticmethod
@@ -44,30 +45,31 @@ class Color(QObject):
 
     def __init__(self) -> None:
         super().__init__()
+        self._hex_to_token = {t.hex: t for t in self._color_palette.values()}
         self._is_dark_theme = False
 
     @Slot(str, result=str)
     @Slot(str, int, result=str)
-    def higher(self, base: T.ColorKey, level: int = 1) -> T.ColorHex:
-        tok = self._color_palette[base]
+    def higher(self, base: T.ColorHex, level: int = 1) -> T.ColorHex:
+        tok = self._hex_to_token[base]
         return tok.higher(level).hex
 
     @Slot(str, result=str)
     @Slot(str, int, result=str)
-    def lower(self, base: T.ColorKey, level: int = 1) -> T.ColorHex:
-        tok = self._color_palette[base]
+    def lower(self, base: T.ColorHex, level: int = 1) -> T.ColorHex:
+        tok = self._hex_to_token[base]
         return tok.lower(level).hex
 
     @Slot(str, result=str)
     @Slot(str, int, result=str)
-    def lighter(self, base: T.ColorKey, level: int = 1) -> T.ColorHex:
-        tok = self._color_palette[base]
+    def lighter(self, base: T.ColorHex, level: int = 1) -> T.ColorHex:
+        tok = self._hex_to_token[base]
         return tok.lighter(level).hex
 
     @Slot(str, result=str)
     @Slot(str, int, result=str)
-    def darker(self, base: T.ColorKey, level: int = 1) -> T.ColorHex:
-        tok = self._color_palette[base]
+    def darker(self, base: T.ColorHex, level: int = 1) -> T.ColorHex:
+        tok = self._hex_to_token[base]
         return tok.darker(level).hex
 
     def _qget_color(self, key: T.ColorKey) -> T.ColorHex:
