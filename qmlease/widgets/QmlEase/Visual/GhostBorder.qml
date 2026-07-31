@@ -6,7 +6,7 @@ Rectangle {
     width: target.width
     height: target.height
     border.width: _area.containsMouse ? 1 : 0
-    border.color: pycolor.primary
+    border.color: pycolor.solid_accent
     color: pycolor.transparent
 
     property Item target

@@ -8,17 +8,12 @@ Item {
     implicitHeight: pysize.button_height
 
     property alias  border: _container.border
-    // the "color seed". if not set, use default colorset.
-    property string color
-    property string text
-    property string textColor: pycolor.get(_colorDefault, 'on')
-    property string _colorDefault: color ? color : pycolor.surface_container
-    property string _colorHovered: color ? pycolor.derive2(
-        pycolor.surface_container, pycolor.surface_container_highest, color
-    ) : pycolor.surface_container_highest
-    property string _colorPressed: color ? pycolor.derive2(
-        pycolor.surface_container_highest, pycolor.surface_container_high, color
-    ) : pycolor.surface_container_high
+    property string color: pycolor.container
+    property string text: ''
+    property string textColor: pycolor.text_main
+    property string _colorDefault: color
+    property string _colorHovered: pycolor.higher(_colorDefault, 2)
+    property string _colorPressed: pycolor.higher(_colorDefault, 1)
 
     signal clicked()
 
@@ -32,16 +27,7 @@ Item {
             _mouse.pressed ? root._colorPressed :
             (_mouse.containsMouse ? root._colorHovered : root._colorDefault)
         )
-        border.width: 1
-        // border.color: pycolor.outline_variant
-        border.color: pycolor.get(_colorDefault, 'border', _colorDefault)
-        // border.color: (
-        //     root.color ? py.qmlease.derive_color(
-        //         pycolor.outline_variant, 
-        //         pycolor.outline_variant, 
-        //         pycolor.surface
-        //     ) : pycolor.outline_variant
-        // )
+        border.color: root.outline
         radius: pysize.radius_l
     }
 

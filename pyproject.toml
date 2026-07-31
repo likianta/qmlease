@@ -9,9 +9,10 @@ requires-python = ">=3.12"
 dependencies = [
     "argsense>=1.1.2",
     "jurigged>=0.6.1",
-    "lk-utils>=3.7.5b6",
+    "lk-utils>=3.7.5b7",
     "materialyoucolor>=3.0.2",
     "neoprint>=0.1.9",
+    "qmlease-colorsys>=0.1.0a4",
     "qtpy>=2.4.3",
 ]
 
@@ -29,7 +30,7 @@ dev = [
 [project.optional-dependencies]
 gui = [
     "pyside6>=6.11.0; python_version >= '3.12' and python_version < '3.15'",
-    "pyside6>=6.4.3,<6.5.0; python_version >= '3.10' and python_version < '3.12'",
+    # "pyside6>=6.4.3,<6.5.0; python_version >= '3.10' and python_version < '3.12'",
 ]
 
 [project.urls]
@@ -52,6 +53,9 @@ relative-imports-order = "closest-to-furthest"
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
 
+# [tool.ty.environment]
+# extra-paths = ["./lib"]
+
 # [tool.ty.rules]
 # invalid-type-form = "ignore"
 
@@ -72,3 +76,4 @@ explicit = true
 # argsense = { index = "likianta" }
 lk-utils = { index = "likianta" }
 neoprint = { index = "likianta" }
+qmlease-colorsys = { index = "likianta" }

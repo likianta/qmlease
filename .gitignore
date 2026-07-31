@@ -2,6 +2,7 @@
 /.vscode/
 /blueprint/_codegen_result.txt
 /deleted/
+/lib/
 /qmlease/qmlside/widget_support/_cache/*
 /qmlease/widgets/MD3/
 /sidework/pyside_package_tailor/dist/deleted/

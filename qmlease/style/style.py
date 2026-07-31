@@ -1,19 +1,19 @@
 from lk_utils import xpath
 from qtpy.QtQml import QQmlPropertyMap
 
-from .color2 import Color
+from .color3 import Color
 from .font import Font
 from .motion import Motion
 from .size import Size
 
 
-class Style(QQmlPropertyMap):
+class _Style(QQmlPropertyMap):
     color = Color()
     font = Font()
     motion = Motion()
     size = Size()
     
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__(None)
         dir_ = xpath('./stylesheet')
         # self.color.update_from_file(f'{dir_}/color.yaml')
@@ -26,13 +26,4 @@ class Style(QQmlPropertyMap):
         self.insert('size', self.size)
 
 
-# class StyleForQml(QObject):
-#     # `Property : param constant`: https://stackoverflow.com/questions/6728615
-#     #   /warning-about-non-notifyable-properties-in-qml
-#     color = Property(Color, lambda _: Style.color, constant=True)
-#     font = Property(Font, lambda _: Style.font, constant=True)
-#     motion = Property(Motion, lambda _: Style.motion, constant=True)
-#     size = Property(Size, lambda _: Style.size, constant=True)
-
-
-pystyle = Style()
+pystyle = _Style()

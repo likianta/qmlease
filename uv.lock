@@ -107,7 +107,7 @@ wheels = [
 
 [[package]]
 name = "lk-utils"
-version = "3.7.5b6"
+version = "3.7.5b7"
 source = { registry = "http://localhost:2191/" }
 dependencies = [
     { name = "argsense" },
@@ -117,7 +117,7 @@ dependencies = [
     { name = "rich" },
 ]
 wheels = [
-    { url = "http://localhost:2191/lk-utils/lk_utils-3.7.5b6-py3-none-any.whl" },
+    { url = "http://localhost:2191/lk-utils/lk_utils-3.7.5b7-py3-none-any.whl" },
 ]
 
 [[package]]
@@ -214,37 +214,38 @@ wheels = [
 
 [[package]]
 name = "materialyoucolor"
-version = "3.0.2"
+version = "3.0.3"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
 dependencies = [
     { name = "pillow" },
 ]
-sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c0/47/2db3504a71e6e7bdad8e4dfdcf4b62a575cb4229c32a3a612062b39cf6cc/materialyoucolor-3.0.2.tar.gz", hash = "sha256:e2c892ae23dc0732c32307682002884616a282de5a350088aacc23cdf885e822", size = 127051, upload-time = "2026-02-22T07:19:30.297Z" }
 wheels = [
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/be/71/ec9df620ed29a8a7176955788d699b954356a41983eef82f3110fe5d0629/materialyoucolor-3.0.2-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:be9def0be02a9e96fddb8ce601158970da4f27da2761acb4c16ee1f05a7394ce", size = 214304, upload-time = "2026-02-22T07:09:25.197Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e2/4b/59dfbbc44cec67e7da62555c8e3434f515ffc80dfa82860a8a21ce2289b5/materialyoucolor-3.0.2-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:e4d69e3ecfe7e1fd5dd0886ae33ae2ef46ac819affc50540a33416816f432ac1", size = 203509, upload-time = "2026-02-22T07:09:26.73Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/9f/b3/b82b40d5d300ce15db4c6fe2a8b3c768f588cc5384d3b1e391a651af93d4/materialyoucolor-3.0.2-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:9f675b95c106db547e9eaf59a08eb01689b8df6dc7bdd21ef58837cb0f20242c", size = 233489, upload-time = "2026-02-22T07:09:28.19Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/be/b7/bb69d6519d42f2e3bbf14315e594cefca5cf68e86160e0bdec18dd82c1f5/materialyoucolor-3.0.2-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:d6692115e570c383202f58c6e3fb55c34840cb37aa2cae7f9a76eb4baec47534", size = 1265493, upload-time = "2026-02-22T07:09:29.7Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/fa/cb/1a57eabd1bc0811dbf89e2db060cdcbe31156a884c0873e65395d7b75cdb/materialyoucolor-3.0.2-cp312-cp312-win32.whl", hash = "sha256:e9a24f185f83100149de9ca3c799c9d0ace96389dfa4404899ae7d66f7f7c3ea", size = 161261, upload-time = "2026-02-22T07:09:31.243Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/1b/96/36700714b69754b19ffa669d11285ff1df9c3cff4896b7a83f0b2d2f81ea/materialyoucolor-3.0.2-cp312-cp312-win_amd64.whl", hash = "sha256:4013952e770c2c8f5bfc5b96a3db31bf0f964cbf9a02ff476eed1f0f4a1c8235", size = 177179, upload-time = "2026-02-22T07:09:32.806Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/4b/94/da86904173a5af7c6af33cefb47365f68e2769f740442d5aaa676fce52ed/materialyoucolor-3.0.2-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:311c1484832c00b8be7ef7781e3fc9e6f17b311f899f6657f4523a1ae067d168", size = 214334, upload-time = "2026-02-22T07:09:34.328Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d2/42/a12606b88d0d991276bfcd8084e66e06c302d3713db3f8929a0be99e9244/materialyoucolor-3.0.2-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:fe03cf51df6e21acf1986810052cf35fed3fbc759c1ab0d7c5a9730ee2890029", size = 203527, upload-time = "2026-02-22T07:09:35.587Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d8/58/a030f46147f3847c7cd3dcda2bc2c362f7275b771ff61e622c547c29f63a/materialyoucolor-3.0.2-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:c4d302e0b309d9b45548074c8a348903733df8bc4101283dc969f0ff157afde5", size = 233604, upload-time = "2026-02-22T07:09:37.061Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ac/e6/8d83bd8366300a79b7d529ad65cb523f904481a45c9a7720705174f81352/materialyoucolor-3.0.2-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:92c56bf78cd7008a925b9a928c2784e30266b3c6a56e5a481f627d51c82ed2f8", size = 1265500, upload-time = "2026-02-22T07:09:38.549Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/07/cc/5b3252893277c03ee231d147ce877e5a348b60c628b185433f9e75c40b9d/materialyoucolor-3.0.2-cp313-cp313-win32.whl", hash = "sha256:8fa0ae5ea849b0d120e998b157605aa098b1388a035ecd019c8424fd14fc23b9", size = 161307, upload-time = "2026-02-22T07:09:39.874Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/55/02/f7c7a953b33f64979b97c02bccb0b23226a433d55e5696193e27cdb923c7/materialyoucolor-3.0.2-cp313-cp313-win_amd64.whl", hash = "sha256:32048938b7735fdb8496fcc6561a5a0c04f74160f8f41674f08304b0942740e7", size = 177237, upload-time = "2026-02-22T07:09:41.437Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/a7/69/00a69bc4359add916dcd7fc3e18af088105532bb702f1adbfca1ed901f80/materialyoucolor-3.0.2-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:d913024cf54f7ff76c8651205994421798016ee99dc4a267c6ef85bca5af0bf3", size = 214611, upload-time = "2026-02-22T07:09:42.884Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/1f/bf/7dfccba92d8aeb4bee7d29c6e3a39be49c654e56eb20b0e7608aebd6aa38/materialyoucolor-3.0.2-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:b2d52554ca52758a318016a52da4f9f7d8024280eb303ec9df8033261ea6099b", size = 203678, upload-time = "2026-02-22T07:09:44.144Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/20/84/27f5ab8a9b5824b238939b9d11361f78ce1d03511e3137df030938933020/materialyoucolor-3.0.2-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:91a02dce74057262c6890ca308b33f04c95fbb7831c1e439e2c94662e7bcb88b", size = 233743, upload-time = "2026-02-22T07:09:45.393Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d2/00/0ae789137ab411880a808c462e3d0512da7b7ff77b46174a6e5df99fe5d2/materialyoucolor-3.0.2-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:0ffb0dd15f7c3d9821bd94f04e376135c56854734c0008e238fa78a58f67278c", size = 1265560, upload-time = "2026-02-22T07:09:46.585Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/33/a5/d819932a25edfa1b7332a9dbb507c7da2274039682b89d2eb6b5b8cc1d4c/materialyoucolor-3.0.2-cp314-cp314-win32.whl", hash = "sha256:420c537a9829c92b0baa47d15dd375e9fc6a7fecfc203204d1cbcc31654d26f2", size = 163905, upload-time = "2026-02-22T07:09:48.312Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b3/31/da2731a3c963df8041785c1901f961f1466fd6db4adb51899b120281da59/materialyoucolor-3.0.2-cp314-cp314-win_amd64.whl", hash = "sha256:bdc919d66abccffc01293a29065ad05c0b04ac745a45fe386879e80f92222640", size = 180648, upload-time = "2026-02-22T07:09:49.397Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/85/a6/05ffd5b338a67f5ae9c33eed09bb51d03df4694b25ff65e17bb8514ccd38/materialyoucolor-3.0.2-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:f14660be800f7d7844400dabc1fa0a777a3b7c9fbe62f353db31bfab85e60945", size = 217682, upload-time = "2026-02-22T07:09:50.582Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/e7/92/fcaed76a04445c71339165f159524b0f52f763aff46a3ae94bdd88636f90/materialyoucolor-3.0.2-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:4a922b46d14311688487c493ec8135f6bc3d59c03c38130b0b8e757671aa93a5", size = 207402, upload-time = "2026-02-22T07:09:51.822Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/fb/de/741a3682b82a0beb9254e030f780644b980c88e65c50212ca43e19b858bf/materialyoucolor-3.0.2-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:250a07f4847e6d5ab54554a0bf310c00ae8ae492244127a84d8101719b6994f5", size = 233884, upload-time = "2026-02-22T07:09:53.029Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/f1/46/138de4eecaf29bc42d56c6427b62632cfa5396d8446e57a3c14d21109246/materialyoucolor-3.0.2-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:f80ed46bd57f6217b66a37f10a57ff2c2d405ca8842ed4a64cfe4d6d5c554947", size = 1265954, upload-time = "2026-02-22T07:09:54.506Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c9/69/ab0c433163bdec5bc5a08ab7c022dd06fcd978cd52519024046e1eb65d41/materialyoucolor-3.0.2-cp314-cp314t-win32.whl", hash = "sha256:9995eb30c16388c2069213f7446a6840e365420f20f1dd0ecb9d5e9ce746056d", size = 168361, upload-time = "2026-02-22T07:09:55.72Z" },
-    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/4f/67/c58c72b176c30585ae2e1055580fa5c7229b25bf88ad0205b5a5e070435e/materialyoucolor-3.0.2-cp314-cp314t-win_amd64.whl", hash = "sha256:0a31030706af9b1f3d3916ce26b44e1b6a822cfd78a50083ea2451497d24863d", size = 186157, upload-time = "2026-02-22T07:09:57.145Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b4/86/974fd2ea4add5858c03f897212272dc6ecd4b1edf697be3b21f370157cc2/materialyoucolor-3.0.3-cp312-cp312-macosx_10_13_x86_64.whl", hash = "sha256:d9fd56e23f7957be579607034edb67e6fe7330f6ef490b48d616ca7a531f49f3", size = 216598, upload-time = "2026-07-15T19:04:53.735Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/07/84/accb3397a50af2c20c55704ac6bd55b996011d4f38a2b48f0997d83aa52d/materialyoucolor-3.0.3-cp312-cp312-macosx_11_0_arm64.whl", hash = "sha256:85a4c287cc473b82100e17e1be038bdc061e25c6c9872309dd8c605c8ebdbcf9", size = 207227, upload-time = "2026-07-15T19:04:55.093Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/66/ec/1adfca4a49a692384aef1ab25f5b206da7d1b9b8c730adba2869e0389acf/materialyoucolor-3.0.3-cp312-cp312-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:50b3183f1117cab424717a4a1c140d4b34e6e4bfdfa633398080429398b08e00", size = 235268, upload-time = "2026-07-15T19:04:56.562Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ff/ca/b8f8d6778f8804fc619fb9e8515be5ba47b2e7ff7f7c4a6c66325344e055/materialyoucolor-3.0.3-cp312-cp312-musllinux_1_2_x86_64.whl", hash = "sha256:44ed946df2709d1923935a55803121dbf1711d62b716bdcd595e1f1e2b9de103", size = 1267642, upload-time = "2026-07-15T19:04:58.277Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/67/2e/2a26f32b00eff36858e8db1a9230f3f7fa75c9becf6ef493fa217519347a/materialyoucolor-3.0.3-cp312-cp312-win32.whl", hash = "sha256:0741c64fb1f5caada83d7e189329ad5ff4400c750c11132644c52ce46e0b0457", size = 354889, upload-time = "2026-07-15T19:04:59.943Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c8/9f/e09ad72f72c5825a3211585c3500aecc222e8e646272d470cfb5d94eafe2/materialyoucolor-3.0.3-cp312-cp312-win_amd64.whl", hash = "sha256:e52d93c2e507b737b2a1e2505ce9504b9d0200eee652892473ec19d186673be7", size = 376258, upload-time = "2026-07-15T19:05:01.508Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/b5/24/3ebafa4f8bad7b6c69efec59363615f8b2fd3a9abd1460c76bc87a7e35a1/materialyoucolor-3.0.3-cp313-cp313-macosx_10_13_x86_64.whl", hash = "sha256:90bf1d5cc7ac49dbfdd6f88a4639e6bfff5841a9e6ef805a5abf4c78c184eae5", size = 216668, upload-time = "2026-07-15T19:05:02.922Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/21/b5/38e9f3dd9c5002faeb8c7db9c1bcf8f9aebf9d6f3fedb3270d11c56c897b/materialyoucolor-3.0.3-cp313-cp313-macosx_11_0_arm64.whl", hash = "sha256:f449eed1c57b87f6bc572ee3f2f137d53629941f2884457e17fa7857d58f304c", size = 207217, upload-time = "2026-07-15T19:05:04.344Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/69/fc/60eb9e142d916a7f2c23ae0d1a20aa17a631b626ef71a3a8a440ab94158e/materialyoucolor-3.0.3-cp313-cp313-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:f4cd85d01f56f7e201907571126125864f71180872c1ae2ddac866333cf77866", size = 235259, upload-time = "2026-07-15T19:05:05.727Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c5/ef/b4379797c7a910ef16c72ec55c306e6bee15b4ebe72c2e2dd4a96b03b2fb/materialyoucolor-3.0.3-cp313-cp313-musllinux_1_2_x86_64.whl", hash = "sha256:faf65e7ff8885b0bd6cb13f5d0f9b8333222402c9c14530da53031e18ecaf582", size = 1267725, upload-time = "2026-07-15T19:05:07.4Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/c6/79/cd4616cc801b450949cf6ad1e0ab03b4e11390e13f0c32950200a5af4121/materialyoucolor-3.0.3-cp313-cp313-win32.whl", hash = "sha256:09f26b67e03183a05deda4390e8166e62565cf09ae6116a6d4738f70a4cf8442", size = 354876, upload-time = "2026-07-15T19:05:09.099Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/0a/4d/b222e7ad801bfe9a2fd60d863c63f22ffee287b5d4a698279fee22bea3ee/materialyoucolor-3.0.3-cp313-cp313-win_amd64.whl", hash = "sha256:91dc5eb16bb289fcf19d65d4784baad53cd06192ebafb3967b1b827ad7cb7bc9", size = 376269, upload-time = "2026-07-15T19:05:10.529Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/d3/d6/b0fe16bed199533efbcbe890201b69024ebe57a99f2a22d5ff98d0ad4951/materialyoucolor-3.0.3-cp314-cp314-android_24_arm64_v8a.whl", hash = "sha256:9b9fd5f8af846d7d6372ee174cfbb8c15813562fdb31ad9da10365f293442041", size = 420505, upload-time = "2026-07-20T17:09:32.524Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/00/8c/71cdd6efb91ca253b11672af6d4ad30a745b869d3490fce8db86f4a46101/materialyoucolor-3.0.3-cp314-cp314-android_24_x86_64.whl", hash = "sha256:cf03b4aaf3e8b3dd24549e54f533cb4fd284a0c8e50aff4b5970974381808b69", size = 398058, upload-time = "2026-07-20T17:19:29.132Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/60/6b/394b5cdcff07633b3b472e76b5b0bdf8a83759bbaa3aba5bface93fb3143/materialyoucolor-3.0.3-cp314-cp314-macosx_10_15_x86_64.whl", hash = "sha256:77ac14637ac5e6e1127332f195f2d0407d0a3b3914b884a0c9ba014a9cfe4af2", size = 216864, upload-time = "2026-07-15T19:05:12.234Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/7b/e1/b1cdaf4fb4a0f635cd1558a92287cd6a8924ca67bad4ef3e70e9d8b1ba32/materialyoucolor-3.0.3-cp314-cp314-macosx_11_0_arm64.whl", hash = "sha256:5219aa8ebf4c733afdff12e717118499fad3e83338fa096cfa3fc54ef42ed109", size = 207346, upload-time = "2026-07-15T19:05:13.616Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/34/57/2292d5e334d76263f93755fd50c0709f355d471952df72b9bde0578612cc/materialyoucolor-3.0.3-cp314-cp314-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:6a599f8f3f34d41332c548ca3bfdfa0c787088ddc461fd245458041de49b149a", size = 235324, upload-time = "2026-07-15T19:05:15.015Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/88/cd/595a1f54898d8896f2635d05f0b1e08720fa2dacbd276d12663e28cc84f3/materialyoucolor-3.0.3-cp314-cp314-musllinux_1_2_x86_64.whl", hash = "sha256:bf4e737257ca23cf6447d4a43f858327caae16ed0ef4186696e5522f7517e99c", size = 1267763, upload-time = "2026-07-15T19:05:16.789Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/17/69/1c16829c1cd6f5cd30eca5934414bfa0e6e0f6375dd9c3ee5ea5f60cf330/materialyoucolor-3.0.3-cp314-cp314-win32.whl", hash = "sha256:e9e8b7cc79fccc841455bf649383dc9476fc70972728e54a228be5b1f053fae4", size = 363204, upload-time = "2026-07-15T19:05:18.141Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/9e/fa/0487e6c356aba6ac5ce1bf3b10c238910b795471395af44f5f5b42ffe036/materialyoucolor-3.0.3-cp314-cp314-win_amd64.whl", hash = "sha256:bf7a05dd88dc0cd5f4bfa75b18a290fdd2ef925bd8a1103dac31659aaccf101f", size = 386551, upload-time = "2026-07-15T19:05:19.862Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/7c/00/df81d35c47629d4312f0412f306c6b69da92ea1f4dff2d7ea6315b31aa56/materialyoucolor-3.0.3-cp314-cp314t-macosx_10_15_x86_64.whl", hash = "sha256:c24702e7a3ecf2b01af77bd9d824cbde9c60796e79ab75cd181cb8dfd4586258", size = 220123, upload-time = "2026-07-15T19:05:21.709Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/1d/1b/923c33eb12a380e99b0b0d47a8d846b1a2c9d644c6fc31dc16a6d1e082c9/materialyoucolor-3.0.3-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:ea4e3afa4887b827a80a7802b058915bb0be30124490cc10b38b6c935b6a399c", size = 211242, upload-time = "2026-07-15T19:05:23.175Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/9f/5e/95b4e16ae706a6ca1b75e7975e1bc03500c959dc4e13c312132b33cc7ba0/materialyoucolor-3.0.3-cp314-cp314t-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:538282f4bf5bde979295f6b902c72c25b7a919e49d3e673518977afbcd88c8fa", size = 235543, upload-time = "2026-07-15T19:05:24.549Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/f3/5d/b4e391510b5b50a12aedba37423b1ce40fb61ece86e596ab6d55cf7c7be6/materialyoucolor-3.0.3-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:02783e86f3384b63e7e125c4868e5a485300e42680fabb958cc2ed196d91a40c", size = 1267849, upload-time = "2026-07-15T19:05:26.161Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/61/04/32f7104288aa2a2af37fa2f010a4b21415008732ed0e91d2b371262bddca/materialyoucolor-3.0.3-cp314-cp314t-win32.whl", hash = "sha256:293a50395546eb8c6f4dafe33c5256f67ad4e19292281a529e16ecd6b1504955", size = 365841, upload-time = "2026-07-15T19:05:27.567Z" },
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/ce/ee/addd74f26a56fa04f00868cf0d8319be70e5cb1790f81c683b16cf132e9a/materialyoucolor-3.0.3-cp314-cp314t-win_amd64.whl", hash = "sha256:9765035e60eee11a874e41b96bfcf34403bc49acd8afa1a394690d2057a73b80", size = 390713, upload-time = "2026-07-15T19:05:28.889Z" },
 ]
 
 [[package]]
@@ -399,6 +400,15 @@ wheels = [
 ]
 
 [[package]]
+name = "pycolornames"
+version = "1.1.0"
+source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
+sdist = { url = "https://pypi.tuna.tsinghua.edu.cn/packages/0b/b3/ffa5cb19d77568751a14c4c13802d0d14918fc47f158f0bab1bda5d41181/pycolornames-1.1.0.tar.gz", hash = "sha256:902c612f46684a5e619c52cc4cb6aec920f6f3d4d093ffb5206702d69a9b9697", size = 58157, upload-time = "2024-06-29T17:12:55.221Z" }
+wheels = [
+    { url = "https://pypi.tuna.tsinghua.edu.cn/packages/cd/9e/0a9fde7ed68c459a434e79c10d120248afd5ce7248c809979d050136d9e1/pycolornames-1.1.0-py3-none-any.whl", hash = "sha256:38451739be1c49a909a227d7155504cb53a812267d5dc875b341c297f70878af", size = 35967, upload-time = "2024-06-29T17:12:53.758Z" },
+]
+
+[[package]]
 name = "pygments"
 version = "2.20.0"
 source = { registry = "https://pypi.tuna.tsinghua.edu.cn/simple/" }
@@ -511,6 +521,7 @@ dependencies = [
     { name = "lk-utils" },
     { name = "materialyoucolor" },
     { name = "neoprint" },
+    { name = "qmlease-colorsys" },
     { name = "qtpy" },
 ]
 
@@ -530,11 +541,11 @@ dev = [
 requires-dist = [
     { name = "argsense", specifier = ">=1.1.2" },
     { name = "jurigged", specifier = ">=0.6.1" },
-    { name = "lk-utils", specifier = ">=3.7.5b6", index = "http://localhost:2191/" },
+    { name = "lk-utils", specifier = ">=3.7.5b7", index = "http://localhost:2191/" },
     { name = "materialyoucolor", specifier = ">=3.0.2" },
     { name = "neoprint", specifier = ">=0.1.9", index = "http://localhost:2191/" },
-    { name = "pyside6", marker = "python_full_version >= '3.10' and python_full_version < '3.12' and extra == 'gui'", specifier = ">=6.4.3,<6.5.0" },
     { name = "pyside6", marker = "python_full_version >= '3.12' and python_full_version < '3.15' and extra == 'gui'", specifier = ">=6.11.0" },
+    { name = "qmlease-colorsys", specifier = ">=0.1.0a4", index = "http://localhost:2191/" },
     { name = "qtpy", specifier = ">=2.4.3" },
 ]
 provides-extras = ["gui"]
@@ -544,6 +555,21 @@ dev = [
     { name = "faker", specifier = ">=40.8.0" },
     { name = "parsel", marker = "python_full_version >= '3.12'", specifier = ">=1.10.0" },
     { name = "pyside6", marker = "python_full_version >= '3.12' and python_full_version < '3.15'", specifier = ">=6.11.0" },
+]
+
+[[package]]
+name = "qmlease-colorsys"
+version = "0.1.0a4"
+source = { registry = "http://localhost:2191/" }
+dependencies = [
+    { name = "argsense" },
+    { name = "lk-utils" },
+    { name = "materialyoucolor" },
+    { name = "neoprint" },
+    { name = "pycolornames" },
+]
+wheels = [
+    { url = "http://localhost:2191/qmlease-colorsys/qmlease_colorsys-0.1.0a4-py3-none-any.whl" },
 ]
 
 [[package]]

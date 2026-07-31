@@ -13,7 +13,7 @@ Button {
     icon.color: color
     icon.source: source
 
-    property string color: pycolor.icon_line_default
+    property string color: pycolor.outline
     property alias  hovering: _area.containsMouse
     property int    size: pysize.icon_size
     property string source

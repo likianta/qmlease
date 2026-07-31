@@ -6,20 +6,20 @@ QE.Rectangle {
     width: 0
     height: pysize.button_height
     border.width: ghostBorder ? (_area.containsMouse ? 1 : 0) : 0
-    border.color: pycolor.border_default
-    color:
+    border.color: pycolor.outline
+    color: (
         _area.containsPress ? colorBgPressed :
         _area.containsMouse ? colorBgHovered :
-        'transparent'
+        pycolor.transparent
+    )
 
     property bool   checkable: true
     property bool   checked: false
     property string colorBgHovered: 'transparent'
-    //  or pycolor.button_bg_hovered
-    property string colorBgPressed: pycolor.button_bg_pressed
+    property string colorBgPressed: pycolor.container_tint
     property bool   ghostBorder: false
     property int    indicatorSize: pysize.indicator_size
-    property string text
+    property string text: ''
     property alias  textItem: _text
     property int    __padding: pysize.padding_m
 
@@ -35,8 +35,8 @@ QE.Rectangle {
         width: root.indicatorSize
         height: root.indicatorSize
         border.width: 1
-        border.color: pycolor.border_default
-        color: 'transparent'
+        border.color: pycolor.outline
+        color: pycolor.transparent
 
         Image {
             visible: root.checked
@@ -55,7 +55,7 @@ QE.Rectangle {
             leftMargin: root.__padding
             verticalCenter: parent.verticalCenter
         }
-        color: root.checkable ? pycolor.text_default : pycolor.text_disabled
+        color: root.checkable ? pycolor.text_main : pycolor.text_dim
         text: root.text
     }
 

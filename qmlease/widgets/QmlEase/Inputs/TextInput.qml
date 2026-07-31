@@ -9,16 +9,16 @@ ColumnLayout {
     // width: pysize.long_entry_width
     // spacing: pysize.spacing_s
 
-    property string color: pycolor.surface_container
+    property string color: pycolor.container
     property bool   enabled: true
     property string help
     property string label
-    property string outlineColor: pycolor.outline_variant
+    property string outlineColor: pycolor.outline
     property string placeholder
     property bool   readonly: false
     property bool   showEditingHint: false
     property string text
-    property string textColor: pycolor.on_surface
+    property string textColor: pycolor.on_container
     property bool   _hasContent: text.length > 0
     property bool   _userEdited: false
 
@@ -39,7 +39,7 @@ ColumnLayout {
                 leftMargin: 2
                 verticalCenter: parent.verticalCenter
             }
-            color: root.enabled ? pycolor.on_surface : pycolor.outline
+            color: root.enabled ? pycolor.on_panel : pycolor.outline
             // font.pixelSize: pyfont.size_s
             text: root.label
         }
@@ -77,7 +77,7 @@ ColumnLayout {
             ColorAnimation {
                 target: _inputContainer
                 property: 'border.color'
-                to: pycolor.theme_blue
+                to: pycolor.solid_brand
                 duration: 100
             }
             ColorAnimation {
@@ -108,7 +108,7 @@ ColumnLayout {
             font.family: pyfont.font_default
             font.pixelSize: pyfont.size_m
             readOnly: root.readonly
-            selectionColor: pycolor.primary
+            selectionColor: pycolor.solid_brand
             text: root.text
 
             onEditingFinished: {

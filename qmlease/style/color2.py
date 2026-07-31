@@ -107,7 +107,7 @@ class Color(QObject):
     _seed_color: str
     
     @staticmethod
-    def __qinit__(attrs: dict):
+    def __before_init__(attrs: dict):
         # dynamically register property names
         role_names = set()
         role_names.update(attrs['_preset_roles'])

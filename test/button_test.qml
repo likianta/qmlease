@@ -10,36 +10,24 @@ Window {
         spacing: 12
         Button {
             Layout.fillWidth: true
-            text: 'One'
+            text: 'One Two Three'
         }
         Button {
-            Layout.fillWidth: true
-            text: 'Two'
-        }
-        Button {
-            text: 'Three Four Five Six Seven'
-        }
-        Button {
-            border.width: 2
-            border.color: pycolor.get(pycolor.theme_blue, 'outline_variant')
-            // color: pycolor.theme_blue
-            color: pycolor.get(pycolor.theme_blue, 'darker')
-            text: 'Eight Nine Ten'
-            textColor: pycolor.on_theme_blue
+            text: 'Four Five Six Seven'
         }
         // Button {
-        //     border.width: 2
-        //     border.color: pycolor.theme_blue_outline_variant
-        //     // border.color: pycolor.red
-        //     color: pycolor.theme_blue_container
-        //     text: 'Eleven Twelve Thirteen'
-        //     textColor: pycolor.on_theme_blue
+        //     Layout.fillWidth: true
+        //     border.width: 4
+        //     // border.color: pycolor.get(pycolor.theme_blue, 'outline_variant')
+        //     // color: pycolor.theme_blue
+        //     color: pycolor.get(pycolor.theme_blue, 'rshift')
+        //     text: 'Eight Nine Ten'
         // }
-        Button {
-            text: 'Switch light/dark theme'
-            onClicked: {
-                pycolor.dark_theme = !pycolor.dark_theme
-            }
-        }
+        // Button {
+        //     text: 'Switch light/dark theme'
+        //     onClicked: {
+        //         pycolor.dark_theme = !pycolor.dark_theme
+        //     }
+        // }
     }
 }

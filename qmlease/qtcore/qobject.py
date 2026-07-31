@@ -37,8 +37,9 @@ class DynamicPropMeta(type(QtObject)):
         custom_props = []
         delegate = PartialDelegate()
         
-        if '__qinit__' in attrs:
-            attrs['__qinit__'](attrs)
+        if '__before_init__' in attrs:
+            # this should be a static method.
+            attrs['__before_init__'](attrs)
         
         for k, v in tuple(attrs.items()):
             if isinstance(v, Property):

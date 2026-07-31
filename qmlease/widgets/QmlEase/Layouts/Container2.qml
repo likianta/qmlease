@@ -3,7 +3,7 @@ import QmlEase
 
 Rectangle {
     border.width: 0
-    border.color: pycolor.outline_variant
+    border.color: pycolor.outline
     color: pycolor.transparent
     
     default property alias content: _content.data

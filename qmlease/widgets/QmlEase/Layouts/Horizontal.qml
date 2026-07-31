@@ -24,7 +24,7 @@ Item {
         id: _border
         anchors.fill: parent
         border.width: root.showBorder ? 1 : 0
-        border.color: pycolor.outline_variant
+        border.color: pycolor.outline
         color: root.color
     }
 

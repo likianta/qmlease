@@ -7,8 +7,8 @@ Item {
     height: size * 1.5
     clip: false
 
-    property string bgColor: pycolor.primary_container
-    property string color: pycolor.on_primary_container
+    property string bgColor: pycolor.container_tint
+    property string color: pycolor.on_container_tint
     property alias  cursorShape: _area.cursorShape
     property bool   halo: false
     property alias  hovered: _area.containsMouse
