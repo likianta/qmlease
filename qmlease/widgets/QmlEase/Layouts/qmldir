@@ -3,6 +3,7 @@ module QmlEase.Layouts
 Column      1.0  ./Column.qml
 Container   1.0  ./Container2.qml
 Horizontal  1.0  ./Horizontal.qml
+Row         1.0  ./Row.qml
 SwipeView   1.0  ./SwipeView.qml
 TabsLayout  1.0  ./TabsLayout.qml
 Vertical    1.0  ./Vertical.qml

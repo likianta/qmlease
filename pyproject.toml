@@ -1,6 +1,6 @@
 [project]
 name = "qmlease"
-version = "4.0.0a10"
+version = "4.0.0a14"
 description = "A flexible toolkit for Python programmer to efficiently develop QML graphical user interface."
 authors = [{ name = "Likianta", email = "likianta@foxmail.com" }]
 license = "MIT"
@@ -9,10 +9,10 @@ requires-python = ">=3.12"
 dependencies = [
     "argsense>=1.1.2",
     "jurigged>=0.6.1",
-    "lk-utils>=3.7.5b7",
+    "lk-utils>=3.7.6a0",
     "materialyoucolor>=3.0.2",
-    "neoprint>=0.1.9",
-    "qmlease-colorsys>=0.1.0a4",
+    "neoprint>=0.1.10a0",
+    "qmlease-colorsys>=0.1.0a10",
     "qtpy>=2.4.3",
 ]
 
