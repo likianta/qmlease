@@ -80,6 +80,9 @@ class Application(QApplication):
     def set_app_icon(self, file: str) -> None:
         self.setWindowIcon(QIcon(file))  # noqa
     
+    def set_font_family(self, family: str) -> None:
+        self.setFont(family)
+
     @staticmethod
     def set_assets_root(root_dir: str) -> None:
         from ..qmlside import pyassets
