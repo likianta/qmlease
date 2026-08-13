@@ -60,7 +60,7 @@ class ListModel(QAbstractListModel):
         if isinstance(data[0], dict):
             instance.extend(data)
         else:
-            instance.extend((dict(zip(fields, x, strict=True)) for x in data))
+            instance.extend([dict(zip(fields, x, strict=True)) for x in data])
         instance.submit().always()
         return instance
 
@@ -290,7 +290,7 @@ class ListModel(QAbstractListModel):
     def get(self, index: int) -> T.Item:
         return self._items[index]
 
-    def submit(self):
+    def submit(self) -> tp.Self:  # type: ignore
         assert len(self._shadow_list) == len(self._items)
 
         def aggregate_changes():

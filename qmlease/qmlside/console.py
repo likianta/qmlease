@@ -51,7 +51,6 @@ class Console(QObject):
         self._file_id_map_rev[(path, start_line_no)] = file_id
         return file_id
 
-    # noinspection PyUnresolvedReferences
     def _handle_message(
         self, mode: QtMsgType, ctx: QMessageLogContext, msg: str
     ) -> None:

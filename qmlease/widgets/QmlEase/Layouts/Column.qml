@@ -16,7 +16,7 @@ Q.Item {
     property bool   borderColor: pycolor.outline
     property int    borderWidth: border ? 1 : 0
     property string color: pycolor.transparent
-    property int    spacing: pysize.spacing_s
+    property int    spacing: 4
 
     E.Rectangle {
         anchors.fill: parent

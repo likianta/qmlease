@@ -5,6 +5,7 @@ from types import NoneType
 
 # fix typehint of Signal and Slot.
 # https://rednafi.github.io/reflections/static-typing-python-decorators.html
+from qtpy.QtCore import QAbstractListModel
 from qtpy.QtCore import QObject as QtObject
 from qtpy.QtCore import Slot as QtSlot
 from qtpy.QtQml import QJSValue
@@ -24,7 +25,6 @@ class T:
     Func = tp.Callable[ParamSpec, tp.Any]
 
 
-# noinspection PyPep8Naming
 def Slot(
     *argtypes: T.ArgType0,
     name: str = '',
@@ -44,24 +44,24 @@ def Slot(
                         ^^^         ^^^
         see `_reformat_argtypes : docstring`
     """
-    argtypes = _reformat_argtypes(argtypes)
-    result = _reformat_result(result)
+    q_argtypes = _reformat_argtypes(argtypes)
+    q_result = _reformat_result(result)
     
     def decorator(func: T.Func) -> T.Func:
-        nonlocal argtypes, name, result
-        if QT_API == 'pyqt5' and result is None:
+        nonlocal q_argtypes, name, q_result
+        if QT_API == 'pyqt5' and q_result is None:
             __hidden_ref.append(
                 QtSlot(
-                    *argtypes,
-                    name=(name or func.__name__)
+                    *q_argtypes,
+                    name=(name or func.__name__)  # type: ignore
                 )(func)
             )
         else:
             __hidden_ref.append(
                 QtSlot(
-                    *argtypes,
-                    name=(name or func.__name__),
-                    result=result
+                    *q_argtypes,
+                    name=(name or func.__name__),  # type: ignore
+                    result=q_result
                 )(func)
             )
         
@@ -184,6 +184,9 @@ def _reformat_result(result: T.SlotReturn0) -> T.SlotReturn1:
     """
     if result in (None, bool, bytes, float, int, str):
         return result
-    if result in (dict, list, set, tuple, object, ...):
+    elif result in (dict, list, set, tuple, object, ...):
         return 'QVariant'
-    raise Exception(f'Result `{result}` is not convertable!')
+    elif issubclass(result, QAbstractListModel):
+        return result
+    else:
+        raise Exception(f'Result `{result}` is not convertable!')

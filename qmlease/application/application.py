@@ -219,6 +219,7 @@ class Application(QApplication):
         self._register.release()
 
 
+app: Application
 if _inst := QApplication.instance():
     # workaround
     #   when qmlease is mixed using with streamlit framework, for example the -
@@ -242,6 +243,6 @@ if _inst := QApplication.instance():
     # )
     # assert _inst.__class__ is Application
     assert _inst.__module__ == 'qmlease.application.application'
-    app = _inst
+    app = t.cast(Application, _inst)
 else:
     app = Application()
