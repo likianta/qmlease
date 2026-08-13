@@ -1,45 +1,77 @@
-import typing as t
+import typing as tp
+
 from lk_utils import textwrap as tw
 from qtpy.QtCore import QAbstractListModel
 from qtpy.QtCore import QModelIndex
+
 from ...qtcore import Slot
 
+
 class T:
-    Defaults = t.Dict[str, t.Any]
-    Item = t.Dict[str, t.Any]
-    Items = t.List[Item]
-    Roles = t.Union[t.Dict[str, t.Any], t.Iterable[str]]
-    Schema = t.Tuple[str, ...]
+    Defaults = tp.Dict[str, tp.Any]
+    Item = tp.Dict[str, tp.Any]
+    Items = tp.List[Item]
+    Roles = tp.Union[tp.Dict[str, tp.Any], tp.Iterable[str]]
+    Schema = tp.Tuple[str, ...]
+
 
 class ListModel(QAbstractListModel):
     """
     references:
-        https://pyblish.gitbooks.io/developer-guide/content/qml_and_python_interoperability.html
+        https://pyblish.gitbooks.io/developer-guide/content/qml_and_python
+        _interoperability.html
         https://stackoverflow.com/questions/54687953/declaring-a-qabstractlistmodel-as-a-property-in-pyside2
     """
+
     auto_complete: bool
     auto_submit: bool
     _defaults: T.Defaults  # see also `self._auto_complete`
     _items: T.Items
     _origin_list_length: int
     _schema: T.Schema
-    _shadow_list: t.List[t.Optional[bool]]
-    
+    _shadow_list: tp.List[tp.Optional[bool]]
+
     @classmethod
-    def from_list(cls, xlist: T.Items, roles: T.Roles = None) -> 'ListModel':
-        instance = cls(roles or xlist[0].keys(), auto_submit=False)
-        instance.extend(xlist)
+    def from_list(
+        cls,
+        data: tp.Union[tp.Iterable[tuple], tp.Iterable[tp.Dict[str, tp.Any]]],
+        fields: tp.Optional[T.Roles] = None,
+    ) -> 'ListModel':
+        """
+        There are two canonical use forms:
+            1.
+                model = ListModel.from_list(
+                    fields=('text', 'icon'),
+                    data=[('Alpha', 'hello.svg'), ('Beta', 'world.svg')],
+                )
+            2.
+                model = ListModel.from_list(
+                    data=[
+                        {'text': 'Alpha', 'icon': 'hello.svg'},
+                        {'text': 'Beta', 'icon': 'world.svg'},
+                    ]
+                )
+        """
+        assert isinstance(data, (tuple, list)) and len(data) > 0
+        if fields is None:
+            assert isinstance(data[0], dict)
+            fields = tp.cast(tp.Iterable[str], data[0].keys())
+        instance = cls(fields, auto_submit=False)
+        if isinstance(data[0], dict):
+            instance.extend(data)
+        else:
+            instance.extend((dict(zip(fields, x, strict=True)) for x in data))
         instance.submit().always()
         return instance
 
     @classmethod
     def empty_copy(cls, instance: 'ListModel', **kwargs) -> 'ListModel':
         return cls(
-            instance._schema, 
-            auto_complete=kwargs.get('auto_complete', False), 
+            instance._schema,
+            auto_complete=kwargs.get('auto_complete', False),
             auto_submit=kwargs.get('auto_submit', True),
         )
-    
+
     def __init__(
         self,
         roles: T.Roles,
@@ -51,11 +83,16 @@ class ListModel(QAbstractListModel):
         self.auto_submit = auto_submit
         self._schema = tuple(roles)
         self._items = []
-        self._defaults = roles if isinstance(roles, dict) else {
-            x: '' for x in roles
-            #   trick: set default value to '' instead of None to improve
-            #   compatibility.
-        }
+        self._defaults = (  # type: ignore
+            roles
+            if isinstance(roles, dict)
+            else {
+                x: ''
+                for x in roles
+                #   trick: set default value to '' instead of None to improve
+                #   compatibility.
+            }
+        )
         self._shadow_list = []
         self._origin_list_length = 0
         # self._transactions = {
@@ -63,60 +100,70 @@ class ListModel(QAbstractListModel):
         #     '-': set(),
         #     '+': set(),
         # }
-    
+
     @property
     def items(self) -> T.Items:
         return self._items
-    
+
     def __bool__(self):
         return bool(self._items)
-    
+
     def __getitem__(self, index: int) -> dict:
         return self._items[index]
-    
-    def __iter__(self) -> t.Iterator[T.Item]:
+
+    def __iter__(self) -> tp.Iterator[T.Item]:
         return iter(self._items)
-    
+
     def __len__(self):
         return len(self._items)
-    
+
     def __str__(self) -> str:
         if self._items:
             return tw.wrap(
-                '''
+                """
                 <ListModel with {} items:
                     [
                         {}
                     ]
                 >
-                ''',
+                """,
                 lstrip=False,
             ).format(
                 len(self._items),
-                tw.join((
-                    tw.wrap(
-                        '''
-                        {{
-                            {}
-                        }}
-                        '''
-                    ).format(
-                        tw.join((
-                            '"{}": {}'.format(
-                                k, 
-                                '"{}"'.format(v) if isinstance(v, str) else 
-                                str(v).lstrip() if isinstance(v, ListModel) 
-                                else v
+                tw.join(
+                    (
+                        tw.wrap(
+                            """
+                            {{
+                                {}
+                            }}
+                            """
+                        ).format(
+                            tw.join(
+                                (
+                                    '"{}": {}'.format(
+                                        k,
+                                        '"{}"'.format(v)
+                                        if isinstance(v, str)
+                                        else str(v).lstrip()
+                                        if isinstance(v, ListModel)
+                                        else v,
+                                    )
+                                    for k, v in item.items()
+                                ),
+                                4,
+                                ',\n',
                             )
-                            for k, v in item.items()
-                        ), 4, ',\n')
-                    )
-                    for item in self._items
-                ), 8, ',\n')
+                        )
+                        for item in self._items
+                    ),
+                    8,
+                    ',\n',
+                ),
             )
         else:
             return '<ListModel with 0 items>'
-    
+
     # --------------------------------------------------------------------------
 
     @Slot(dict)
@@ -129,7 +176,7 @@ class ListModel(QAbstractListModel):
         else:
             self._items.append(self._auto_complete(item))
             self._shadow_list.append(True)
-    
+
     @Slot(list)
     def extend(self, items: T.Items, *, index: int = -1) -> None:
         if index == -1:
@@ -152,7 +199,7 @@ class ListModel(QAbstractListModel):
             else:
                 self._items[index:index] = list(map(self._auto_complete, items))
                 self._shadow_list[index:index] = [True] * len(items)
-    
+
     @Slot(int, dict)
     def insert(self, index: int, item: T.Item) -> None:
         if self.auto_submit:
@@ -162,10 +209,12 @@ class ListModel(QAbstractListModel):
         else:
             self._items.insert(index, self._auto_complete(item))
             self._shadow_list.insert(index, True)
-    
+
     @Slot(result=dict)
     @Slot(result=list)
-    def pop(self, index: int = -1, *, count: int = 1) -> T.Item:
+    def pop(
+        self, index: int = -1, *, count: int = 1
+    ) -> tp.Union[T.Item, T.Items]:
         pop_last = index == -1
         if index < 0:
             index = len(self._items) + index
@@ -186,16 +235,16 @@ class ListModel(QAbstractListModel):
                     self._shadow_list.pop(index)
         else:
             assert index + count <= len(self._items)
-            out = self._items[index:index+count]
+            out = self._items[index : index + count]
             if self.auto_submit:
                 self.beginRemoveRows(QModelIndex(), index, index + count - 1)
-                self._items[index:index+count] = []
+                self._items[index : index + count] = []
                 self.endRemoveRows()
             else:
-                self._items[index:index+count] = []
-                self._shadow_list[index:index+count] = []
+                self._items[index : index + count] = []
+                self._shadow_list[index : index + count] = []
         return out
-    
+
     # extended method: move, move_up, move_down
     # these are convenience for user to drag and drop listview items.
     @Slot(int, int)
@@ -212,14 +261,14 @@ class ListModel(QAbstractListModel):
             self._items.insert(index_to, item)
             self._shadow_list.pop(index_fo)
             self._shadow_list.insert(index_to, True)
-    
+
     @Slot(int, result=bool)
     def move_up(self, index: int) -> bool:
         if index > 0:
             self.move(index, index - 1)
             return True
         return False
-    
+
     @Slot(int, result=bool)
     def move_down(self, index: int) -> bool:
         if index < len(self._items) - 1:
@@ -236,11 +285,11 @@ class ListModel(QAbstractListModel):
         else:
             self._items.clear()
             self._shadow_list.clear()
-    
+
     @Slot(int, result=dict)
     def get(self, index: int) -> T.Item:
         return self._items[index]
-    
+
     def submit(self):
         assert len(self._shadow_list) == len(self._items)
 
@@ -261,17 +310,17 @@ class ListModel(QAbstractListModel):
 
             if len(self._shadow_list) > self._origin_list_length:
                 yield (
-                    'insert', 
-                    self._origin_list_length, 
-                    len(self._shadow_list) - 1
+                    'insert',
+                    self._origin_list_length,
+                    len(self._shadow_list) - 1,
                 )
             elif len(self._shadow_list) < self._origin_list_length:
                 yield (
-                    'remove', 
-                    len(self._shadow_list), 
-                    self._origin_list_length - 1
+                    'remove',
+                    len(self._shadow_list),
+                    self._origin_list_length - 1,
                 )
-        
+
         for opt, start, end in aggregate_changes():
             match opt:
                 case 'update':
@@ -289,10 +338,9 @@ class ListModel(QAbstractListModel):
         self._origin_list_length = len(self._shadow_list)
         return self
 
-    def always(self):
+    def always(self) -> None:
         """
-        usage:
-            my_list_model.submit().always()
+        usage: my_list_model.submit().always()
         """
         self.auto_submit = True
 
@@ -302,24 +350,26 @@ class ListModel(QAbstractListModel):
                 if k not in item:
                     item[k] = v
         return item
-    
-    # -------------------------------------------------------------------------
+
+    # --------------------------------------------------------------------------
     # overrides
-    
-    # noinspection PyMethodOverriding
-    def data(self, index: QModelIndex, role: int):
+
+    def data(self, index: QModelIndex, role: int) -> tp.Any:  # type: ignore
         key = self._schema[role]
         return self._items[index.row()].get(key, '')
-    
-    # noinspection PyMethodOverriding,PyTypeChecker,PyUnresolvedReferences
-    def setData(self, index, value, role):
+
+    def setData(  # type: ignore
+        self, index: QModelIndex, value: tp.Any, role: int
+    ) -> None:
         key = self._schema[role]
         self._items[index.row()][key] = value
         self.dataChanged.emit(index, index, [role])
-    
-    def rowCount(self, parent=QModelIndex()):  # noqa
+
+    def rowCount(  # type: ignore
+        self, parent: QModelIndex = QModelIndex()
+    ) -> int:
         return len(self._items)
-    
-    def roleNames(self) -> t.Dict[int, bytes]:
+
+    def roleNames(self) -> tp.Dict[int, bytes]:  # type: ignore
         return {i: k.encode('utf-8') for i, k in enumerate(self._schema)}
         # return dict(enumerate(self._schema))
