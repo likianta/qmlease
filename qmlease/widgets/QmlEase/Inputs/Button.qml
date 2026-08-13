@@ -6,9 +6,9 @@ Item {
     id: root
     implicitWidth: (
         lpadding +
-        (leading_icon ? _icon_size + _gap : 0) +
+        (leadingIcon ? _iconSize + _gap : 0) +
         textItem.implicitWidth + 
-        (following_icon ? _gap + _icon_size : 0) +
+        (followingIcon ? _gap + _iconSize : 0) +
         rpadding
     )
     implicitHeight: 32
@@ -26,16 +26,16 @@ Item {
         pycolor.higher(baseColor, 2) :
         baseColor
     )
-    property string following_icon: ''
+    property string followingIcon: ''
     property alias  hovered: mouse.hovered
     property int    hpadding: 12
-    property string leading_icon: ''
+    property string leadingIcon: ''
     property int    lpadding: hpadding
     property int    rpadding: hpadding
     property string text: ''
     property string textColor: pycolor.against(color)
-    property int    _gap: 4
-    property int    _icon_size: 16
+    property int    _gap: 8
+    property int    _iconSize: 16
 
     signal clicked()
 
@@ -60,10 +60,10 @@ Item {
         spacing: root._gap
 
         E.Icon {
-            visible: root.leading_icon != ''
+            visible: root.leadingIcon != ''
             anchors.verticalCenter: parent.verticalCenter
-            size: root._icon_size
-            source: root.leading_icon
+            size: root._iconSize
+            source: root.leadingIcon
             color: root.textColor
         }
 
@@ -77,10 +77,10 @@ Item {
         }
 
         E.Icon {
-            visible: root.following_icon != ''
+            visible: root.followingIcon != ''
             anchors.verticalCenter: parent.verticalCenter
-            size: root._icon_size
-            source: root.following_icon
+            size: root._iconSize
+            source: root.followingIcon
             color: root.textColor
         }
         
