@@ -3,7 +3,7 @@ import QtQuick.Controls
 
 Button {
     // https://stackoverflow.com/questions/15236304/need-to-change-color-of
-    //  -an-svg-image-in-qml
+    // -an-svg-image-in-qml
     enabled: false
     background: Item {}
     flat: true
@@ -14,12 +14,14 @@ Button {
     icon.source: source
 
     property string color: pycolor.outline
-    property alias  hovering: _area.containsMouse
-    property int    size: pysize.icon_size
+    property bool   clickable: false
+    // property alias  hovered: _area.containsMouse
+    property int    size: 16
     property string source
 
     MouseArea {
         id: _area
+        visible: parent.clickable
         anchors.fill: parent
         hoverEnabled: true
         onClicked: (mouse) => parent.clicked(mouse)

@@ -3,6 +3,6 @@ import QtQuick
 Text {
     color: pycolor.text_main
     // font.family: pyfont.font_default
-    font.pixelSize: pyfont.size_m
+    font.pixelSize: 12
     wrapMode: Text.Wrap
 }

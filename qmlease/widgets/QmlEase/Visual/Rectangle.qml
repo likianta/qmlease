@@ -5,6 +5,6 @@ Rectangle {
     border.width: 0
     border.color: pycolor.outline
     clip: true
-    color: pycolor.panel
+    color: pycolor.transparent
     radius: pysize.radius_l
 }
