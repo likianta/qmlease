@@ -333,4 +333,4 @@ class LayoutHelper(QObject):
             return 1  # column
 
 
-pylayout = LayoutHelper()
+layout = LayoutHelper()

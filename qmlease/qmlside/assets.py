@@ -9,51 +9,55 @@ from lk_utils import fs
 from ..qtcore import QObject
 from ..qtcore import Slot
 
+
 class T:
-    PathUrl = str  # a 'file:///' url to a file or directory
+    AnyDirPath = str
 
 
 class Assets(QObject):
-    
+    """
+    usage:
+        assets = Assets()
+
+        assets.get('/aaa.png')
+        # -> 'file:///<cwd>/aaa.png'
+
+        assets.get('./bbb.png')
+        # -> 'file:///<the_caller_directory>/bbb.png'
+
+        assets.get('../ccc.png')
+        # -> 'file:///<the_parent_directory_of_caller>/ccc.png'
+
+        assets.add_source('/path/to/lkwidgets/assets', 'lkwidgets')
+        assets.get('lkwidgets:/home.svg')
+        # -> 'file:///path/to/lkwidgets/assets/home.svg'
+    """
+
     def __init__(self) -> None:
         super().__init__()
-        self._cwd = 'file:///' + getcwd().replace('\\', '/')
-        self._src = self._cwd
-        self._custom_sources = {}  # type: dict[str, str]
-    
-    def set_root(self, dir: str) -> None:
-        self._src = 'file:///' + fs.abspath(dir)
-    
-    def add_source(self, src_dir: str, name: str = None) -> None:
-        if name is None:
-            name = fs.basename(src_dir)
-        self._custom_sources[name] = 'file:///' + fs.abspath(src_dir)
-    
-    @Slot(result=str)
+        self._cwd = getcwd().replace('\\', '/')
+        self._default = self._cwd
+        self._sources = {}
+
+    def set_default_source(self, dir: T.AnyDirPath) -> None:
+        self._default = fs.abspath(dir)
+
+    def add_source(
+        self, dir: T.AnyDirPath, name: tp.Optional[str] = None
+    ) -> None:
+        self._sources[name or fs.basename(dir)] = fs.abspath(dir)
+
     @Slot(str, result=str)
-    def src(self, relpath: str = '') -> str:
-        if relpath == '':
-            return self._src
+    def get(self, relpath: str) -> str:
+        if relpath.startswith(('./', '../')):
+            caller_frame: FrameType = currentframe().f_back  # type: ignore
+            caller_dir = dirname(caller_frame.f_code.co_filename)
+            return 'file:///' + fs.normpath(f'{caller_dir}/{relpath}')
+        elif relpath.startswith('/'):
+            return 'file:///' + self._default + relpath
         else:
-            return fs.normpath(f'{self._src}/{relpath}')
-    
-    @Slot(result=str)
-    @Slot(str, result=str)
-    def cwd(self, relpath: str = '') -> str:
-        if relpath == '':
-            return self._cwd
-        else:
-            return fs.normpath(f'{self._cwd}/{relpath}')
-    
-    def here(self, relpath: str) -> T.PathUrl:
-        last_frame: FrameType = currentframe().f_back  # type: ignore
-        last_dir = dirname(last_frame.f_code.co_filename)
-        return 'file:///' + fs.normpath(f'{last_dir}/{relpath}')
-
-    @Slot(str, result=str)
-    @Slot(str, str, result=str)
-    def get(self, src_name: str, relpath: str = '') -> str:
-        return fs.normpath(f'{self._custom_sources[src_name]}/{relpath}')
+            a, b = relpath.split(':', 1)
+            return 'file:///' + self._sources[a] + b
 
 
-pyassets = Assets()
+assets = Assets()

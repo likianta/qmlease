@@ -70,7 +70,7 @@ class Application(QApplication):
         if IS_WINDOWS:
             self.setFont('Microsoft YaHei UI')  # noqa
     
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     
     def set_app_name(self, name: str) -> None:
         # just made a consistent snake-case function alias for external caller,
@@ -83,12 +83,7 @@ class Application(QApplication):
     def set_font_family(self, family: str) -> None:
         self.setFont(family)
 
-    @staticmethod
-    def set_assets_root(root_dir: str) -> None:
-        from ..qmlside import pyassets
-        pyassets.set_root(root_dir)
-    
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     
     def register_qmldir(self, qmldir: str) -> None:
         """
@@ -106,29 +101,28 @@ class Application(QApplication):
     
     def _register_backend(self) -> None:
         from ..pyside import pyside
-        from ..qmlside import pyassets, pybroad, pylayout  # DELETE
+        from ..qmlside import assets, layout, pybroad  # DELETE
         from ..style import pyenum, pystyle
         from ..widget_support import widget_support
         
+        assets.add_source(fs.there('../widgets/LKWidgets'), 'lkwidgets')
+        assets.add_source(fs.there('../widgets/QmlEase/Assets'), 'qmlease')
+    
         # self.register(widget_support, 'widget', 'qmlease')
         self.register(widget_support, 'qmlease')
         
-        self.register(pyassets, 'pyassets', 'global')
+        self.register(assets, 'pyassets', 'global')
+        self.register(layout, 'pylayout', 'global')
         self.register(pybroad, 'pybroad', 'global')
         self.register(pyenum, 'pyenum', 'global')
-        self.register(pylayout, 'pylayout', 'global')
         self.register(pyside, 'pyside', 'global')
         self.register(pystyle, 'pystyle', 'global')
         self.register(pystyle.color, 'pycolor', 'global')
         self.register(pystyle.font, 'pyfont', 'global')
         self.register(pystyle.motion, 'pymotion', 'global')
         self.register(pystyle.size, 'pysize', 'global')
-        
-        # TODO: refactor
-        pyassets.add_source(fs.xpath('../widgets/LKWidgets'), 'lkwidgets')
-        pyassets.add_source(fs.xpath('../widgets/QmlEase/Assets'), 'qmlease')
     
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     
     def run(self, qmlfile: str, debug: bool = False, **kwargs) -> None:
         assert fs.exist(qmlfile)
@@ -187,7 +181,7 @@ class Application(QApplication):
         splash.show()
         self.processEvents()
     
-    # -------------------------------------------------------------------------
+    # --------------------------------------------------------------------------
     
     def on_exit_register(self, func: t.Callable) -> int:
         self._on_exit_funcs.append(func)

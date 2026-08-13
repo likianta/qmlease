@@ -26,9 +26,10 @@ if 5:
     from .qmlside import ListModel
     from .qmlside import Model  # DELETE?
     from .qmlside import SimpleModel  # DELETE?
+    from .qmlside import assets
     from .qmlside import eval_js
-    from .qmlside import pyassets
     from .qmlside import console
+    from .qmlside import layout
     from .qmlside import qml_eval
     from .qmlside import widgets_backend
     from .qmlside.widgets_backend import log
