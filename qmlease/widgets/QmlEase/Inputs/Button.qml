@@ -58,10 +58,10 @@ Item {
             (root.height - height) / 2 + 1 : 
             (root.height - height) / 2
         spacing: root._gap
+        valign: 'center'
 
         E.Icon {
             visible: root.leadingIcon != ''
-            anchors.verticalCenter: parent.verticalCenter
             size: root._iconSize
             source: root.leadingIcon
             color: root.textColor
@@ -69,8 +69,8 @@ Item {
 
         E.Text {
             id: textItem
-            height: parent.height
-            verticalAlignment: Text.AlignVCenter
+            // height: parent.height
+            // verticalAlignment: Text.AlignVCenter
             text: root.text
             color: root.textColor
             font.bold: root.bold
@@ -78,7 +78,6 @@ Item {
 
         E.Icon {
             visible: root.followingIcon != ''
-            anchors.verticalCenter: parent.verticalCenter
             size: root._iconSize
             source: root.followingIcon
             color: root.textColor

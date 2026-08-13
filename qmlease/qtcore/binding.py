@@ -37,8 +37,8 @@ def bind_prop(
     # emitter_prop: str,
     # receiver: t.Optional[QObject] = None,
     # receiver_prop: t.Optional[str] = None,
-    custom_handler: t.Callable = None,
-    effect_now: bool = None,
+    custom_handler: t.Optional[t.Callable] = None,
+    effect_now: t.Optional[bool] = None,
 ) -> None:
     """
     args form:

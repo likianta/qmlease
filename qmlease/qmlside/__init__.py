@@ -3,7 +3,7 @@ from . import widgets_backend
 from .assets import assets
 from .broadcast import pybroad
 from .hot_reloader import HotReloader
-from .layout_helper import layout
+from .layout_engine import layout
 from .model import ListModel
 from .model import Model
 from .model import SimpleModel
