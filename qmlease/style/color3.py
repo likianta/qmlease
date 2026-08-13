@@ -72,5 +72,18 @@ class Color(QObject):
         tok = self._hex_to_token[base]
         return tok.darker(level).hex
 
+    @Slot(str, result=str)
+    def against(self, source: T.ColorHex) -> T.ColorHex:
+        tok = self._hex_to_token[source]
+        return ColorToken(
+            (
+                tok.h,
+                tok.c,
+                min((tok.t - 50, 20))
+                if tok.is_light
+                else max((tok.t + 50, 80)),
+            )
+        ).hex
+
     def _qget_color(self, key: T.ColorKey) -> T.ColorHex:
         return self._color_palette[key].hex
