@@ -19,6 +19,7 @@ examples/:
 gallery/: 一些应用截图.
 lib/:
   qmlease_colorsys/: 专为 QmlEase 设计的颜色生成系统.
+prototype/: 设计原型图, 可作为组件设计参考. 一般是 HTML 或 PNG 文件.
 qmlease/: # 项目源代码
   application/:
     application.py: 对 QApplication 的封装.
@@ -40,7 +41,13 @@ qmlease/: # 项目源代码
   widgets/:
     # QML 组件库
     LKWidgets/: 已停止开发, 可忽略.
-    QmlEase/: 主要组件库, 积极开发中.
+    QmlEase/: 
+      # 主要组件库, 积极开发中. 每个子目录都会有一个 qmldir 文件.
+      Composites/: 多种基础组件组合而成的复杂组件.
+      Inputs/: 输入型组件.
+      Layouts/: 布局类组件.
+      Visual/: 可视化组件.
+      qmldir: 该索引只列出常用的组件. 对于非常用的组件, 需要通过 `import QmlEase.<SubModule>` 来导入.
 references/:
   omnicomm_serdes_tool/: 第三方项目, 基于 QmlEase 框架完整开发, 可作为代码用法的重要参考.
 sidework/: 一些周边工作.
@@ -53,8 +60,14 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 
 - 使用 `python` 运行脚本.
 - 使用 `uv` 管理 pyproject.toml 中的依赖.
-- 使用 `ty` 检查类型错误.
-- 使用 `ruff` 格式化代码.
+- 使用 `ty` 检查 ".py" 文件的类型错误.
+- 使用 `ruff` 格式化 ".py" 文件的代码.
+- 使用 `python tools/qmllint.py check` 检查 ".qml" 文件的代码. (实验性功能)
+
+如果要运行一个应用, 有两种方法:
+
+1. 如果有 py 脚本作为入口, 则通过 `python <py_file>` 启动.
+2. 如果没有 py 脚本, 只有一个 qml 文件作为入口, 则通过 `python -m qmlease run <qml_file>` 启动.
 
 ## 代码风格 (Python)
 
@@ -92,74 +105,3 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 ## 代码风格 (QML)
 
 - 代码中使用全英文, 不要有中文注释.
-- 代码风格:
-
-  推荐按下面的顺序写代码:
-  - id
-  - enabled/visible 属性
-  - geometry 相关的属性: anchors, x, y, width, height, ...
-  - 其他属性: border.width, color, text, ...
-  - on 事件: onWidthChanged, onHeightChanged, onColorChanged, ...
-  - 新属性: `property int <name>: <value>`, ...
-  - 信号槽: `signal <name>(<arguments>)`, ...
-  - JS 函数: `function <name>(<arguments>) { ... }`, ...
-  - 子组件: ...
-  - 最后写 `Component.onCompleted`
-
-  示例:
-
-  ```qml
-  import QtQuick // 先导入官方库, 后导入个人库
-  import QmlEase
-
-  Rectangle {
-      id: root // 先写 id
-      enabled: true // 再写 enabled/visible 属性
-      visible: true
-      anchors.centerIn: parent // 然后写 geometry 相关的属性
-      x: 0
-      y: 0
-      width: 800
-      height: 600
-      border.width: 1 // 然后按字母顺序写其他属性
-      color: "red"
-
-      // 空一行后, 开始写 on-changed 事件. (按字母顺序写)
-      onColorChanged: {
-          console.log("color changed")
-      }
-      onHeightChanged: {
-          console.log("height changed")
-      }
-      onWidthChanged: {
-          console.log("width changed", root.width)
-      }
-      ...
-
-      // 空一行后, 开始写属性.
-      property int count: 0
-      ...
-
-      // 空一行后, 开始写信号槽.
-      signal confirmed()
-      ...
-
-      // 空一行后, 开始写 JS 函数.
-      function incrementCount() {
-          root.count += 1
-      }
-      ...
-
-      // 写其他组件
-      ListView {
-          ...
-      }
-
-      ...
-
-      // 最后写 Component.onCompleted
-      Component.onCompleted: {
-          console.log("rectangle complete")
-      }
-  }
-  ```
