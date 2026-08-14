@@ -5,6 +5,7 @@
 /lib/
 /qmlease/qmlside/widget_support/_cache/*
 /qmlease/widgets/MD3/
+/references/
 /sidework/pyside_package_tailor/dist/deleted/
 /sidework/pyside_package_tailor/dist/pyside6_lite/*
 /sidework/pyside_package_tailor/dist/*.zip
