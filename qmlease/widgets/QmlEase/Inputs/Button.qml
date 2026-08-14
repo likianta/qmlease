@@ -1,6 +1,8 @@
 // inspired by daisyui button: https://daisyui.com/components/button/
 import QtQuick
-import QmlEase as E
+import "../Layouts" as L
+import "../Other" as O
+import "../Visual" as V
 
 Item {
     id: root
@@ -28,18 +30,19 @@ Item {
     )
     property string followingIcon: ''
     property alias  hovered: mouse.hovered
-    property int    hpadding: 12
+    property int    hpadding: 24
     property string leadingIcon: ''
     property int    lpadding: hpadding
     property int    rpadding: hpadding
     property string text: ''
-    property string textColor: pycolor.against(color)
+    // property string textColor: pycolor.against(color)
+    property string textColor: pycolor.on_container
     property int    _gap: 8
     property int    _iconSize: 16
 
     signal clicked()
 
-    E.Rectangle {
+    V.Rectangle {
         id: _container
         anchors {
             fill: parent
@@ -51,7 +54,7 @@ Item {
         color: root.color
     }
 
-    E.Row {
+    L.Row {
         x: root.lpadding
         // anchors { horizontalCenter: parent.horizontalCenter }
         y: mouse.pressed ?
@@ -60,14 +63,14 @@ Item {
         spacing: root._gap
         valign: 'center'
 
-        E.Icon {
+        V.Icon {
             visible: root.leadingIcon != ''
             size: root._iconSize
             source: root.leadingIcon
             color: root.textColor
         }
 
-        E.Text {
+        V.Text {
             id: textItem
             // height: parent.height
             // verticalAlignment: Text.AlignVCenter
@@ -76,7 +79,7 @@ Item {
             font.bold: root.bold
         }
 
-        E.Icon {
+        V.Icon {
             visible: root.followingIcon != ''
             size: root._iconSize
             source: root.followingIcon
@@ -92,7 +95,7 @@ Item {
         }
     }
 
-    E.MouseArea {
+    O.MouseArea {
         id: mouse
         anchors.fill: parent
         onClicked: root.clicked()

@@ -1,4 +1,3 @@
-import QtQuick
 import QmlEase
 
 Window {
@@ -7,8 +6,14 @@ Window {
 
     Row {
         anchors.centerIn: parent
-        spacing: 12
+        valign: 'center'
+        lpadding: 24
+        rpadding: 8
+        vpadding: 8
+        spacing: 40
         border: true
+        borderColor: pycolor.outline_thin
+        color: pycolor.panel
 
         Text {
             text: `Counter: ${root.counter}`

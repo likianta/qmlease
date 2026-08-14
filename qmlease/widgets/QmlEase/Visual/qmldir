@@ -1,9 +1,11 @@
 module QmlEase.Visual
 
-Divider      1.0  Divider.qml
-Empty        1.0  Empty.qml
-GhostBorder  1.0  GhostBorder.qml
-Icon         1.0  Icon.qml
-Info         1.0  Info.qml
-Rectangle    1.0  Rectangle.qml
-Text         1.0  Text.qml
+Circle           1.0  Circle.qml
+Divider          1.0  Divider.qml
+Empty            1.0  Empty.qml
+GhostBorder      1.0  GhostBorder.qml
+Icon             1.0  Icon.qml
+Info             1.0  Info.qml
+Rectangle        1.0  Rectangle.qml
+StatusIndicator  1.0  StatusIndicator.qml
+Text             1.0  Text.qml
