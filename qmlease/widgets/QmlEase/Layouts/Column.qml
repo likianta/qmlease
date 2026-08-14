@@ -1,10 +1,11 @@
-/// Note: This file is a copy-paste from Row.qml, but with Column instead of 
-/// Row.
+// This file was auto translated from ./Row.qml, please do not 
+// modify it manuall.
+// Translator: sidework/translate_row_to_column.py
 
-import QtQuick as Q
-import QmlEase as E
+import QtQuick
+import "../Visual" as V
 
-Q.Item {
+Item {
     id: root
     clip: true
     implicitWidth: column.implicitWidth + borderWidth * 2
@@ -13,12 +14,39 @@ Q.Item {
     default property alias content: column.data
 
     property bool   border: false // shorthand for borderWidth
-    property bool   borderColor: pycolor.outline
+    property string borderColor: pycolor.outline
     property int    borderWidth: border ? 1 : 0
+    property int    bpadding: -1
     property string color: pycolor.transparent
-    property string halign: 'none' // 'none', 'stretch', 'center'
+    property string halign: 'start' // start, stretch, center
+    property int    hpadding: -1
+    property int    lpadding: -1
+    property int    padding: -1
+    property int    rpadding: -1
+    property int    tpadding: -1
     property int    spacing: 4
-    property string valign: 'none' // 'none', 'stretch'
+    property string valign: 'start' // start, stretch
+    property int    vpadding: -1
+    property int    _finalBottomPadding: 
+        bpadding >= 0 ? bpadding :
+        vpadding >= 0 ? vpadding :
+        padding >= 0 ? padding :
+        0
+    property int    _finalLeftPadding: 
+        lpadding >= 0 ? lpadding :
+        hpadding >= 0 ? hpadding :
+        padding >= 0 ? padding :
+        0
+    property int    _finalRightPadding: 
+        rpadding >= 0 ? rpadding :
+        hpadding >= 0 ? hpadding :
+        padding >= 0 ? padding :
+        0
+    property int    _finalTopPadding: 
+        tpadding >= 0 ? tpadding :
+        vpadding >= 0 ? vpadding :
+        padding >= 0 ? padding :
+        0
 
     function computeLayout() {
         // layout system: 
@@ -77,7 +105,7 @@ Q.Item {
         // horizontal dimension
         if (root.halign == 'stretch') {
             const resonableWidth = 
-                column.width - column.topPadding - column.bottomPadding
+                column.width - column.leftPadding - column.rightPadding
             for (let child of children) {
                 child.width = resonableWidth
             }
@@ -89,33 +117,37 @@ Q.Item {
         }
     }
 
-    E.Rectangle {
+    V.Rectangle {
         anchors.fill: parent
         border.width: root.borderWidth
         border.color: root.borderColor
         color: root.color
 
-        Q.Column {
+        Column {
             id: column
             anchors {
                 fill: parent
                 margins: root.borderWidth
             }
+            bottomPadding: root._finalBottomPadding
+            leftPadding: root._finalLeftPadding
+            rightPadding: root._finalRightPadding
+            topPadding: root._finalTopPadding
             spacing: root.spacing
-            // Q.Component.onCompleted: {
+            // Component.onCompleted: {
             //     root.computeLayout()
             // }
         }
     }
 
-    Q.Component.onCompleted: {
+    Component.onCompleted: {
         // pylayout.inspect_size(this, 'column layout')
         // pylayout.inspect_size(column, 'inner column layout')
         root.widthChanged.connect(root.computeLayout)
         root.heightChanged.connect(root.computeLayout)
         root.halignChanged.connect(root.computeLayout)
         root.valignChanged.connect(root.computeLayout)
-        if (root.halign != 'none' || root.valign != 'none') {
+        if (root.halign != 'start' || root.valign != 'start') {
             root.computeLayout()
         }
     }

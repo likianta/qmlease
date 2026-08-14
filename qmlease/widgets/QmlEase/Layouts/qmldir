@@ -1,7 +1,7 @@
 module QmlEase.Layouts
 
 Column      1.0  ./Column.qml
-Container   1.0  ./Container2.qml
+Container   1.0  ./Container.qml
 Horizontal  1.0  ./Horizontal.qml
 Row         1.0  ./Row.qml
 Sidebar     1.0  ./Sidebar.qml
