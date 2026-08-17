@@ -1,0 +1,10 @@
+module QmlEase.Inputs
+
+Button     1.0  Button.qml
+CheckBox   1.0  CheckBox.qml
+IconButton 1.0  IconButton.qml
+RadioBox   1.0  RadioBox.qml
+RadioGroup 1.0  RadioGroup.qml
+SelectBox  1.0  SelectBox.qml
+Switch     1.0  Switch.qml
+TextInput  1.0  TextInput.qml

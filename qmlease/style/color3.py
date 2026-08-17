@@ -13,8 +13,8 @@ from ..qtcore import StaticProperty
 
 
 class T:
-    ColorKey = str
     ColorHex = str  # `#rrggbb`
+    ColorKey = str
     ColorPalette = tp.Dict[ColorKey, ColorToken]
     ColorToken = ColorToken
 

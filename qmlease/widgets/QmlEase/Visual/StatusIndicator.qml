@@ -43,45 +43,27 @@ L.Row {
     property int    maxTextWidth: 0
     property string status: 'idle' // idle, info, success, warning, error
     property string text: (
-        status == 'idle' ?
-        'IDLE' :
-        status == 'info' ?
-        'INFO' :
-        status == 'success' ?
-        'SUCCESS' :
-        status == 'warning' ?
-        'WARNING' :
-        status == 'error' ?
-        'ERROR' :
-        'IDLE'
+        status == 'idle' ? 'IDLE' :
+        status == 'info' ? 'INFO' :
+        status == 'success' ? 'SUCCESS' :
+        status == 'warning' ? 'WARNING' :
+        status == 'error' ? 'ERROR' : 'IDLE'
     )
     // property string _indicatorColor: status == 'idle' ? 
     //     pycolor.text_tertiary : _textColor
     property string _indicatorColor: (
-        status == 'idle' ?
-        pycolor.text_tertiary :
-        status == 'info' ?
-        pycolor.paint_info :
-        status == 'success' ?
-        pycolor.paint_success :
-        status == 'warning' ?
-        pycolor.paint_warning :
-        status == 'error' ?
-        pycolor.paint_error :
-        pycolor.text_tertiary
+        status == 'idle' ? pycolor.text_tertiary :
+        status == 'info' ? pycolor.paint_info :
+        status == 'success' ? pycolor.paint_success :
+        status == 'warning' ? pycolor.paint_warning :
+        status == 'error' ? pycolor.paint_error : pycolor.text_tertiary
     )
     property string _textColor: (
-        status == 'idle' ?
-        pycolor.text_secondary :
-        status == 'info' ?
-        pycolor.on_container_info :
-        status == 'success' ?
-        pycolor.on_container_success :
-        status == 'warning' ?
-        pycolor.on_container_warning :
-        status == 'error' ?
-        pycolor.on_container_error :
-        pycolor.text_secondary
+        status == 'idle' ? pycolor.text_secondary :
+        status == 'info' ? pycolor.on_container_info :
+        status == 'success' ? pycolor.on_container_success :
+        status == 'warning' ? pycolor.on_container_warning :
+        status == 'error' ? pycolor.on_container_error : pycolor.text_secondary
     )
 
     function measureTextWidth(text) {

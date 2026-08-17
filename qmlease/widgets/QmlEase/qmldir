@@ -16,6 +16,7 @@ MouseArea    1.0  Controls/MouseArea.qml
 RadioGroup   1.0  Inputs/RadioGroup.qml
 Rectangle    1.0  Visual/Rectangle.qml
 Row          1.0  Layouts/Row.qml
+SelectBox    1.0  Inputs/SelectBox.qml
 Text         1.0  Visual/Text.qml
 TextInput    1.0  Inputs/TextInput.qml
 Vertical     1.0  Layouts/Vertical.qml

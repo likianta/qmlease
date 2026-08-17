@@ -126,8 +126,8 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 
     由于 QML 组件的开发周期较长, 有很多 ".qml" 文件的风格不一致的问题. 下面列出的是最近校正过, 可以作为范例的文件:
     - examples/click_counter.qml
-    - examples/sidebar/sidebar.qml
     - examples/status_indicator.qml
+    - examples/sidebar/sidebar.qml
     - qmlease/widgets/QmlEase/Inputs/Button.qml
     - qmlease/widgets/QmlEase/Layouts/Row.qml
     - qmlease/widgets/QmlEase/Visual/StatusIndicator.qml

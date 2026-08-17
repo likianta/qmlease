@@ -1,4 +1,4 @@
 module QmlEase.Controls
 
 MouseArea    1.0  MouseArea.qml
-TextMetrcis  1.0  TextMetrcis.qml
+TextMetrics  1.0  TextMetrics.qml

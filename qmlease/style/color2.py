@@ -1,4 +1,5 @@
 """
+DELETE: this file is going to be deleted, use ./color3.py instead.
 inspiration:
     - https://github.com/T-Dynamos/materialyoucolor-python
     - https://github.com/sudoevolve/material-components-pyside

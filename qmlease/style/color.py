@@ -1,4 +1,6 @@
 """
+DELETE: this file is going to be deleted, use ./color3.py instead.
+
 naming style:
     component_part_state
         component: button, text, panel, win, ...
