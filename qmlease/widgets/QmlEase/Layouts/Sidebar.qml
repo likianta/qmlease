@@ -33,7 +33,7 @@ E.Rectangle {
                 pycolor.container_tint :
                 root.color
             )
-            // hpadding: 8
+            hpadding: 12
             leadingIcon: model.icon
             text: model.text
             textColor: (

@@ -7,10 +7,11 @@ L.Row {
     id: root
     implicitHeight: 36
     valign: 'center'
-    lpadding: 16
-    rpadding: 24
+    hpadding: 12
+    // lpadding: 16
+    // rpadding: 24
     // vpadding: 4
-    spacing: 8
+    spacing: 4
 
     borderColor: (
         status == 'idle' ?
@@ -66,6 +67,16 @@ L.Row {
         status == 'error' ? pycolor.on_container_error : pycolor.text_secondary
     )
 
+    function getMaxWidth(text) {
+        return (
+            root.finalLeftPadding + 
+            indicatorCircle.size + 
+            root.spacing + 
+            measureTextWidth(text) + 
+            root.finalRightPadding
+        )
+    }
+
     function measureTextWidth(text) {
         return textMetrics.getTextLength(text)   
     }
@@ -93,6 +104,7 @@ L.Row {
     }
 
     V.Circle {
+        id: indicatorCircle
         size: 12
         color: root._indicatorColor
     }

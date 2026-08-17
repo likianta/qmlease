@@ -16,6 +16,14 @@ Item {
 
     signal selected(int index, string text)
 
+    onModelChanged: {
+        if (root.model.length > 0) {
+            if (root.currentText == '') {
+                root.currentText = root.model[0]
+            }
+        }
+    }
+
     I.Button {
         id: display
         anchors.fill: parent
@@ -123,12 +131,6 @@ Item {
             //     pylayout.inspect_size(popup, 'SelectBox:popup')
             //     pylayout.inspect_size(listView, 'SelectBox:listView')
             // }
-        }
-    }
-
-    Component.onCompleted: {
-        if (root.model.length > 0) {
-            root.currentText = root.model[0]
         }
     }
 }

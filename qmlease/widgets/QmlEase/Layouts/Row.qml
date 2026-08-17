@@ -14,6 +14,26 @@ Item {
     property int    borderWidth: border ? 1 : 0
     property int    bpadding: -1
     property string color: pycolor.transparent
+    property int    finalBottomPadding: 
+        bpadding >= 0 ? bpadding :
+        vpadding >= 0 ? vpadding :
+        padding >= 0 ? padding :
+        0
+    property int    finalLeftPadding: 
+        lpadding >= 0 ? lpadding :
+        hpadding >= 0 ? hpadding :
+        padding >= 0 ? padding :
+        0
+    property int    finalRightPadding: 
+        rpadding >= 0 ? rpadding :
+        hpadding >= 0 ? hpadding :
+        padding >= 0 ? padding :
+        0
+    property int    finalTopPadding: 
+        tpadding >= 0 ? tpadding :
+        vpadding >= 0 ? vpadding :
+        padding >= 0 ? padding :
+        0
     property string halign: 'start' // start, stretch
     property int    hpadding: -1
     property int    lpadding: -1
@@ -23,26 +43,6 @@ Item {
     property int    spacing: 4
     property string valign: 'start' // start, stretch, center
     property int    vpadding: -1
-    property int    _finalBottomPadding: 
-        bpadding >= 0 ? bpadding :
-        vpadding >= 0 ? vpadding :
-        padding >= 0 ? padding :
-        0
-    property int    _finalLeftPadding: 
-        lpadding >= 0 ? lpadding :
-        hpadding >= 0 ? hpadding :
-        padding >= 0 ? padding :
-        0
-    property int    _finalRightPadding: 
-        rpadding >= 0 ? rpadding :
-        hpadding >= 0 ? hpadding :
-        padding >= 0 ? padding :
-        0
-    property int    _finalTopPadding: 
-        tpadding >= 0 ? tpadding :
-        vpadding >= 0 ? vpadding :
-        padding >= 0 ? padding :
-        0
 
     function computeLayout() {
         // layout system: 
@@ -134,10 +134,10 @@ Item {
                 fill: parent
                 margins: root.borderWidth
             }
-            bottomPadding: root._finalBottomPadding
-            leftPadding: root._finalLeftPadding
-            rightPadding: root._finalRightPadding
-            topPadding: root._finalTopPadding
+            bottomPadding: root.finalBottomPadding
+            leftPadding: root.finalLeftPadding
+            rightPadding: root.finalRightPadding
+            topPadding: root.finalTopPadding
             spacing: root.spacing
             // Component.onCompleted: {
             //     root.computeLayout()
