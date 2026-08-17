@@ -9,6 +9,10 @@ Item {
 
     default property alias content: row.data
 
+    // note: if you want to animate the background width or height, do not use 
+    // `Behavior on width` directly; use `Behavior on implicitWidth` instead.
+    // property alias  backgroundWidth: root.width
+    // property alias  backgroundHeight: root.height
     property bool   border: false // shorthand for borderWidth
     property string borderColor: pycolor.outline
     property int    borderWidth: border ? 1 : 0
@@ -123,9 +127,11 @@ Item {
     }
 
     V.Rectangle {
+        id: background
         anchors.fill: parent
         border.width: root.borderWidth
         border.color: root.borderColor
+        // clip: true
         color: root.color
 
         Row {

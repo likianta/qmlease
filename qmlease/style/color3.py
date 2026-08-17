@@ -48,6 +48,9 @@ class Color(QObject):
         self._hex_to_token = {t.hex: t for t in self._color_palette.values()}
         self._is_dark_theme = False
 
+    def get_hex(self, name: str) -> T.ColorHex:
+        return self._color_palette[name].hex
+
     @Slot(str, result=str)
     @Slot(str, int, result=str)
     def higher(self, base: T.ColorHex, level: int = 1) -> T.ColorHex:

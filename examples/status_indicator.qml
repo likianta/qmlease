@@ -14,12 +14,12 @@ Window {
 
         StatusIndicator {
             id: stat
-            maxTextWidth: measureTextWidth('DISCONNECTED')
+            // maxTextWidth: measureTextWidth('DISCONNECTED')
             text: status == 'idle' ? 
                 'IDLE' : status == 'success' ? 'CONNECTED' : 'DISCONNECTED'
-            Component.onCompleted: {
-                console.log('maxTextWidth:', maxTextWidth)
-            }
+            // Component.onCompleted: {
+            //     console.log('maxTextWidth:', maxTextWidth)
+            // }
         }
 
         SelectBox {

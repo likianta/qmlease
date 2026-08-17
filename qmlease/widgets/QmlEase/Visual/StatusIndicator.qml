@@ -85,6 +85,12 @@ L.Row {
         root.computeLayout()
     }
 
+    Behavior on implicitWidth {
+        NumberAnimation {
+            duration: 100
+        }
+    }
+
     Behavior on color {
         ColorAnimation {
             duration: 100

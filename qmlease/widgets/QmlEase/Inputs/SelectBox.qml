@@ -14,7 +14,12 @@ Item {
     property bool   expanded: popup.opened
     property var    model: []
 
+    signal itemAdded(int index, Item item)
     signal selected(int index, string text)
+
+    // function itemAtIndex(index: int) {
+    //     return root.model[index]
+    // }
 
     onModelChanged: {
         if (root.model.length > 0) {
@@ -118,11 +123,19 @@ Item {
                     pycolor.on_container_tint :
                     pycolor.on_panel
                 )
+
+                property bool selected: ListView.isCurrentItem
+
                 onClicked: {
+                    listView.currentIndex = index
                     root.currentIndex = index
                     root.currentText = this.text
                     root.selected(index, this.text)
                     popup.close()
+                }
+                
+                Component.onCompleted: {
+                    root.itemAdded(index, this)
                 }
             }
 
