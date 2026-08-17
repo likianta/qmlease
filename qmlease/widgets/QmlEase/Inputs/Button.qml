@@ -15,7 +15,9 @@ Item {
     )
     implicitHeight: 32
 
-    property string alignment: 'center'
+    readonly property int textYPosition: content_.y
+
+    property string alignment: 'center' // center, start, end
     property string baseColor: pycolor.container
     property bool   bold: false
     property bool   border: false
@@ -55,6 +57,7 @@ Item {
     }
 
     L.Row {
+        id: content_
         x: root.lpadding
         // anchors { horizontalCenter: parent.horizontalCenter }
         y: mouse.pressed ?

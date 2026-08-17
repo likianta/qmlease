@@ -132,13 +132,21 @@ class LayoutEngine(QObject):
         include_children: bool = False,
         _level: int = 0,
     ) -> tp.Optional[str]:
+        def try_to_get_children_rect_size(item):
+            try:
+                return '{} x {}'.format(
+                    item['childrenRect'].width(),
+                    item['childrenRect'].height(),
+                )
+            except AttributeError:
+                return 'N/A'
+
         template = tw.dedent(
             """
             inspect {NAME}:
                 size: {WIDTH} x {HEIGHT}
                 implicit size: {IMPLICIT_WIDTH} x {IMPLICIT_HEIGHT}
-                children rect size: {CHILDREN_RECT_WIDTH} x \\
-                {CHILDREN_RECT_HEIGHT}
+                children rect size: {CHILDREN_RECT_SIZE}
 
                 {CHILDREN_INSPECTION}
             """,
@@ -154,8 +162,7 @@ class LayoutEngine(QObject):
             HEIGHT=item['height'],
             IMPLICIT_WIDTH=item['implicitWidth'],
             IMPLICIT_HEIGHT=item['implicitHeight'],
-            CHILDREN_RECT_WIDTH=item['childrenRect'].width(),
-            CHILDREN_RECT_HEIGHT=item['childrenRect'].height(),
+            CHILDREN_RECT_SIZE=try_to_get_children_rect_size(item),
             CHILDREN_INSPECTION=tw.join(
                 self.inspect_size(
                     child,

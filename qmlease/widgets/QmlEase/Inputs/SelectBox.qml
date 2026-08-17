@@ -1,176 +1,134 @@
 import QtQuick
 import QtQuick.Controls
-import "../Controls" as C
-import "../Layouts" as L
+import "../Inputs" as I
 import "../Visual" as V
 
 Item {
     id: root
-    clip: false
-    implicitWidth: _trigger.implicitWidth
-    implicitHeight: _trigger.implicitHeight
+    implicitWidth: 120
+    implicitHeight: 36
+    clip: false // to allow popup to show outside of the parent
 
     property int    currentIndex: 0
-    property bool   expanded: _popup.opened
+    property string currentText: ''
+    property bool   expanded: popup.opened
     property var    model: []
-    property int    widthHint: 200
 
     signal selected(int index, string text)
 
-    L.Row {
-        id: _trigger
-        implicitWidth: root.widthHint
-        implicitHeight: 36
-        borderWidth: 1
-        borderColor: pycolor.outline
-        color: (
-            mouse.pressed ?
-            pycolor.higher(pycolor.container, 1) :
-            pycolor.container
-        )
-        lpadding: 12
-        rpadding: 8
-        valign: 'center'
-        spacing: 8
+    I.Button {
+        id: display
+        anchors.fill: parent
+        alignment: 'start'
+        hpadding: 20
+        border: true
+        text: root.currentText
 
-        property string _currentLabel: (
-            root.model[root.currentIndex] === undefined ?
-            '' :
-            typeof root.model[root.currentIndex] === 'string' ?
-            root.model[root.currentIndex] :
-            root.model[root.currentIndex].label
-        )
-
-        V.Text {
-            width: root.widthHint - 40
-            color: pycolor.on_container
-            elide: Text.ElideRight
-            text: _trigger._currentLabel
+        onClicked: {
+            if (root.expanded) {
+                popup.close()
+            } else {
+                popup.open()
+            }
         }
-
+        
         V.Icon {
-            anchors.right: parent.right
-            size: 16
-            source: '../Resources/arrow-down-s-line.svg'
+            anchors {
+                right: parent.right
+                rightMargin: 8
+                // verticalCenter: parent.verticalCenter
+            }
+            y: parent.textYPosition
+            source: '../Resources/caret-left.svg'
             color: pycolor.text_secondary
-            rotation: root.expanded ? 180 : 0
+            rotation: root.expanded ? -90 : 0
 
             Behavior on rotation {
                 NumberAnimation {
-                    duration: 100
-                }
-            }
-        }
-
-        C.MouseArea {
-            id: mouse
-            anchors.fill: parent
-            onClicked: {
-                if (root.expanded) {
-                    _popup.close()
-                } else {
-                    _popup.open()
+                    duration: 50
                 }
             }
         }
     }
 
     Popup {
-        id: _popup
+        id: popup
         x: 0
-        y: _trigger.height + 4
-        width: root.implicitWidth
-        padding: 0
-        closePolicy: Popup.CloseOnEscape |
-                     Popup.CloseOnPressOutsideParent
+        y: display.height + 4
+        width: root.width
+        height: _preferredContentHeight + topPadding + bottomPadding
+        padding: 4
+        closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutsideParent
+
+        property int _entryHeight: 32
+        property int _preferredContentHeight: 
+            root.model.length == 0 ? 
+            _entryHeight :
+            root.model.length > 20 ?
+            _entryHeight * 20 + _spacing * 19 :
+            _entryHeight * root.model.length +
+            _spacing * (root.model.length - 1)
+        property int _spacing: 4
 
         background: V.Rectangle {
-            width: parent.width
-            height: parent.height
             border.width: 1
-            border.color: pycolor.outline
             color: pycolor.panel
             radius: 8
         }
 
         contentItem: ListView {
-            anchors.fill: parent
-            anchors.margins: 4
+            // popup's background and contentItem should not define their own
+            // explicit size. they are auto calculated when popup size changes.
+            id: listView
             clip: true
             model: root.model
-            spacing: 2
+            spacing: popup._spacing
 
-            delegate: V.Rectangle {
-                width: ListView.view.width - 8
-                height: typeof modelData === 'object' && modelData.description ?
-                        44 : 32
-                radius: 6
+            property int _entryHeight: 32
+
+            // ref: ../Layouts/Sidebar.qml
+            delegate: I.Button {
+                width: listView.width
+                height: popup._entryHeight
+                alignment: 'start'
+                hpadding: 16
+
+                bold: ListView.isCurrentItem
                 color: (
-                    index === root.currentIndex ?
+                    ListView.isCurrentItem ?
                     pycolor.paint_brand :
-                    (mouseArea.containsMouse ?
-                     pycolor.higher(pycolor.panel, 1) :
-                     pycolor.transparent)
+                    hovered ?
+                    pycolor.container_tint :
+                    pycolor.panel
                 )
-
-                V.Text {
-                    id: _label
-                    anchors {
-                        left: parent.left
-                        leftMargin: 10
-                        top: parent.top
-                        topMargin: 8
-                        right: parent.right
-                        rightMargin: 10
-                    }
-                    color: (
-                        index === root.currentIndex ?
-                        pycolor.on_paint_brand :
-                        pycolor.on_panel
-                    )
-                    elide: Text.ElideRight
-                    font.bold: index === root.currentIndex
-                    font.pixelSize: 13
-                    text: typeof modelData === 'string' ?
-                          modelData : modelData.label
-                }
-
-                V.Text {
-                    visible: typeof modelData === 'object' &&
-                             modelData.description
-                    anchors {
-                        left: parent.left
-                        leftMargin: 10
-                        top: _label.bottom
-                        topMargin: 2
-                        right: parent.right
-                        rightMargin: 10
-                    }
-                    color: (
-                        index === root.currentIndex ?
-                        pycolor.higher(pycolor.on_paint_brand, 2) :
-                        pycolor.text_secondary
-                    )
-                    elide: Text.ElideRight
-                    font.pixelSize: 11
-                    text: modelData.description
-                }
-
-                C.MouseArea {
-                    id: mouseArea
-                    anchors.fill: parent
-                    hoverEnabled: true
-                    onClicked: {
-                        root.currentIndex = index
-                        root.selected(
-                            index,
-                            typeof modelData === 'string' ?
-                            modelData : modelData.label
-                        )
-                        _popup.close()
-                    }
+                text: typeof modelData === "string" ?
+                    modelData : modelData.label
+                textColor: (
+                    ListView.isCurrentItem ? 
+                    pycolor.on_paint_brand :
+                    hovered ?
+                    pycolor.on_container_tint :
+                    pycolor.on_panel
+                )
+                onClicked: {
+                    root.currentIndex = index
+                    root.currentText = this.text
+                    root.selected(index, this.text)
+                    popup.close()
                 }
             }
+
+            // Component.onCompleted: {
+            //     pylayout.inspect_size(root, 'SelectBox:root')
+            //     pylayout.inspect_size(popup, 'SelectBox:popup')
+            //     pylayout.inspect_size(listView, 'SelectBox:listView')
+            // }
+        }
+    }
+
+    Component.onCompleted: {
+        if (root.model.length > 0) {
+            root.currentText = root.model[0]
         }
     }
 }

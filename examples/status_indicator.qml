@@ -9,6 +9,7 @@ Window {
         hpadding: 16
         vpadding: 8
         spacing: 16
+        clip: false
         color: pycolor.panel
 
         StatusIndicator {
@@ -19,6 +20,12 @@ Window {
             Component.onCompleted: {
                 console.log('maxTextWidth:', maxTextWidth)
             }
+        }
+
+        SelectBox {
+            width: 200
+            model: ['One', 'Two', 'Three', 'Four']
+            // property int _stretch: 1
         }
 
         Button {
