@@ -9,9 +9,9 @@ class Sidebar(qe.QObject):
             # ^^^^^ we must hold the reference of the model to prevent python GC.
             fields=('text', 'icon'),
             data=(
-                ('Dashboard', qe.pyassets.here('readiness_score.svg')),
-                ('Power Management', qe.pyassets.here('flashlight_fill.svg')),
-                ('Chipboard', qe.pyassets.here('cpu_line.svg')),
+                ('Dashboard', qe.assets.here('readiness_score.svg')),
+                ('Power Management', qe.assets.here('flashlight_fill.svg')),
+                ('Chipboard', qe.assets.here('cpu_line.svg')),
             ),
         )
         return self._model

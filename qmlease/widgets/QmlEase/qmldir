@@ -12,7 +12,7 @@ GhostBorder  1.0  Visual/GhostBorder.qml
 Horizontal   1.0  Layouts/Horizontal.qml
 Icon         1.0  Visual/Icon.qml
 IconButton   1.0  Inputs/IconButton.qml
-MouseArea    1.0  Other/MouseArea.qml
+MouseArea    1.0  Controls/MouseArea.qml
 RadioGroup   1.0  Inputs/RadioGroup.qml
 Rectangle    1.0  Visual/Rectangle.qml
 Row          1.0  Layouts/Row.qml

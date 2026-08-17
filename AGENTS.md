@@ -41,7 +41,7 @@ qmlease/: # 项目源代码
   widgets/:
     # QML 组件库
     LKWidgets/: 已停止开发, 可忽略.
-    QmlEase/: 
+    QmlEase/:
       # 主要组件库, 积极开发中. 每个子目录都会有一个 qmldir 文件.
       Composites/: 多种基础组件组合而成的复杂组件.
       Inputs/: 输入型组件.
@@ -62,7 +62,7 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 - 使用 `uv` 管理 pyproject.toml 中的依赖.
 - 使用 `ty` 检查 ".py" 文件的类型错误.
 - 使用 `ruff` 格式化 ".py" 文件的代码.
-- 使用 `python tools/qmllint.py check` 检查 ".qml" 文件的代码. (实验性功能)
+- 使用 `python tools/qmllint.py check` 检查 ".qml" 文件的代码. (可选, 实验性支持)
 
 如果要运行一个应用, 有两种方法:
 
@@ -105,3 +105,29 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 ## 代码风格 (QML)
 
 - 代码中使用全英文, 不要有中文注释.
+- QML 代码风格
+  - 书写顺序:
+    1. import official components library (QtQuick, QtQuick.Controls, QtQuick.Layouts, ...)
+    2. import qmlease components library (QmlEase)
+    3. import relative path (`import "../xxx" as xxx`)
+    4. component
+    5. id
+    6. geometric properties (anchors, x, y, width, height, implicitWidth, implicitHeight)
+    7. other properties (alphabetical order)
+    8. property assignments
+    9. signals
+    10. js functions
+    11. "onXxxChanged" slots
+    12. attached properties (e.g. `Behavior on <property> {...}`)
+    13. children
+    14. `Component.onCompleted: {...}`
+
+  - 范例参考
+
+    由于 QML 组件的开发周期较长, 有很多 ".qml" 文件的风格不一致的问题. 下面列出的是最近校正过, 可以作为范例的文件:
+    - examples/click_counter.qml
+    - examples/sidebar/sidebar.qml
+    - examples/status_indicator.qml
+    - qmlease/widgets/QmlEase/Inputs/Button.qml
+    - qmlease/widgets/QmlEase/Layouts/Row.qml
+    - qmlease/widgets/QmlEase/Visual/StatusIndicator.qml

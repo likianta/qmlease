@@ -1,7 +1,7 @@
 // inspired by daisyui button: https://daisyui.com/components/button/
 import QtQuick
+import "../Controls" as C
 import "../Layouts" as L
-import "../Other" as O
 import "../Visual" as V
 
 Item {
@@ -95,7 +95,7 @@ Item {
         }
     }
 
-    O.MouseArea {
+    C.MouseArea {
         id: mouse
         anchors.fill: parent
         onClicked: root.clicked()

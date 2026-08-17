@@ -1,4 +1,5 @@
 import QtQuick
+import "../Controls" as C
 import "../Layouts" as L
 import "../Visual" as V
 
@@ -24,7 +25,7 @@ L.Row {
         pycolor.outline_error :
         pycolor.container
     )
-    borderWidth: 1
+    // borderWidth: 1
     color: (
         status == 'idle' ?
         pycolor.container :
@@ -39,6 +40,7 @@ L.Row {
         pycolor.container
     )
 
+    property int    maxTextWidth: 0
     property string status: 'idle' // idle, info, success, warning, error
     property string text: (
         status == 'idle' ?
@@ -82,6 +84,10 @@ L.Row {
         pycolor.text_secondary
     )
 
+    function measureTextWidth(text) {
+        return textMetrics.getTextLength(text)   
+    }
+
     onTextChanged: {
         root.computeLayout()
     }
@@ -109,8 +115,27 @@ L.Row {
         color: root._indicatorColor
     }
 
-    V.Text {
-        color: root._textColor
-        text: root.text
+    Item {
+        implicitWidth: root.maxTextWidth > 0 ? 
+            root.maxTextWidth : textItem.implicitWidth
+        implicitHeight: textItem.implicitHeight
+
+        V.Text {
+            id: textItem
+            // width: root.maxTextWidth > 0 ? root.maxTextWidth : implicitWidth
+            color: root._textColor
+            text: root.text
+
+            C.TextMetrics {
+                id: textMetrics
+                target: parent
+                // Component.onCompleted: {
+                //     console.log(
+                //         'max width of status indicator', 
+                //         this.getTextLength('SUCCESS') // -> 50.66
+                //     )
+                // }
+            }
+        }
     }
 }

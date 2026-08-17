@@ -1,7 +1,7 @@
 import typing as tp
 from functools import partial
 
-from lk_utils import dedent
+from lk_utils import tw
 from lk_utils import fs
 from qtpy.QtCore import QRectF
 from qtpy.QtQml import QJSEngine
@@ -124,34 +124,51 @@ class LayoutEngine(QObject):
 
     @Slot(object)
     @Slot(object, str)
-    def inspect_size(self, item: QObject, remark: str = '') -> None:
-        print(
-            dedent(
-                """
-                inspect {}:
-                    size: {} x {}
-                    implicit size: {} x {}
-                    children rect size: {} x {}
-                """.format(
-                    '"{}" ({})'.format(remark, item.class_name)
-                    if remark
-                    else '`{}`'.format(item.class_name),
-                    *map(
-                        int,
-                        (
-                            item['width'],
-                            item['height'],
-                            item['implicitWidth'],
-                            item['implicitHeight'],
-                            item['childrenRect'].width(),
-                            item['childrenRect'].height(),
-                        ),
-                    ),
-                ),
-                indent=4,
-                lstrip=False,
-            )
+    @Slot(object, str, bool)
+    def inspect_size(
+        self,
+        item: QObject,
+        remark: str = '',
+        include_children: bool = False,
+        _level: int = 0,
+    ) -> tp.Optional[str]:
+        template = tw.dedent(
+            """
+            inspect {NAME}:
+                size: {WIDTH} x {HEIGHT}
+                implicit size: {IMPLICIT_WIDTH} x {IMPLICIT_HEIGHT}
+                children rect size: {CHILDREN_RECT_WIDTH} x \\
+                {CHILDREN_RECT_HEIGHT}
+
+                {CHILDREN_INSPECTION}
+            """,
+            indent=4,
+            join_sep='\\',
+            lstrip=False,
         )
+        output = template.format(
+            NAME='"{}" ({})'.format(remark, item.class_name)
+            if remark
+            else '`{}`'.format(item.class_name),
+            WIDTH=item['width'],
+            HEIGHT=item['height'],
+            IMPLICIT_WIDTH=item['implicitWidth'],
+            IMPLICIT_HEIGHT=item['implicitHeight'],
+            CHILDREN_RECT_WIDTH=item['childrenRect'].width(),
+            CHILDREN_RECT_HEIGHT=item['childrenRect'].height(),
+            CHILDREN_INSPECTION=tw.join(
+                self.inspect_size(
+                    child,
+                    include_children=True,
+                    _level=_level + 1,
+                )
+                for child in item.children()
+            ) if include_children else '',  # TODO
+        ).rstrip()
+        if _level == 0:
+            print(output)
+        else:
+            return tw.indent(output, 4 * _level)
 
 
 layout = LayoutEngine()

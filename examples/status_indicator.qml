@@ -1,38 +1,35 @@
+import QtQuick
 import QmlEase
 import QmlEase.Visual
 
 Window {
     Row {
         anchors.centerIn: parent
-        // width: 200
-        // height: 80
         valign: 'center'
-        
+        hpadding: 16
+        vpadding: 8
+        spacing: 16
+        color: pycolor.panel
+
         StatusIndicator {
-            id: indicator
-            width: 200
+            id: stat
+            maxTextWidth: measureTextWidth('DISCONNECTED')
+            text: status == 'idle' ? 
+                'IDLE' : status == 'success' ? 'CONNECTED' : 'DISCONNECTED'
+            Component.onCompleted: {
+                console.log('maxTextWidth:', maxTextWidth)
+            }
         }
-        
+
         Button {
             text: 'Change status'
             onClicked: {
-                switch (indicator.status) {
-                    case 'idle':
-                        indicator.status = 'info'
-                        break
-                    case 'info':
-                        indicator.status = 'success'
-                        break
-                    case 'success':
-                        indicator.status = 'warning'
-                        break
-                    case 'warning':
-                        indicator.status = 'error'
-                        break
-                    case 'error':
-                        indicator.status = 'idle'
-                        break
-                }
+                stat.status = (
+                    stat.status === 'idle' ? 'success' :
+                    stat.status === 'success' ? 'error' :
+                    stat.status === 'error' ? 'idle' :
+                    ''
+                )
             }
         }
     }
