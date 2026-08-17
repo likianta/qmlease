@@ -7,15 +7,15 @@ import difflib
 from lk_utils import dump
 from lk_utils import here
 from lk_utils import load
-from lk_utils import manipulate
+from lk_utils import manipulate_text
 from neoprint import print
 
 
-def main():
+def main() -> None:
     text_i = load('qmlease/widgets/QmlEase/Layouts/Row.qml', 'plain')
     # fmt: off
     text_o = (
-        manipulate(text_i)
+        manipulate_text(text_i)
         .prepend(
             '// This file was auto translated from ./Row.qml, please do not \n'
             '// modify it manuall.\n'
@@ -24,29 +24,26 @@ def main():
         .replacex_all(r'\brow\.', r'column.')
         # update halign comment
         .find("halign: 'start'")
-        .then_findx(r'// .+')
-        .replace('// start, stretch, center')
+        .then_findx(r'// .+').replace('// start, stretch, center')
         # update valign comment
         .then_find("valign: 'start'")
-        .then_findx(r'// .+')
-        .replace('// start, stretch')
+        .then_findx(r'// .+').replace('// start, stretch')
         # translate `computeLayout` function
         .reset_index()
         .find('function computeLayout').then_find('return').end().cut()
         .find('V.Rectangle').cut()
         .swap('// horizontal', '// vertical')
         .swapx(r'root\.halign\b', r'root\.valign\b')
-        .swap('.width', '.height')
         .swap('Width', 'Height')
+        .swap('.width', '.height')
         .swap('leftPadding', 'topPadding')
         .swap('rightPadding', 'bottomPadding')
         .replace('verticalCenter', 'horizontalCenter')
+        .replace('child.y', 'child.x')
         # translate real container
         .find('V.Rectangle')
-        .find('Row')
-        .replace('Column')
-        .then_find('id: row')
-        .replace('id: column')
+        .find('Row').replace('Column')
+        .then_find('id: row').replace('id: column')
         # translate `onCompleted` stage
         .then_find('Component.onCompleted')
         .replace_all('row', 'column')

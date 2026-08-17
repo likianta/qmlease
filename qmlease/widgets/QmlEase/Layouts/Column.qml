@@ -110,9 +110,18 @@ Item {
                 child.width = resonableWidth
             }
         } else if (root.halign == 'center') {
+            // for (let child of children) {
+            //     child.anchors.horizontalCenter = 
+            //         Qt.binding(() => column.horizontalCenter)
+            // }
+            
+            const resonableWidth = 
+                column.width - column.leftPadding - column.rightPadding
+            let childWidth = 0
             for (let child of children) {
-                child.anchors.horizontalCenter = 
-                    Qt.binding(() => column.horizontalCenter)
+                childWidth = child.width > 0 ? 
+                    child.width : child.implicitWidth
+                child.x = (column.width - childWidth) / 2
             }
         }
     }

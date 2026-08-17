@@ -107,7 +107,7 @@ wheels = [
 
 [[package]]
 name = "lk-utils"
-version = "3.8.0a3"
+version = "3.8.0a4"
 source = { registry = "http://localhost:2191/" }
 dependencies = [
     { name = "argsense" },
@@ -117,7 +117,7 @@ dependencies = [
     { name = "rich" },
 ]
 wheels = [
-    { url = "http://localhost:2191/lk-utils/lk_utils-3.8.0a3-py3-none-any.whl" },
+    { url = "http://localhost:2191/lk-utils/lk_utils-3.8.0a4-py3-none-any.whl" },
 ]
 
 [[package]]
@@ -541,7 +541,7 @@ dev = [
 requires-dist = [
     { name = "argsense", specifier = ">=1.1.2" },
     { name = "jurigged", specifier = ">=0.6.1" },
-    { name = "lk-utils", specifier = ">=3.8.0a3", index = "http://localhost:2191/" },
+    { name = "lk-utils", specifier = ">=3.8.0a4", index = "http://localhost:2191/" },
     { name = "materialyoucolor", specifier = ">=3.0.2" },
     { name = "neoprint", specifier = ">=0.1.10a0", index = "http://localhost:2191/" },
     { name = "pyside6", marker = "python_full_version >= '3.12' and python_full_version < '3.15' and extra == 'gui'", specifier = ">=6.11.0" },

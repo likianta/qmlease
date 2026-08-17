@@ -106,9 +106,18 @@ Item {
                 child.height = resonableHeight
             }
         } else if (root.valign == 'center') {
+            // for (let child of children) {
+            //     child.anchors.verticalCenter = 
+            //         Qt.binding(() => row.verticalCenter)
+            // }
+            
+            const resonableHeight = 
+                row.height - row.topPadding - row.bottomPadding
+            let childHeight = 0
             for (let child of children) {
-                child.anchors.verticalCenter = 
-                    Qt.binding(() => row.verticalCenter)
+                childHeight = child.height > 0 ? 
+                    child.height : child.implicitHeight
+                child.y = (row.height - childHeight) / 2
             }
         }
     }
