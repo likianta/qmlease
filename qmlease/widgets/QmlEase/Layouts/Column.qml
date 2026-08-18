@@ -3,13 +3,14 @@
 // Translator: sidework/translate_row_to_column.py
 
 import QtQuick
+import QtQuick as Q
 import "../Visual" as V
 
 Item {
     id: root
-    clip: true
     implicitWidth: column.implicitWidth + borderWidth * 2
     implicitHeight: column.implicitHeight + borderWidth * 2
+    clip: true
 
     default property alias content: column.data
 
@@ -19,6 +20,7 @@ Item {
     // property alias  backgroundHeight: root.height
     property bool   border: false // shorthand for borderWidth
     property string borderColor: pycolor.outline
+    property int    borderRadius: 8
     property int    borderWidth: border ? 1 : 0
     property int    bpadding: -1
     property string color: pycolor.transparent
@@ -137,8 +139,9 @@ Item {
         border.color: root.borderColor
         // clip: true
         color: root.color
+        radius: root.borderRadius
 
-        Column {
+        Q.Column {
             id: column
             anchors {
                 fill: parent

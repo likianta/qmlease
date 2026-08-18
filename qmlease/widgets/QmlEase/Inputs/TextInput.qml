@@ -1,69 +1,57 @@
 import QtQuick
 import QtQuick as Q
-import QtQuick.Layouts
-import QmlEase
+import "../Controls" as C
+import "../Layouts" as L
+import "../Visual" as V
 
-ColumnLayout {
+L.Column {
     id: root
-    implicitWidth: pysize.long_entry_width
-    // width: pysize.long_entry_width
-    // spacing: pysize.spacing_s
+    implicitWidth: 200
 
     property string color: pycolor.container
-    property bool   enabled: true
-    property string help
-    property string label
+    // property int    inputWidth: 0
+    property string help: ''
+    property string label: ''
     property string outlineColor: pycolor.outline
-    property string placeholder
+    property string placeholder: ''
+    property string prefix: ''
     property bool   readonly: false
     property bool   showEditingHint: false
-    property string text
+    // property string text: ''
+    property alias  text: inputBox.text
     property string textColor: pycolor.on_container
     property bool   _hasContent: text.length > 0
     property bool   _userEdited: false
 
     signal editingFinished(string text)
-    
+
+    // header row (above input box)
     Item {
         visible: root.label || root.help
-        Layout.fillWidth: true
-        // height: _label.height
-        height: pysize.above_entry_height
-        clip: true
+        width: parent.width
+        height: 16
 
-        Text {
-            id: _label
-            visible: root.label != ''
+        V.Text {
+            id: label
             anchors {
                 left: parent.left
                 leftMargin: 2
                 verticalCenter: parent.verticalCenter
             }
-            color: root.enabled ? pycolor.on_panel : pycolor.outline
-            // font.pixelSize: pyfont.size_s
+            color: root.enabled ? pycolor.text_primary : pycolor.text_secondary
             text: root.label
         }
 
-        IconButton {
-            id: _help
-            visible: root.help != ''
-            anchors {
-                verticalCenter: parent.verticalCenter
-                right: parent.right
-                rightMargin: 4
-            }
-        }
+        // TODO: root.help icon
     }
 
-    Rectangle {
-        id: _inputContainer
-        Layout.fillWidth: true
-        // height: _input.implicitHeight + 12
-        height: pysize.edit_height
-        border.width: _input.activeFocus ? 2 : 0
+    V.Rectangle {
+        id: inputContainer
+        width: parent.width
+        height: 36
+        border.width: inputBox.activeFocus ? 2 : 0
         border.color: root.outlineColor
         color: root.color
-        radius: pysize.radius_l
 
         Behavior on border.width {
             NumberAnimation {
@@ -71,90 +59,100 @@ ColumnLayout {
             }
         }
 
+        // border breathing effect, will be triggered when user presses enter to 
+        // submit something.
         SequentialAnimation {
-            id: _borderColorAnimation
-            // running: false
+            id: borderBreathingEffect
             ColorAnimation {
-                target: _inputContainer
+                target: inputContainer
                 property: 'border.color'
                 to: pycolor.solid_brand
                 duration: 100
             }
             ColorAnimation {
-                target: _inputContainer
+                target: inputContainer
                 property: 'border.color'
                 to: root.outlineColor
                 duration: 200
             }
         }
 
-        MouseArea {
+        L.Row {
+            id: inputRow
             anchors.fill: parent
-            cursorShape: root.enabled ? Qt.IBeamCursor : Qt.ForbiddenCursor
-            onClicked: _input.focus = true
-        }
-
-        Q.TextInput {
-            id: _input
-            anchors {
-                verticalCenter: parent.verticalCenter
-                left: parent.left
-                right: parent.right
-                margins: 12
+            valign: 'center'
+            hpadding: 8
+            spacing: 2
+                
+            V.Text {
+                visible: root.prefix
+                text: root.prefix
+                color: pycolor.text_dim
             }
-            clip: true
-            color: root.enabled ? root.textColor : pycolor.outline
-            enabled: root.enabled
-            font.family: pyfont.font_default
-            font.pixelSize: pyfont.size_m
-            readOnly: root.readonly
-            selectionColor: pycolor.solid_brand
-            text: root.text
 
-            onEditingFinished: {
-                if (root._userEdited) {
-                    root.editingFinished(root.text)
-                    root._userEdited = false
+            Q.TextInput {
+                id: inputBox
+                enabled: root.enabled
+                clip: true
+                color: root.enabled ? root.textColor : pycolor.text_secondary
+                font.pixelSize: 12
+                readOnly: root.readonly
+                selectionColor: pycolor.solid_brand
+                // text: root.text
+
+                onEditingFinished: {
+                    if (root._userEdited) {
+                        root.editingFinished(root.text)
+                        root._userEdited = false
+                    }
+                }
+
+                onTextChanged: {
+                    // root.text = text
+                    root._userEdited = true
+                }
+
+                // placeholder
+                V.Text {
+                    visible: root.placeholder && !root._hasContent
+                    anchors.fill: parent
+                    color: inputBox.color
+                    font: parent.font
+                    opacity: 0.5
+                    text: root.placeholder
+                    verticalAlignment: Q.TextInput.AlignVCenter
+                    wrapMode: Text.NoWrap
                 }
             }
-            onTextChanged: {
-                root.text = text
-                root._userEdited = true
-            }
-
-            Text {  // placeholder
-                visible: root.placeholder && !root._hasContent
-                anchors.fill: parent
-                color: _input.color
-                font: parent.font
-                opacity: 0.5
-                text: root.placeholder
-                verticalAlignment: Q.TextInput.AlignVCenter
-                wrapMode: Text.NoWrap
-            }
         }
 
-        Component.onCompleted: {
-            root.editingFinished.connect(() => {
-                if (_input.activeFocus) {
-                    _borderColorAnimation.start()
-                }
-            })
+        // just changes hovering cursor shape.
+        C.MouseArea {
+            anchors.fill: parent
+            acceptedButtons: Qt.NoButton
+            // cursorShape: root.enabled ? Qt.IBeamCursor : Qt.ForbiddenCursor
+            // cursorShape: root.readonly ? Qt.ArrowCursor : Qt.IBeamCursor
+            cursorShape:
+                root.enabled ?
+                (root.readonly ? Qt.ArrowCursor : Qt.IBeamCursor) :
+                Qt.ForbiddenCursor
         }
     }
 
+    // footer (below input box)
     Item {
+        width: parent.width
+        implicitHeight: hint.implicitHeight
         visible: root.showEditingHint
-        Layout.fillWidth: true
-        Layout.preferredHeight: pysize.below_entry_height
 
         property string _lastEditedText
 
-        Text {
+        V.Text {
+            id: hint
             visible: (
                 root.enabled &&
                 root._hasContent &&
-                _input.activeFocus &&
+                inputBox.activeFocus &&
                 root.text != parent._lastEditedText
             )
             anchors {
@@ -162,13 +160,23 @@ ColumnLayout {
                 rightMargin: 2
                 verticalCenter: parent.verticalCenter
             }
-            font.pixelSize: pyfont.size_s
+            font.pixelSize: 11
             text: 'Press Enter to apply'
         }
 
         Component.onCompleted: {
             this._lastEditedText = root.text
-            root.editingFinished.connect((text) => this._lastEditedText = text)
+            root.editingFinished.connect(
+                (text) => { this._lastEditedText = text }
+            )
         }
+    }
+
+    Component.onCompleted: {
+        root.editingFinished.connect(() => {
+            if (inputBox.activeFocus) {
+                borderBreathingEffect.start()
+            }
+        })
     }
 }

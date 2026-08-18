@@ -107,7 +107,7 @@ wheels = [
 
 [[package]]
 name = "lk-utils"
-version = "3.8.0a5"
+version = "3.8.0a8"
 source = { registry = "http://localhost:2191/" }
 dependencies = [
     { name = "argsense" },
@@ -117,7 +117,7 @@ dependencies = [
     { name = "rich" },
 ]
 wheels = [
-    { url = "http://localhost:2191/lk-utils/lk_utils-3.8.0a5-py3-none-any.whl" },
+    { url = "http://localhost:2191/lk-utils/lk_utils-3.8.0a8-py3-none-any.whl" },
 ]
 
 [[package]]
@@ -513,7 +513,7 @@ wheels = [
 
 [[package]]
 name = "qmlease"
-version = "4.0.0a15"
+version = "4.0.0a17"
 source = { editable = "." }
 dependencies = [
     { name = "argsense" },
@@ -541,11 +541,11 @@ dev = [
 requires-dist = [
     { name = "argsense", specifier = ">=1.1.2" },
     { name = "jurigged", specifier = ">=0.6.1" },
-    { name = "lk-utils", specifier = ">=3.8.0a5", index = "http://localhost:2191/" },
+    { name = "lk-utils", specifier = ">=3.8.0a8", index = "http://localhost:2191/" },
     { name = "materialyoucolor", specifier = ">=3.0.2" },
     { name = "neoprint", specifier = ">=0.1.10a0", index = "http://localhost:2191/" },
     { name = "pyside6", marker = "python_full_version >= '3.12' and python_full_version < '3.15' and extra == 'gui'", specifier = ">=6.11.0" },
-    { name = "qmlease-colorsys", specifier = ">=0.1.0a10", index = "http://localhost:2191/" },
+    { name = "qmlease-colorsys", specifier = ">=0.1.0a11", index = "http://localhost:2191/" },
     { name = "qtpy", specifier = ">=2.4.3" },
 ]
 provides-extras = ["gui"]
@@ -559,7 +559,7 @@ dev = [
 
 [[package]]
 name = "qmlease-colorsys"
-version = "0.1.0a10"
+version = "0.1.0a11"
 source = { registry = "http://localhost:2191/" }
 dependencies = [
     { name = "argsense" },
@@ -569,7 +569,7 @@ dependencies = [
     { name = "pycolornames" },
 ]
 wheels = [
-    { url = "http://localhost:2191/qmlease-colorsys/qmlease_colorsys-0.1.0a10-py3-none-any.whl" },
+    { url = "http://localhost:2191/qmlease-colorsys/qmlease_colorsys-0.1.0a11-py3-none-any.whl" },
 ]
 
 [[package]]

@@ -1,11 +1,12 @@
 import QtQuick
+import QtQuick as Q
 import "../Visual" as V
 
 Item {
     id: root
-    clip: true
     implicitWidth: row.implicitWidth + borderWidth * 2
     implicitHeight: row.implicitHeight + borderWidth * 2
+    clip: true
 
     default property alias content: row.data
 
@@ -15,6 +16,7 @@ Item {
     // property alias  backgroundHeight: root.height
     property bool   border: false // shorthand for borderWidth
     property string borderColor: pycolor.outline
+    property int    borderRadius: 8
     property int    borderWidth: border ? 1 : 0
     property int    bpadding: -1
     property string color: pycolor.transparent
@@ -133,8 +135,9 @@ Item {
         border.color: root.borderColor
         // clip: true
         color: root.color
+        radius: root.borderRadius
 
-        Row {
+        Q.Row {
             id: row
             anchors {
                 fill: parent

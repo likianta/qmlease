@@ -61,7 +61,7 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 - 使用 `python` 运行脚本.
 - 使用 `uv` 管理 pyproject.toml 中的依赖.
 - 使用 `ty` 检查 ".py" 文件的类型错误.
-- 使用 `ruff` 格式化 ".py" 文件的代码.
+- 使用 `ruff` 格式化 ".py" 文件的代码 (`./qmlease/widgets/` 目录下没有 .py 文件, 需要排除).
 - 使用 `python tools/qmllint.py check` 检查 ".qml" 文件的代码. (可选, 实验性支持)
 
 如果要运行一个应用, 有两种方法:
