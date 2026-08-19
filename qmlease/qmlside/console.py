@@ -2,23 +2,28 @@ import os
 import re
 import sys
 
+import neoprint as np
 from lk_utils import fs
 from neoprint.path_scope import path_glob
-from qtpy.QtCore import QMessageLogContext
+from qtpy import QtCore
 from qtpy.QtCore import QtMsgType
-from qtpy.QtCore import qInstallMessageHandler
 
+from ..application import app
 from .._env import IS_WINDOWS
-from .._env import QT_VERSION
 from ..qtcore import QObject
 
-if QT_VERSION >= (6, 4, 0):
-    from qtpy.QtCore import qCritical as QtCriticalMsg
-    from qtpy.QtCore import qWarning as QtWarningMsg
-else:
-    from qtpy.QtCore import QtCriticalMsg  # ty: ignore
-    from qtpy.QtCore import QtWarningMsg  # ty: ignore
+# print(':nl', QtCore.qDebug, QtCore.qInfo, QtCore.qWarning, QtCore.qCritical)
+# print(
+#     ':nl',
+#     QtMsgType.QtSystemMsg,
+#     QtMsgType.QtDebugMsg,
+#     QtMsgType.QtInfoMsg,
+#     QtMsgType.QtWarningMsg,
+#     QtMsgType.QtCriticalMsg,
+#     QtMsgType.QtFatalMsg,
+# )
 
+RAISE_EXCEPTION = os.getenv('QMLEASE_ZERO_TOLERANCE_EXCEPTION', '0') == '1'
 SHOW_FUNCNAME = False
 SHOW_UNPLEASENT_WARNINGS = os.getenv('QMLEASE_DEBUG', '0') == '1'
 _BUILTIN_WIDGETS_DIR = fs.there('../widgets')
@@ -27,14 +32,14 @@ _VENV_PACKAGES_DIR = fs.normpath(sys.exec_prefix + '/Lib/site-packages')
 
 
 class Console(QObject):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__()
         self._file_id_map = {}
         #   dict[str id, tuple[str pretty_path, int start_line_no]]
         self._file_id_map_rev = {}
         self._file_id_pattern = re.compile(r'\[file_id:(\d+)]')
         self._simple_id_counter = 0
-        qInstallMessageHandler(self._handle_message)
+        QtCore.qInstallMessageHandler(self._handle_message)
 
     def generate_file_id(self, path: str, start_line_no: int) -> str:
         path = fs.normpath(path)
@@ -52,7 +57,7 @@ class Console(QObject):
         return file_id
 
     def _handle_message(
-        self, mode: QtMsgType, ctx: QMessageLogContext, msg: str
+        self, mode: QtMsgType, ctx: QtCore.QMessageLogContext, msg: str
     ) -> None:
         """
         params:
@@ -76,7 +81,7 @@ class Console(QObject):
                 special case 2:  TODO: explain this case
                     '[file_id:<id>]...'
         """
-        # print(':v', mode, ctx.file, ctx.line, ctx.function, msg)  # TEST
+        # print(':lnv', mode, ctx.file, ctx.line, ctx.function, msg)  # TEST
         # if ctx.file == 'eval code':
         #     raise Exception(msg)
 
@@ -90,9 +95,10 @@ class Console(QObject):
             if ctx.file:
                 # strip `<file>:<row>:<col>` prefix from `msg`.
                 if msg.startswith(ctx.file):
-                    msg = msg.replace(ctx.file, '', 1)
-                    assert (m := re.match(r':\d+(?::\d+)?: ', msg)), msg
-                    msg = msg[len(m.group()) :]
+                    assert msg.startswith(
+                        prefix := '{}:{}: '.format(ctx.file, ctx.line)
+                    )
+                    msg = msg[len(prefix) :]
 
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
@@ -132,28 +138,20 @@ class Console(QObject):
         line_number = 0 if ctx.line == -1 else ctx.line + start_line_no
         source = f'{file_path}:{line_number}'
         func_name = ctx.function
-        logger_markup = ':s1'
 
-        # optimize msg
-        if mode in (QtWarningMsg, QtCriticalMsg):
-            if ctx.file and msg.startswith(ctx.file):
-                # examples:
-                #   msg = '<ctx.file>: <message>'
-                #   msg = '<ctx.file>:<line_no>:<column_no>: <message>'
-                # so we firstly strip `ctx.file`, then split by ': ' to extract
-                # the main message.
-                msg = msg[len(ctx.file) :].split(': ', 1)[1]
-            msg += '!'
-            logger_markup = ':v4s1'
-
-        # msg = msg.replace('[', '\\[')
-        if SHOW_FUNCNAME and func_name:
-            print(
-                '{}  >  {}  >  {}'.format(source, ctx.function, msg),
-                logger_markup,
+        if mode in (QtMsgType.QtWarningMsg, QtMsgType.QtCriticalMsg):
+            np.print(
+                '{} > {}'.format(source, msg),
+                markup=':s1v{}'.format('6' if QtMsgType.QtWarningMsg else '8'),
+            )
+            if RAISE_EXCEPTION:
+                app.force_exit()
+        elif SHOW_FUNCNAME and func_name:
+            np.print(
+                '{} > {} > {}'.format(source, ctx.function, msg), markup=':s1'
             )
         else:
-            print('{}  >  {}'.format(source, msg), logger_markup)
+            np.print('{} > {}'.format(source, msg), markup=':s1')
 
     @staticmethod
     def _normalize_path(path: str) -> str:

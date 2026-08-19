@@ -2,6 +2,7 @@ import os
 import typing as t
 
 from lk_utils import fs
+from qtpy.QtCore import QTimer
 from qtpy.QtGui import QIcon
 from qtpy.QtQml import QQmlApplicationEngine
 from qtpy.QtQml import QQmlContext
@@ -137,6 +138,28 @@ class Application(QApplication):
         else:
             self._run(qmlfile)
     
+    def show_splash_screen(self, file: str) -> None:
+        assert fs.exist(file)
+        
+        from qtpy.QtCore import Qt
+        from qtpy.QtGui import QPixmap
+        from qtpy.QtWidgets import QSplashScreen, QWidget
+        
+        pixmap = QPixmap(file)  # noqa
+        splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)  # type: ignore
+        splash.setMask(pixmap.mask())
+        
+        def on_close() -> None:
+            nonlocal splash
+            print(':v', 'close splash screen')
+            splash.hide()
+            splash.finish(QWidget())  # noqa
+        
+        self.engine.objectCreated.connect(on_close)  # noqa
+        
+        splash.show()
+        self.processEvents()
+    
     def _run(self, qmlfile: str) -> None:
         """
         note: do not merge this method into `run`, because -
@@ -159,29 +182,10 @@ class Application(QApplication):
     #   -startapps+&cd=1&hl=zh-CN&ct=clnk&gl=sg
     launch = start = open = run
     
-    def show_splash_screen(self, file: str) -> None:
-        assert fs.exist(file)
-        
-        from qtpy.QtCore import Qt
-        from qtpy.QtGui import QPixmap
-        from qtpy.QtWidgets import QSplashScreen, QWidget
-        
-        pixmap = QPixmap(file)  # noqa
-        splash = QSplashScreen(pixmap, Qt.WindowStaysOnTopHint)  # noqa
-        splash.setMask(pixmap.mask())
-        
-        def on_close() -> None:
-            nonlocal splash
-            print(':v', 'close splash screen')
-            splash.hide()
-            splash.finish(QWidget())  # noqa
-        
-        self.engine.objectCreated.connect(on_close)  # noqa
-        
-        splash.show()
-        self.processEvents()
-    
     # --------------------------------------------------------------------------
+
+    def force_exit(self, delay: int = 0) -> None:
+        QTimer.singleShot(delay, self.quit)
     
     def on_exit_register(self, func: t.Callable) -> int:
         self._on_exit_funcs.append(func)

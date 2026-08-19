@@ -1,5 +1,5 @@
 import os
-import typing as t
+import typing as tp
 
 
 def _find_qt_api() -> str:
@@ -7,15 +7,24 @@ def _find_qt_api() -> str:
     this should be called before importing qtpy.
     refer: `lib:qtpy/__init__.py`
     """
-    api = os.getenv('QT_API', '')
-    
-    if not api:
+    if api := os.getenv('QT_API', '').lower():
+        if api == 'pyside2':
+            # try to repair pyside2 highdpi issue
+            #   https://www.hwang.top/post/pyside2pyqt-zai-windows-zhong-tian
+            #   -jia-dui-gao-fen-ping-de-zhi-chi/
+            # warning: this must be called before QCoreApplication is created.
+            from PySide2 import QtCore  # type: ignore
+
+            QtCore.QCoreApplication.setAttribute(
+                QtCore.Qt.AA_EnableHighDpiScaling
+            )
+        return api
+    else:
         for pkg, api in {
-            'PySide6'     : 'pyside6',
-            'PyQt6'       : 'pyqt6',
-            'PySide2'     : 'pyside2',
-            'PyQt5'       : 'pyqt5',
-            'pyside6_lite': 'pyside6_lite'
+            'PySide6': 'pyside6',
+            'PyQt6': 'pyqt6',
+            'PySide2': 'pyside2',
+            'PyQt5': 'pyqt5',
         }.items():
             try:
                 m = __import__(pkg)
@@ -26,42 +35,27 @@ def _find_qt_api() -> str:
                     ':v2',
                     'auto detected qt api: {} ({})'.format(
                         api, getattr(m, '__version__', 'version unknown')
-                    )
+                    ),
                 )
                 os.environ['QT_API'] = api
-                break
+                return api
         else:
             raise ModuleNotFoundError('no qt bindings found!')
-    
-    if api == 'pyside6_lite':
-        # see `sidework/pyside_package_tailor/dist/pyside6_lite`.
-        # activate special pyside6 location.
-        import pyside6_lite  # noqa
-        # set environ to be 'pyside6' for qtpy to recognize it.
-        os.environ['QT_API'] = 'pyside6'
-    
-    elif api == 'pyside2':
-        # try to repair pyside2 highdpi issue
-        #   https://www.hwang.top/post/pyside2pyqt-zai-windows-zhong-tian-jia
-        #   -dui-gao-fen-ping-de-zhi-chi/
-        # warning: this must be called before QCoreApplication is created.
-        from PySide2 import QtCore  # noqa
-        QtCore.QCoreApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    
-    return api
 
 
-def _get_qt_version() -> t.Tuple[int, int, int]:
+def _get_qt_version() -> tp.Tuple[int, int, int]:
     """
     return <major>.<minor> version of the qt api.
     """
     from qtpy import QT_VERSION  # e.g. '5.15.2'
+
+    assert isinstance(QT_VERSION, str)
     assert QT_VERSION.count('.') == 2
     # noinspection PyTypeChecker
-    return tuple(map(int, QT_VERSION.split('.')))
+    return tuple(map(int, QT_VERSION.split('.')))  # type: ignore
 
 
-IS_WINDOWS: bool = os.name == 'nt'
-QT_API: str = _find_qt_api()
-QT_DEBUG: bool = False
-QT_VERSION: t.Tuple[int, int, int] = _get_qt_version()
+IS_WINDOWS = os.name == 'nt'
+QT_API = _find_qt_api()
+QT_DEBUG = False
+QT_VERSION = _get_qt_version()

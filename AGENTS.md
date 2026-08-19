@@ -64,10 +64,11 @@ pyproject.toml: 我们使用现代的 Python 项目管理方式 (uv + ruff + ty)
 - 使用 `ty` 检查 ".py" 文件的类型错误.
 - 使用 `ruff` 格式化 ".py" 文件的代码 (`./qmlease/widgets` 目录下没有 .py 文件, 需要排除).
 
-如果要运行一个应用, 有两种方法:
+如果要运行一个应用, 有三种方法:
 
 1. 如果有 py 脚本作为入口, 则通过 `python <py_file>` 启动.
 2. 如果没有 py 脚本, 只有一个 qml 文件作为入口, 则通过 `python -m qmlease run <qml_file>` 启动.
+3. 如果要调试一个应用, 使用 `python tools/debug_runner.py <py_file>` 启动.
 
 ## 代码风格 (Python)
 
