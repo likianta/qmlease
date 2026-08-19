@@ -9,20 +9,21 @@ L.Column {
     implicitWidth: 200
 
     property string color: pycolor.container
-    // property int    inputWidth: 0
     property string help: ''
+    property alias  inputMask: inputBox.inputMask
+    property alias  inputWidth: inputBox.width
     property string label: ''
     property string outlineColor: pycolor.outline
     property string placeholder: ''
     property string prefix: ''
     property bool   readonly: false
     property bool   showEditingHint: false
-    // property string text: ''
     property alias  text: inputBox.text
     property string textColor: pycolor.on_container
     property bool   _hasContent: text.length > 0
     property bool   _userEdited: false
 
+    signal editing(string text)
     signal editingFinished(string text)
 
     // header row (above input box)
@@ -107,8 +108,13 @@ L.Column {
                     }
                 }
 
-                onTextChanged: {
-                    // root.text = text
+                // onTextChanged: {
+                //     // root.text = text
+                //     root._userEdited = true
+                // }
+
+                onTextEdited: {
+                    root.editing(root.text)
                     root._userEdited = true
                 }
 

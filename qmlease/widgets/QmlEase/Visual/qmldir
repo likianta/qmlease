@@ -1,7 +1,7 @@
 module QmlEase.Visual
 
 Circle           1.0  Circle.qml
-Divider          1.0  Divider.qml
+DividerLine      1.0  DividerLine.qml
 Empty            1.0  Empty.qml
 GhostBorder      1.0  GhostBorder.qml
 Icon             1.0  Icon.qml
