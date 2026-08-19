@@ -213,6 +213,11 @@ class QObject(QtObject, metaclass=DynamicPropMeta):
     @property
     def qobj(self) -> t.Self:
         return self
+
+    def find_child(self, object_name: str) -> 'QObject':
+        child = self.findChild(QtObject, object_name)
+        assert child
+        return QObjectDelegate(child)
     
     def parent(self) -> 'QObject':
         return t.cast(QObject, QObjectDelegate(QtObject.parent(self)))
@@ -302,6 +307,11 @@ class QObjectDelegate:
         # e.g. 'LKColumn_QMLTYPE_18' -> 'LKColumn'
         # noinspection PyTypeChecker
         return self.qobj.metaObject().className().split('_QMLTYPE_')[0]
+    
+    def find_child(self, object_name: str) -> 'QObject':
+        child = self.qobj.findChild(QtObject, object_name)
+        assert child
+        return QObjectDelegate(child)
     
     def parent(self) -> 'QObject':
         return t.cast(QObject, QObjectDelegate(self.qobj.parent()))

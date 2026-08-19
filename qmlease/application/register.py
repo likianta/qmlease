@@ -24,13 +24,13 @@ class Register:
     # the holder is made for preventing the objects which were registered to
     #   qml side from being recycled by python garbage collector incorrectly.
     __hidden_ref: t.Dict[int, QObject]
-    
+
     def __init__(self, root_context: QQmlContext):
         self._namespaces = {'py': Namespace()}
         self._root = root_context
         self.__hidden_ref = {}
         self._root.setContextProperty('py', self._namespaces['py'])
-    
+
     def register(
         self,
         qobj: t.Union[QObject, type[QObject]],
@@ -39,9 +39,9 @@ class Register:
     ) -> None:
         """
         register an instance or a subclass of QObject to qml side.
-        
+
         read in details: `docs/the-app-register-method.md`
-        
+
         params:
             qobj: either a QObject subclass or a subclass instance.
             name:
@@ -54,7 +54,7 @@ class Register:
                     'py':
                         register to `py` namespace.
                 else (any other string):
-                    register to the given namespace. be sure the custom 
+                    register to the given namespace. be sure the custom
                     namespace contains only `[a-zA-Z0-9_]`.
 
         example:
@@ -84,7 +84,24 @@ class Register:
                 }
         """
         # print(':v', name, qobj, type(qobj), isinstance(qobj, QObject))
-        
+
+        instance: QObject = qobj if isinstance(qobj, QObject) else qobj()
+        name = name or _pascal_2_snake_case(instance.__class__.__name__)
+        if namespace == 'py':
+            self._namespaces['py'].insert(name, instance)
+        elif namespace in ('', 'global'):
+            self._root.setContextProperty(name, instance)
+        else:
+            # print(namespace, name, ':pv')
+            if namespace not in self._namespaces:
+                self._namespaces[namespace] = Namespace()
+                self._root.setContextProperty(
+                    namespace, self._namespaces[namespace]
+                )
+            self._namespaces[namespace].insert(name, instance)
+        self.__hidden_ref[id(instance)] = instance
+
+        """
         if isinstance(qobj, QObject):
             name = name or _pascal_2_snake_case(qobj.__class__.__name__)
             
@@ -170,13 +187,15 @@ class Register:
             raise Exception()
         
         self.__hidden_ref[id(qobj)] = qobj
-    
+        """
+
     def freeze(self) -> None:
         # self.__root.setContextProperty('py', self._namespaces['py'])
         pass
-    
+
     def release(self) -> None:
-        for v in tuple(self._namespaces.values()): del v  # noqa
+        for v in tuple(self._namespaces.values()):
+            del v  # noqa
         self._namespaces.clear()
         self._namespaces['py'] = Namespace()
         self.__hidden_ref.clear()
@@ -184,15 +203,15 @@ class Register:
 
 class Namespace(QQmlPropertyMap):
     _subspaces: t.Dict[str, 'Namespace']  # patch for pyside6 v6.6+
-    
+
     def __init__(self) -> None:
         super().__init__()
         self._subspaces = {}
-    
+
     def __getitem__(self, sub_space_name: str) -> 'Namespace':
         return self._subspaces[sub_space_name]
-    
-    def insert(self, key, value) -> None:
+
+    def insert(self, key, value) -> None:  # type: ignore
         if isinstance(value, Namespace):
             self._subspaces[key] = value
         super().insert(key, value)
