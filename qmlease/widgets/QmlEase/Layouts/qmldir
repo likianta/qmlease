@@ -1,5 +1,6 @@
 module QmlEase.Layouts
 
+CardLayout  1.0  ./CardLayout.qml
 Column      1.0  ./Column.qml
 Container   1.0  ./Container.qml
 Horizontal  1.0  ./Horizontal.qml
