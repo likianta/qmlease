@@ -218,6 +218,11 @@ class WidgetSupport(QObject):
             int, texts and max(map(self.estimate_line_width, texts)) or 0
         )
 
+    @Slot(str, result=int)
+    def get_mask_length(self, mask: str) -> int:
+        # e.g. '>HHHH;0' -> 4
+        return len(mask[1:].split(';')[0])
+
     @Slot(result=str)
     def generate_random_id(self) -> str:
         return uuid1().hex

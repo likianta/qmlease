@@ -7,8 +7,15 @@ import "../Visual" as V
 L.Column {
     id: root
     implicitWidth: 200
+    implicitHeight:
+        (root.label || root.help ? header.height : 0) +
+        inputContainer.height +
+        (root.showEditingHint ? footer.height : 0)
 
     property string color: pycolor.container
+    // DELETE: displayText cannot be a property since it should be defer 
+    // computed after user edited.
+    // property string displayText: inputMask == '' ? text : getMaskedText()
     property string help: ''
     property alias  inputMask: inputBox.inputMask
     property alias  inputWidth: inputBox.width
@@ -21,13 +28,29 @@ L.Column {
     property alias  text: inputBox.text
     property string textColor: pycolor.on_container
     property bool   _hasContent: text.length > 0
+    property int    _maskLength: inputMask == '' ? 
+        0 : py.qmlease.get_mask_length(inputMask)
     property bool   _userEdited: false
 
-    signal editing(string text)
-    signal editingFinished(string text)
+    signal editing(string displayText)
+    signal editingFinished(string displayText)
+
+    function getDisplayText() {
+        return root.inputMask ? root.getMaskedText() : root.text
+    }
+
+    function getMaskedText() {
+        /// QtQuick.TextInput shows a weird behavior when inputMask is set.
+        /// For example when we are typing from '0000' to '0100', it shows:
+        ///     text: '1'
+        ///     displayText: '0000' (an old value!)
+        /// We use this function to resolve this issue.
+        return inputBox.getText(0, root._maskLength)
+    }
 
     // header row (above input box)
     Item {
+        id: header
         visible: root.label || root.help
         width: parent.width
         height: 16
@@ -103,18 +126,13 @@ L.Column {
 
                 onEditingFinished: {
                     if (root._userEdited) {
-                        root.editingFinished(root.text)
+                        root.editingFinished(root.getDisplayText())
                         root._userEdited = false
                     }
                 }
 
-                // onTextChanged: {
-                //     // root.text = text
-                //     root._userEdited = true
-                // }
-
                 onTextEdited: {
-                    root.editing(root.text)
+                    root.editing(root.getDisplayText())
                     root._userEdited = true
                 }
 
@@ -147,9 +165,10 @@ L.Column {
 
     // footer (below input box)
     Item {
+        id: footer
+        visible: root.showEditingHint
         width: parent.width
         implicitHeight: hint.implicitHeight
-        visible: root.showEditingHint
 
         property string _lastEditedText
 
