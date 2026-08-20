@@ -1,21 +1,24 @@
 import typing as tp
-from functools import partial
 
 from lk_utils import tw
 from lk_utils import fs
-from qtpy.QtCore import QRectF
-from qtpy.QtQml import QJSEngine
+from qtpy.QtCore import QObject as OriginQObject
+from qtpy.QtGui import QFont
+from qtpy.QtGui import QFontMetrics
 from qtpy.QtQml import QQmlComponent
 from qtpy.QtQml import QQmlEngine
 
 from ...qtcore import QObject
-from ...qtcore import Signal
 from ...qtcore import Slot
 from ...qtcore import bind_prop
 from ...style import pyenum
 
 
 class LayoutEngine(QObject):
+    _font_metrics: QFontMetrics
+    _qml_engine: QQmlEngine
+    __helper: tp.Optional[OriginQObject]
+
     def __init__(self) -> None:
         super().__init__()
         self._qml_engine = QQmlEngine()
@@ -32,6 +35,14 @@ class LayoutEngine(QObject):
             self.__helper = comp.create()
             assert self.__helper
         return self.__helper
+
+    def set_font(self, font_family: str, font_size: int = 12) -> None:
+        font = QFont()
+        font.setPixelSize(font_size)
+        font.setFamily(font_family)
+        self._font_metrics = QFontMetrics(font)
+
+    # --------------------------------------------------------------------------
 
     @Slot(object, bool, result=bool)
     def compute_layout(self, parent: QObject, horizontal: bool) -> bool:

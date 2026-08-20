@@ -1,5 +1,6 @@
 """
-TODO: this module is going to replace `../layout_helper/layout_helper.py`.
+DELETE: this module is going to be deleted. see alternative at 
+`qmlease/qmlside/layout_engine/layout_engine.py`.
 """
 
 import typing as t

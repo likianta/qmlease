@@ -6,6 +6,7 @@ L.Column {
     id: root
     default property alias content: contentArea.data
     property bool   collapsible: false
+    property int    contentPadding: 12
     property string title: ''
 
     implicitWidth: Math.max(titleText.implicitWidth + 24, 200)
@@ -19,7 +20,7 @@ L.Column {
     V.Rectangle {
         height: 32
         clip: false
-        radius: parent.borderRadius
+        radius: root.borderRadius
         color: pycolor.container
 
         // gasket
@@ -53,18 +54,17 @@ L.Column {
     // sizing problem: 
     // https://chatgpt.com/share/6a8662e3-8488-83e8-bf0e-cbea4b373f6c
     Item {  // content wrapper
-        property int _padding: 12
         implicitHeight: 
             (
                 contentArea.childrenRect.height > 0 ?
                 contentArea.childrenRect.height : 80
-            ) + _padding * 2
+            ) + root.contentPadding * 2
         
         Item {  // content area
             id: contentArea
             anchors {
                 fill: parent
-                margins: parent._padding
+                margins: root.contentPadding
             }
             // x: parent._padding
             // y: parent._padding

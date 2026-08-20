@@ -1,29 +1,31 @@
 """
-ref:
-    https://doc.qt.io/qt-6/qml-qtquick-image.html#source-prop
-    https://doc.qt.io/qt-6/qquickimageprovider.html
-        https://doc.qt.io/qt-6/qquickimageprovider.html#an-example
+References:
+- https://doc.qt.io/qt-6/qml-qtquick-image.html#source-prop
+- https://doc.qt.io/qt-6/qquickimageprovider.html
+- https://doc.qt.io/qt-6/qquickimageprovider.html#an-example
 """
 
 import atexit
-import typing as t
+import typing as tp
+
 from lk_utils import fs
+from lk_utils import uuid
 from qtpy.QtCore import QSize
 from qtpy.QtGui import QImage
 from qtpy.QtQuick import QQuickImageProvider
-from uuid import uuid1
+
 from ..qtcore import QObject
 from ..qtcore import Signal
 
 
 class T:
-    BakedImage = t.TypeVar('BakedImage', bound=t.Any)
+    BakedImage = tp.TypeVar('BakedImage', bound=tp.Any)
 
 
 class LocalImageProvider(QObject):
     image_updated = Signal(str)
     
-    def __init__(self, root: str = fs.xpath('_cache')) -> None:
+    def __init__(self, root: str = fs.here('_image_cache')) -> None:
         super().__init__()
         self.root = fs.abspath(root)
         self._cached_files = []
@@ -48,7 +50,7 @@ class LocalImageProvider(QObject):
             fs.remove_file(f)
     
     def _random_file(self) -> str:
-        return '{}/{}.png'.format(self.root, uuid1())
+        return '{}/{}.png'.format(self.root, uuid())
     
     def _save_to_local(self, obj: T.BakedImage) -> str:
         """
@@ -65,7 +67,7 @@ class ImageProvider(QQuickImageProvider):
     def __init__(
         self,
         domain: str = 'myimages',
-        default_size: t.Tuple[int, int] = (800, 600),
+        default_size: tp.Tuple[int, int] = (800, 600),
         #   TODO: dynamically get size from realtime image data.
     ) -> None:
         super().__init__(QQuickImageProvider.ImageType.Image)

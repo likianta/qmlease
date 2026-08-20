@@ -4,7 +4,8 @@
 /// This file is used by "./layout_engine.py", see also 
 /// `.layout_engine:LayoutEngine:compute_layout`.
 
-import QtQml 2.0
+import QtQml
+import QtQuick
 
 QtObject {
     function alignChild(parent, child, anchor) {
@@ -37,6 +38,12 @@ QtObject {
                 child.anchors.bottom = Qt.binding(() => parent.bottom)
                 break
         }
+    }
+
+    function getTextLength(text, font_size) {
+        textMetrics.font.pixelSize = font_size
+        textMetrics.text = text
+        return textMetrics.width
     }
 
     function inferSize(item, dimension) {
@@ -77,5 +84,9 @@ QtObject {
     function wrapSize2(target, ref, hshift, vshift) {
         target.width = Qt.binding(() => ref.width + hshift)
         target.height = Qt.binding(() => ref.height + vshift)
+    }
+
+    TextMetrics {
+        id: textMetrics
     }
 }

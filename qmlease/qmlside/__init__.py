@@ -3,6 +3,8 @@ from . import widgets_backend
 from .assets import assets
 from .broadcast import pybroad
 from .hot_reloader import HotReloader
+from .image_provider import ImageProvider
+from .image_provider import LocalImageProvider
 from .layout_engine import layout
 from .model import ListModel
 from .model import Model
@@ -10,3 +12,4 @@ from .model import SimpleModel
 from .qml_eval import eval_js
 from .qml_eval import qml_eval
 from .resource_manager import BaseResourceManager
+from .widget_support import widget_support

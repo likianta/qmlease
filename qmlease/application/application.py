@@ -17,7 +17,7 @@ from ..qtcore import Signal
 class Application(QApplication):
     engine: QQmlApplicationEngine
     root: QQmlContext
-    on_exit: Signal
+    # on_exit: Signal
     _on_exit_funcs: t.List[t.Callable]
     _register: Register
     
@@ -102,15 +102,14 @@ class Application(QApplication):
     
     def _register_backend(self) -> None:
         from ..pyside import pyside
-        from ..qmlside import assets, layout, pybroad  # DELETE
+        from ..qmlside import assets, layout, pybroad, widget_support
         from ..style import pyenum, pystyle
-        from ..widget_support import widget_support
         
         assets.add_source(fs.there('../widgets/LKWidgets'), 'lkwidgets')
         assets.add_source(fs.there('../widgets/QmlEase/Assets'), 'qmlease')
     
         # self.register(widget_support, 'widget', 'qmlease')
-        self.register(widget_support, 'qmlease')
+        self.register(widget_support, 'qmlease')  # used as `py.qmlease.xxx`
         
         self.register(assets, 'pyassets', 'global')
         self.register(layout, 'pylayout', 'global')
