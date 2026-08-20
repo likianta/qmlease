@@ -8,36 +8,67 @@ import "../Visual" as V
 
 Item {
     id: root
-    implicitWidth: column.implicitWidth + borderWidth * 2
-    implicitHeight: column.implicitHeight + borderWidth * 2
-    clip: true
-
-    default property alias content: column.data
-
     // note: if you want to animate the background width or height, do not use 
     // `Behavior on width` directly; use `Behavior on implicitWidth` instead.
     // property alias  backgroundWidth: root.width
     // property alias  backgroundHeight: root.height
+    implicitWidth: 
+        finalLeftMargin + 
+        borderWidth +
+        column.implicitWidth + 
+        borderWidth +
+        finalRightMargin
+    implicitHeight: 
+        finalTopMargin + 
+        borderWidth +
+        column.implicitHeight + 
+        borderWidth +
+        finalBottomMargin
+    clip: true
+
+    default property alias content: column.data
+
+    property int    bmargin: -1
     property bool   border: false // shorthand for borderWidth
     property string borderColor: pycolor.outline
     property int    borderRadius: 8
     property int    borderWidth: border ? 1 : 0
     property int    bpadding: -1
     property string color: pycolor.transparent
+    property int    finalBottomMargin:
+        bmargin >= 0 ? bmargin :
+        vmargin >= 0 ? vmargin :
+        margin >= 0 ? margin :
+        0
     property int    finalBottomPadding: 
         bpadding >= 0 ? bpadding :
         vpadding >= 0 ? vpadding :
         padding >= 0 ? padding :
+        0
+    property int    finalLeftMargin:
+        lmargin >= 0 ? lmargin :
+        hmargin >= 0 ? hmargin :
+        margin >= 0 ? margin :
         0
     property int    finalLeftPadding: 
         lpadding >= 0 ? lpadding :
         hpadding >= 0 ? hpadding :
         padding >= 0 ? padding :
         0
+    property int    finalRightMargin:
+        rmargin >= 0 ? rmargin :
+        hmargin >= 0 ? hmargin :
+        margin >= 0 ? margin :
+        0
     property int    finalRightPadding: 
         rpadding >= 0 ? rpadding :
         hpadding >= 0 ? hpadding :
         padding >= 0 ? padding :
+        0
+    property int    finalTopMargin:
+        tmargin >= 0 ? tmargin :
+        vmargin >= 0 ? vmargin :
+        margin >= 0 ? margin :
         0
     property int    finalTopPadding: 
         tpadding >= 0 ? tpadding :
@@ -45,13 +76,19 @@ Item {
         padding >= 0 ? padding :
         0
     property string halign: 'start' // start, stretch, center
+    property int    hmargin: -1
     property int    hpadding: -1
+    property int    lmargin: -1
     property int    lpadding: -1
+    property int    margin: -1
     property int    padding: -1
+    property int    rmargin: -1
     property int    rpadding: -1
+    property int    tmargin: -1
     property int    tpadding: -1
-    property int    spacing: 4
+    property int    spacing: 8
     property string valign: 'start' // start, stretch
+    property int    vmargin: -1
     property int    vpadding: -1
 
     function computeLayout() {
@@ -134,7 +171,13 @@ Item {
 
     V.Rectangle {
         id: background
-        anchors.fill: parent
+        anchors {
+            fill: parent
+            leftMargin: root.finalLeftMargin
+            topMargin: root.finalTopMargin
+            rightMargin: root.finalRightMargin
+            bottomMargin: root.finalBottomMargin
+        }
         border.width: root.borderWidth
         border.color: root.borderColor
         // clip: true

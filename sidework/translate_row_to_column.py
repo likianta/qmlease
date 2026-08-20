@@ -4,6 +4,7 @@ Translate qmlease/widgets/QmlEase/Layouts/Row.qml to Column.qml
 
 import difflib
 
+from argsense import cli
 from lk_utils import dump
 from lk_utils import here
 from lk_utils import load
@@ -11,7 +12,8 @@ from lk_utils import manipulate_text
 from neoprint import print
 
 
-def main() -> None:
+@cli
+def main(show_diff: bool = True) -> None:
     text_i = load('qmlease/widgets/QmlEase/Layouts/Row.qml', 'plain')
     # fmt: off
     text_o = (
@@ -53,20 +55,23 @@ def main() -> None:
 
     dump(text_o, 'qmlease/widgets/QmlEase/Layouts/Column.qml')
 
-    # diff = difflib.unified_diff(
-    #     text_i.splitlines(),
-    #     text_o.splitlines(),
-    #     fromfile='input_row.qml',
-    #     tofile='output_col.qml',
-    # )
-    # dump(diff, here('io_diff.txt'))
+    if show_diff:
+        # diff = difflib.unified_diff(
+        #     text_i.splitlines(),
+        #     text_o.splitlines(),
+        #     fromfile='input_row.qml',
+        #     tofile='output_col.qml',
+        # )
+        # dump(diff, here('io_diff.txt'))
 
-    diff = difflib.HtmlDiff().make_file(
-        text_i.splitlines(), text_o.splitlines()
-    )
-    dump(diff, here('_row_to_column_diff.html'))
-    print('see "Column.qml" and "_row_to_column_diff.html"', ':v4')
+        diff = difflib.HtmlDiff().make_file(
+            text_i.splitlines(), text_o.splitlines()
+        )
+        dump(diff, here('_row_to_column_diff.html'))
+        print('see "Column.qml" and "_row_to_column_diff.html"', ':v4')
+    else:
+        print('see "Column.qml"', ':v4')
 
 
 if __name__ == '__main__':
-    main()
+    cli.run(main)

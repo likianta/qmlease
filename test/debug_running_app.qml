@@ -11,6 +11,6 @@ Window {
         }
     }
     Component.onCompleted: {
-        py.main.test_ui(this)
+        py.test_framework.test_ui(this)
     }
 }

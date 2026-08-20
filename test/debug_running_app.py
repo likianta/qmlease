@@ -3,7 +3,7 @@ from lk_utils import fs
 from neoprint import print
 
 
-class Main(qe.QObject):
+class TestFramework(qe.QObject):
     @qe.Slot(object)
     def test_ui(self, window: qe.QObject) -> None:
         print(':d', 'TEST UI START')
@@ -17,5 +17,5 @@ class Main(qe.QObject):
         qe.app.force_exit()
 
 
-qe.app.register(Main)
+qe.app.register(TestFramework)
 qe.app.run(fs.here('debug_running_app.qml'))
