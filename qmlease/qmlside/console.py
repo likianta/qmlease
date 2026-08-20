@@ -82,11 +82,20 @@ class Console(QObject):
                     '[file_id:<id>]...'
         """
         # print(':lnv', mode, ctx.file, ctx.line, ctx.function, msg)  # TEST
+        #   e.g.
+        #       mode = 1;
+        #       ctx.file = "file:///C:/Likianta/workspace/com.jlsemi.likianta
+        #           /asa-gui/apps/app_qe/qml/Main.qml";
+        #       ctx.line = 33;
+        #       ctx.function = None;
+        #       msg = "file:///C:/Likianta/workspace/com.jlsemi.likianta/asa-gui
+        #           /apps/app_qe/qml/Main.qml:33:9: Type Dashboard unavailable"
+
         # if ctx.file == 'eval code':
         #     raise Exception(msg)
 
         # file path
-        if msg.startswith('[file_id:'):
+        if msg.startswith('[file_id:'):  # DELETE: no more this case
             file_id = self._file_id_pattern.search(msg).group(1)  # type: ignore
             file_path, start_line_no = self._file_id_map[file_id]
             msg = '(qml) ' + msg.split(']', 1)[1]
@@ -96,9 +105,11 @@ class Console(QObject):
                 # strip `<file>:<row>:<col>` prefix from `msg`.
                 if msg.startswith(ctx.file):
                     assert msg.startswith(
-                        prefix := '{}:{}: '.format(ctx.file, ctx.line)
+                        prefix := '{}:{}'.format(ctx.file, ctx.line)
                     )
-                    msg = msg[len(prefix) :]
+                    msg = msg.removeprefix(prefix)
+                    if msg[0] == ':':
+                        msg = msg.split(' ', 1)[1]
 
                 file_path = self._normalize_path(ctx.file)
                 file_path = self._reformat_path(file_path)
