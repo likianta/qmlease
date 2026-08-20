@@ -36,9 +36,9 @@ qmlease: # 项目源代码
     widgets_backend: 已停止维护, 可忽略.
     assets.py: 用来索引资源路径.
     console.py: 将 QML 端的打印重定向到 Python 控制台.
+    widget_support.py: 为 QML 组件提供通用的逻辑函数支持.
   qtcore: 对 QObject, Signal, Slot 等核心概念的封装.
   style: 样式相关的模块. 重点关注 color3.py, 它与 lib/qmlease_colorsys 相关.
-  widget_support: 由于 ./qmlside/widgets_backend 已停止维护, 这是第二代重构后的模块, 但同样缺少维护, 谨慎使用.
   widgets:
     # QML 组件库
     LKWidgets: 已停止开发, 可忽略.
@@ -49,8 +49,6 @@ qmlease: # 项目源代码
       Layouts: 布局类组件.
       Visual: 可视化组件.
       qmldir: 该索引只列出常用的组件. 对于非常用的组件, 需要通过 `import QmlEase.<SubModule>` 来导入.
-references:
-  omnicomm_serdes_tool: 第三方项目, 基于 QmlEase 框架完整开发, 可作为代码用法的重要参考.
 sidework: 一些周边工作.
 test: 测试模块.
 unittests: 旧的测试模块, 将会被逐渐转移到 test 目录下.
